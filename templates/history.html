@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}기록{% endblock %}
+{% block content %}
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;text-align:center;min-height:80vh;">
+  <div style="font-size:56px;">📋</div>
+  <div style="font-size:20px;font-weight:800;color:var(--dark);">기록</div>
+  <div style="font-size:14px;color:var(--gray);line-height:1.6;">지난 테스트 결과와 재물운 기록이<br>여기에 쌓입니다.</div>
+  <a href="/test/money" class="btn-primary" style="width:auto;padding:14px 32px;text-decoration:none;">첫 테스트 시작하기</a>
+</div>
+<nav class="navbar">
+  <a class="nav-item" href="/"><span class="nav-icon">🏠</span><span class="nav-label">홈</span></a>
+  <a class="nav-item active"><span class="nav-icon">🕐</span><span class="nav-label">기록</span></a>
+  <a class="nav-item" href="/profile"><span class="nav-icon">👤</span><span class="nav-label">프로필</span></a>
+</nav>
+{% endblock %}

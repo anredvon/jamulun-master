@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}프로필{% endblock %}
+{% block content %}
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;text-align:center;min-height:80vh;">
+  <div style="font-size:56px;">👤</div>
+  <div style="font-size:20px;font-weight:800;color:var(--dark);">프로필</div>
+  <div style="font-size:14px;color:var(--gray);line-height:1.6;">나의 재물운 유형, 누적 점수,<br>프리미엄 구독을 관리합니다.</div>
+  <button class="btn-primary" style="width:auto;padding:14px 32px;">프로필 설정하기</button>
+</div>
+<nav class="navbar">
+  <a class="nav-item" href="/"><span class="nav-icon">🏠</span><span class="nav-label">홈</span></a>
+  <a class="nav-item" href="/history"><span class="nav-icon">🕐</span><span class="nav-label">기록</span></a>
+  <a class="nav-item active"><span class="nav-icon">👤</span><span class="nav-label">프로필</span></a>
+</nav>
+{% endblock %}
