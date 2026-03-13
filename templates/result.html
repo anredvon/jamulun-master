@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+{% block title %}오늘의 결과{% endblock %}
+
+{% block extra_head %}
+<style>
+.result-hero {
+  background:linear-gradient(160deg,var(--gold) 0%,#FF9500 100%);
+  padding:56px 24px 32px; position:relative; overflow:hidden;
+}
+.result-hero::before {
+  content:'💰'; position:absolute; font-size:140px;
+  right:-20px; bottom:-20px; opacity:.15; pointer-events:none;
+}
+.result-hero-tag {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,.25); padding:5px 12px; border-radius:99px;
+  font-size:12px; font-weight:700; color:#fff; margin-bottom:14px;
+}
+.result-hero-title {
+  font-size:34px; font-weight:900; color:#fff; line-height:1.2; margin-bottom:12px;
+}
+.result-hero-desc {
+  font-size:14px; color:rgba(255,255,255,.85); line-height:1.65; max-width:280px;
+}
+.unlock-badge {
+  position:absolute; top:60px; right:20px;
+  background:rgba(0,0,0,.25); padding:6px 14px; border-radius:99px;
+  font-size:12px; font-weight:600; color:#fff; cursor:pointer;
+}
+.result-body { padding:24px 24px 0; }
+.score-box {
+  background:#fff; border:1.5px solid #E5E7EB; border-radius:18px;
+  padding:20px 22px; margin-bottom:24px;
+}
+.score-box-label { font-size:13px; color:var(--gray); margin-bottom:6px; font-weight:500; }
+.score-box-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.score-big { font-size:54px; font-weight:900; color:var(--blue); line-height:1; }
+.score-big span { font-size:20px; color:var(--gray); font-weight:500; }
+.score-badge {
+  background:#D1FAE5; color:var(--green); font-size:13px; font-weight:700;
+  padding:6px 14px; border-radius:99px;
+}
+.score-bar-bg { height:10px; background:#F3F4F6; border-radius:99px; overflow:hidden; }
+.score-bar-fill {
+  height:100%; background:linear-gradient(90deg,var(--gold) 0%,var(--gold-dark) 100%);
+  border-radius:99px; transition:width 1.2s cubic-bezier(.4,0,.2,1);
+}
+.section-label { font-size:15px; font-weight:700; color:var(--gray); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
+.analysis-cards { display:flex; flex-direction:column; gap:12px; margin-bottom:24px; }
+.analysis-card {
+  background:#fff; border:1.5px solid #E5E7EB; border-radius:16px;
+  padding:16px 18px; display:flex; gap:14px; align-items:flex-start;
+}
+.analysis-icon {
+  width:44px; height:44px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;
+}
+.analysis-icon.gold   { background:#FFF3CD; }
+.analysis-icon.blue   { background:#DBEAFE; }
+.analysis-icon.purple { background:#EDE9FE; }
+.analysis-card-title { font-size:15px; font-weight:700; color:var(--dark); margin-bottom:3px; }
+.analysis-card-desc  { font-size:13px; color:var(--gray); line-height:1.5; }
+.result-actions { padding:0 24px 16px; display:flex; flex-direction:column; gap:10px; }
+
+/* Paywall modal */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+  z-index:200; align-items:flex-end; justify-content:center;
+}
+.modal-overlay.active { display:flex; animation:fadeIn .2s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.modal-sheet {
+  width:390px; background:#fff; border-radius:24px 24px 0 0;
+  padding:32px 28px 40px; animation:slideUp .3s cubic-bezier(.4,0,.2,1); text-align:center;
+}
+@keyframes slideUp { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal-lock {
+  width:72px; height:72px;
+  background:linear-gradient(135deg,#DBEAFE 0%,#EDE9FE 100%);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:32px; margin:0 auto 20px;
+}
+.modal-title { font-size:22px; font-weight:800; color:var(--dark); margin-bottom:12px; }
+.modal-desc  { font-size:14px; color:var(--gray); line-height:1.7; margin-bottom:28px; }
+.modal-btns  { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+.modal-divider { border:none; border-top:1px solid #E5E7EB; margin-bottom:24px; }
+.modal-perks { display:flex; flex-direction:column; gap:10px; text-align:left; }
+.modal-perk  { display:flex; align-items:center; gap:10px; font-size:14px; color:var(--dark); font-weight:500; }
+.perk-check {
+  width:22px; height:22px; background:var(--blue);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:12px; flex-shrink:0;
+}
+
+/* Kakao share modal */
+.kakao-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+  z-index:200; align-items:center; justify-content:center;
+}
+.kakao-overlay.active { display:flex; animation:fadeIn .2s ease; }
+.kakao-sheet {
+  width:340px; background:#fff; border-radius:24px; overflow:hidden;
+  animation:popIn .25s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+}
+@keyframes popIn { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
+.kakao-header {
+  padding:14px 20px; display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid #F3F4F6;
+}
+.kakao-header-left { display:flex; align-items:center; gap:10px; }
+.kakao-logo { font-size:22px; }
+.kakao-header-title { font-size:15px; font-weight:700; color:var(--dark); }
+.kakao-close { font-size:20px; color:var(--gray); cursor:pointer; padding:4px; }
+.kakao-banner {
+  background:linear-gradient(135deg,var(--gold) 0%,#FF9500 100%);
+  padding:24px; text-align:center; position:relative; overflow:hidden;
+}
+.kakao-banner::after { content:'🐷'; position:absolute; font-size:80px; right:-10px; bottom:-10px; opacity:.2; }
+.kakao-card {
+  background:rgba(255,255,255,.95); border-radius:14px; padding:20px 22px; text-align:left;
+}
+.kakao-card-icon  { font-size:28px; margin-bottom:8px; }
+.kakao-card-title { font-size:18px; font-weight:800; color:var(--dark); }
+.kakao-body { padding:20px 24px; }
+.kakao-result-tag {
+  display:inline-block; background:var(--blue-light); color:var(--blue);
+  font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px; margin-bottom:8px;
+}
+.kakao-result-title { font-size:20px; font-weight:800; color:var(--dark); margin-bottom:6px; }
+.kakao-result-desc  { font-size:13px; color:var(--gray); line-height:1.6; margin-bottom:20px; }
+.kakao-send-btn {
+  width:100%; padding:14px; background:#FEE500; border:none; border-radius:12px;
+  font-size:15px; font-weight:700; font-family:'Noto Sans KR',sans-serif;
+  color:#3B1E08; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:transform .1s;
+}
+.kakao-send-btn:active { transform:scale(.97); }
+.kakao-footer { padding:0 24px 20px; }
+.kakao-sender { display:flex; align-items:center; gap:10px; }
+.kakao-sender-icon {
+  width:36px; height:36px; background:var(--blue-light);
+  border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;
+}
+.kakao-sender-name { font-size:13px; font-weight:700; color:var(--dark); }
+.kakao-sender-sub  { font-size:12px; color:var(--gray); }
+
+/* AdFit 광고 영역 */
+.ad-container { margin:0 24px 16px; text-align:center; min-height:50px; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set score = result.final_score if result else 0 %}
+<div class="scroll-area">
+  <!-- 히어로 -->
+  <div class="result-hero">
+    <a class="back-btn" style="background:rgba(255,255,255,.2);border-color:transparent;color:#fff;" href="/">←</a>
+    <div style="margin-top:16px;">
+      <div class="result-hero-tag">⭐ 당신의 오늘 데스티니</div>
+      <div class="result-hero-title">{{ result.result_title if result else '황금빛 돈 자석' }}</div>
+      <div class="result-hero-desc">{{ result.result_desc if result else '' }}</div>
+    </div>
+    <div class="unlock-badge">무한한 잠금 해제</div>
+  </div>
+
+  <!-- 점수 박스 -->
+  <div class="result-body">
+    <div class="score-box">
+      <div class="score-box-label">종합 재물운 점수</div>
+      <div class="score-box-row">
+        <div class="score-big">{{ score }}<span>/100</span></div>
+        <div class="score-badge">
+          {% if score >= 90 %}최고의 행운
+          {% elif score >= 75 %}좋은 기운
+          {% elif score >= 55 %}평온한 흐름
+          {% else %}절약의 시기{% endif %}
+        </div>
+      </div>
+      <div class="score-bar-bg">
+        <div class="score-bar-fill" id="result-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- 주요 분석 -->
+    <div class="section-label">주요 분석</div>
+    <div class="analysis-cards">
+      <div class="analysis-card">
+        <div class="analysis-icon gold">📈</div>
+        <div>
+          <div class="analysis-card-title">자산의 증식</div>
+          <div class="analysis-card-desc">통장 잔고에 기분 좋은 서프라이즈나 새로운 부업 아이디어가 생길 수 있습니다.</div>
+        </div>
+      </div>
+      <div class="analysis-card">
+        <div class="analysis-icon blue">🤝</div>
+        <div>
+          <div class="analysis-card-title">뜻밖의 귀인</div>
+          <div class="analysis-card-desc">우연한 만남이 수익성 높은 계약이나 제안으로 이어질 수 있습니다.</div>
+        </div>
+      </div>
+      <div class="analysis-card">
+        <div class="analysis-icon purple">🔮</div>
+        <div>
+          <div class="analysis-card-title">높은 직관력</div>
+          <div class="analysis-card-desc">투자에 대한 당신의 직관이 매우 날카로운 시기입니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 카카오 AdFit 배너 (Step 2에서 실제 코드 삽입) -->
+  <div class="ad-container" id="adfit-banner">
+    <!--
+      카카오 AdFit 배너 광고
+      실제 서비스 시: data-ad-unit 값을 AdFit 대시보드에서 발급받은 단위 ID로 교체
+      https://adfit.kakao.com
+    -->
+    <ins class="kakao_ad_area"
+         style="display:none;"
+         data-ad-unit="DAN-XXXXXXXXXXXXXXXX"
+         data-ad-width="320"
+         data-ad-height="50"></ins>
+    <script async src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
+  </div>
+
+  <!-- 액션 버튼 -->
+  <div class="result-actions">
+    <button class="btn-primary" onclick="openPaywall()">✨ AI 상세 분석 결과 보기</button>
+    <button class="btn-secondary" onclick="openKakao()">🔗 친구에게 공유하고 복채 받기</button>
+  </div>
+</div>
+
+<!-- ── 페이월 모달 ── -->
+<div class="modal-overlay" id="paywall-modal" onclick="closePaywall(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-lock">🔒</div>
+    <div class="modal-title">상세 분석 결과 보기</div>
+    <div class="modal-desc">
+      AI가 분석한 결과, 당신에게 숨겨진 3가지 성장 기회를 발견했습니다.
+      광고 시청이나 업그레이드를 통해 전체 리포트를 확인하세요.
+    </div>
+    <div class="modal-btns">
+      <!-- AdFit 동영상 광고 or 시뮬레이션 -->
+      <button class="btn-primary" id="ad-btn" onclick="watchAdAndUnlock({{ ts.id }})">
+        ▶ 광고 보고 무료로 열기
+      </button>
+      <button class="btn-secondary" onclick="payPremium()">광고 없이 평생 보기 — ₩4,900</button>
+    </div>
+    <hr class="modal-divider">
+    <div class="modal-perks">
+      <div class="modal-perk"><div class="perk-check">✓</div>정밀한 자산 흐름 분석</div>
+      <div class="modal-perk"><div class="perk-check">✓</div>개인 맞춤형 AI 금융 처방전</div>
+      <div class="modal-perk"><div class="perk-check">✓</div>PDF 및 엑셀 리포트 다운로드</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 카카오 공유 모달 ── -->
+<div class="kakao-overlay" id="kakao-modal" onclick="closeKakao(event)">
+  <div class="kakao-sheet" onclick="event.stopPropagation()">
+    <div class="kakao-header">
+      <div class="kakao-header-left">
+        <div class="kakao-logo">💬</div>
+        <div class="kakao-header-title">카카오톡 공유하기</div>
+      </div>
+      <div class="kakao-close" onclick="closeKakao()">✕</div>
+    </div>
+    <div class="kakao-banner">
+      <div class="kakao-card">
+        <div class="kakao-card-icon">💰</div>
+        <div class="kakao-card-title">오늘 나의 재물운은?</div>
+      </div>
+    </div>
+    <div class="kakao-body">
+      <div class="kakao-result-tag">RESULT</div>
+      <div class="kakao-result-title">{{ result.result_title if result else '황금빛 돈방석 예약!' }} 💰</div>
+      <div class="kakao-result-desc">지금 바로 당신의 미래 자산 점수를 확인해보세요. 운세 마스터가 알려주는 특별한 부자 지수!</div>
+      <button class="kakao-send-btn" onclick="doShare()">💬 카카오톡으로 공유하기</button>
+    </div>
+    <div class="kakao-footer">
+      <div class="kakao-sender">
+        <div class="kakao-sender-icon">✨</div>
+        <div>
+          <div class="kakao-sender-name">운세 마스터</div>
+          <div class="kakao-sender-sub">방금 테스트를 완료했습니다</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="navbar">
+  <a class="nav-item" href="/"><span class="nav-icon">🏠</span><span class="nav-label">홈</span></a>
+  <a class="nav-item active"><span class="nav-icon">✨</span><span class="nav-label">분석</span></a>
+  <a class="nav-item" href="/history"><span class="nav-icon">🕐</span><span class="nav-label">기록</span></a>
+  <a class="nav-item" href="/profile"><span class="nav-icon">👤</span><span class="nav-label">프로필</span></a>
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<!--
+  토스페이먼츠 SDK
+  실제 서비스 시: 'test_ck_...' 를 토스페이먼츠 대시보드 클라이언트 키로 교체
+  https://developers.tosspayments.com
+-->
+<script src="https://js.tosspayments.com/v1/payment"></script>
+<script>
+const SESSION_ID = {{ ts.id }};
+const TOSS_CLIENT_KEY = 'test_ck_YOUR_CLIENT_KEY_HERE';  // ← 교체 필요
+
+// ── 점수 바 애니메이션 ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('result-bar').style.width = '{{ score }}%';
+  }, 300);
+});
+
+// ── 페이월 모달 ──
+function openPaywall() {
+  document.getElementById('paywall-modal').classList.add('active');
+}
+function closePaywall(e) {
+  if (!e || e.target.id === 'paywall-modal')
+    document.getElementById('paywall-modal').classList.remove('active');
+}
+
+// ── 카카오 공유 모달 ──
+function openKakao() {
+  document.getElementById('kakao-modal').classList.add('active');
+}
+function closeKakao(e) {
+  if (!e || e.target.id === 'kakao-modal')
+    document.getElementById('kakao-modal').classList.remove('active');
+}
+
+// ── 카카오톡 공유 ──
+async function doShare() {
+  await API.share(SESSION_ID, 'kakao');
+  if (window.Kakao && Kakao.isInitialized()) {
+    Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: '오늘 나의 재물운은? {{ result.result_title if result else "" }}',
+        description: '재물운 테스트 해보세요!',
+        imageUrl: location.origin + '/static/og-image.png',
+        link: { mobileWebUrl: location.origin, webUrl: location.origin }
+      },
+      buttons: [{ title: '테스트 하러 가기', link: { mobileWebUrl: location.origin } }]
+    });
+  } else {
+    // 카카오 SDK 미초기화 시 클립보드 복사 fallback
+    navigator.clipboard.writeText(location.origin).then(() => alert('링크가 복사되었습니다!'));
+  }
+  closeKakao();
+}
+
+// ── 토스페이먼츠 결제 ──
+async function payPremium() {
+  const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+  try {
+    await tossPayments.requestPayment('카드', {
+      amount: 4900,
+      orderId: `order_${SESSION_ID}_${Date.now()}`,
+      orderName: '재물운 AI 리포트 평생 이용권',
+      customerName: '재물운 이용자',
+      successUrl: `${location.origin}/payment/success?session=${SESSION_ID}`,
+      failUrl:    `${location.origin}/payment/fail?session=${SESSION_ID}`,
+    });
+  } catch (e) {
+    if (e.code !== 'USER_CANCEL') {
+      alert('결제 오류: ' + e.message);
+    }
+  }
+}
+</script>
+{% endblock %}

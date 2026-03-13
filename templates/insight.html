@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% block title %}AI 금융 인사이트{% endblock %}
+
+{% block extra_head %}
+<style>
+.insight-header {
+  padding:56px 24px 20px; display:flex;
+  align-items:center; justify-content:space-between;
+}
+.insight-header-title { font-size:18px; font-weight:700; color:var(--dark); }
+.more-btn { font-size:22px; cursor:pointer; color:var(--gray); }
+
+.ai-summary-card {
+  margin:0 24px 24px; background:var(--blue-light); border-radius:16px;
+  padding:18px 20px; display:flex; gap:12px; align-items:flex-start;
+}
+.ai-badge {
+  background:var(--blue); color:#fff; font-size:11px; font-weight:700;
+  padding:3px 8px; border-radius:6px; flex-shrink:0; margin-top:2px;
+}
+.ai-summary-text { font-size:14px; line-height:1.65; color:var(--dark); }
+.ai-summary-text strong { font-weight:700; }
+
+/* Chart */
+.chart-section { padding:0 24px 24px; }
+.chart-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.chart-title { font-size:18px; font-weight:800; color:var(--dark); }
+.chart-sub   { font-size:12px; color:var(--gray); }
+.chart-amount { font-size:28px; font-weight:900; color:var(--dark); }
+.chart-change { font-size:13px; color:var(--green); font-weight:600; }
+.chart-canvas-wrap {
+  background:#fff; border-radius:16px; border:1.5px solid #E5E7EB;
+  overflow:hidden; padding:16px 0 8px;
+}
+canvas#assetChart { width:100%; height:160px; display:block; }
+
+/* Consumption */
+.consumption-section { padding:0 24px 24px; }
+.consumption-title { font-size:18px; font-weight:800; color:var(--dark); margin-bottom:14px; }
+.consumption-grid { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; }
+.consumption-grid::-webkit-scrollbar { display:none; }
+.cons-card {
+  min-width:110px; background:#fff; border:1.5px solid #E5E7EB;
+  border-radius:14px; padding:14px; flex-shrink:0;
+}
+.cons-icon     { font-size:24px; margin-bottom:8px; }
+.cons-category { font-size:12px; color:var(--gray); font-weight:500; margin-bottom:4px; }
+.cons-amount   { font-size:15px; font-weight:800; color:var(--dark); }
+.cons-change   { font-size:11px; font-weight:600; margin-top:2px; }
+.cons-change.up   { color:var(--red); }
+.cons-change.down { color:var(--green); }
+.cons-change.flat { color:var(--gray); }
+
+/* AI action */
+.ai-action-card {
+  margin:0 24px 24px; background:var(--dark); border-radius:18px;
+  padding:20px 22px; position:relative; overflow:hidden;
+}
+.ai-action-card::before {
+  content:''; position:absolute; top:-30px; right:-30px;
+  width:120px; height:120px; background:rgba(255,255,255,.04); border-radius:50%;
+}
+.ai-action-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.ai-action-badge {
+  background:var(--gold); color:var(--dark); font-size:11px; font-weight:800;
+  padding:3px 8px; border-radius:6px;
+}
+.ai-action-text { font-size:13px; color:rgba(255,255,255,.7); line-height:1.6; margin-bottom:18px; }
+.ai-action-text strong { color:#fff; font-weight:700; }
+.ai-action-btns { display:flex; gap:10px; }
+.ai-action-btn-w {
+  flex:1; padding:12px; background:#fff; border:none; border-radius:10px;
+  font-size:14px; font-weight:700; font-family:'Noto Sans KR',sans-serif;
+  color:var(--dark); cursor:pointer; transition:transform .1s;
+}
+.ai-action-btn-w:active { transform:scale(.97); }
+.ai-action-btn-d {
+  flex:1; padding:12px; background:#374151; border:none; border-radius:10px;
+  font-size:14px; font-weight:700; font-family:'Noto Sans KR',sans-serif;
+  color:#fff; cursor:pointer; transition:transform .1s;
+}
+.ai-action-btn-d:active { transform:scale(.97); }
+
+/* Briefing */
+.briefing-section { padding:0 24px; }
+.briefing-title { font-size:18px; font-weight:800; color:var(--dark); margin-bottom:14px; }
+.briefing-items { display:flex; flex-direction:column; gap:12px; }
+.briefing-item {
+  display:flex; gap:14px; align-items:flex-start;
+  background:#fff; border:1.5px solid #E5E7EB; border-radius:14px; padding:14px 16px;
+}
+.briefing-icon { font-size:22px; flex-shrink:0; margin-top:1px; }
+.briefing-item-title { font-size:14px; font-weight:700; color:var(--dark); margin-bottom:3px; }
+.briefing-item-desc  { font-size:13px; color:var(--gray); line-height:1.5; }
+
+/* AdFit */
+.ad-container { margin:0 24px 16px; text-align:center; min-height:50px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="scroll-area">
+  <div class="insight-header">
+    <a class="back-btn" href="/result/{{ ts.id }}">←</a>
+    <div class="insight-header-title">AI 금융 인사이트</div>
+    <div class="more-btn">⋯</div>
+  </div>
+
+  <!-- AI 요약 -->
+  <div class="ai-summary-card">
+    <span class="ai-badge">✦ AI 요약</span>
+    <div class="ai-summary-text">
+      현재의 소비 습관을 유지한다면, <strong>'내 집 마련'</strong> 목표를
+      예상보다 4개월 일찍 달성할 수 있습니다.
+    </div>
+  </div>
+
+  <!-- 자산 예측 차트 -->
+  <div class="chart-section">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">자산 예측</div>
+        <div class="chart-sub">Estimated net worth by 2034</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="chart-amount">$850,200</div>
+        <div class="chart-change">↑ +12.4%</div>
+      </div>
+    </div>
+    <div class="chart-canvas-wrap">
+      <canvas id="assetChart"></canvas>
+    </div>
+  </div>
+
+  <!-- 소비 패턴 -->
+  <div class="consumption-section">
+    <div class="consumption-title">소비 패턴 분석</div>
+    <div class="consumption-grid">
+      <div class="cons-card">
+        <div class="cons-icon">🍽️</div>
+        <div class="cons-category">외식/배달</div>
+        <div class="cons-amount">$420.50</div>
+        <div class="cons-change up">+12% 지난달 대비</div>
+      </div>
+      <div class="cons-card">
+        <div class="cons-icon">🛍️</div>
+        <div class="cons-category">쇼핑</div>
+        <div class="cons-amount">$215.00</div>
+        <div class="cons-change down">-5% 지난달 대비</div>
+      </div>
+      <div class="cons-card">
+        <div class="cons-icon">✈️</div>
+        <div class="cons-category">여행</div>
+        <div class="cons-amount">$80.00</div>
+        <div class="cons-change flat">유지</div>
+      </div>
+      <div class="cons-card">
+        <div class="cons-icon">📱</div>
+        <div class="cons-category">구독</div>
+        <div class="cons-amount">$45.00</div>
+        <div class="cons-change up">+8% 지난달 대비</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI 추천 액션 -->
+  <div class="ai-action-card">
+    <div class="ai-action-header">
+      <span class="ai-action-badge">⚡ AI 추천 액션</span>
+    </div>
+    <div class="ai-action-text">
+      낮은 이자율 계좌에 <strong>$1,240</strong>이 잠들어 있습니다.
+      인덱스 펀드로 이동하면 올해 <strong>$142 더</strong> 벌 수 있습니다.
+    </div>
+    <div class="ai-action-btns">
+      <button class="ai-action-btn-w">바로 실행하기</button>
+      <button class="ai-action-btn-d">Remind Me</button>
+    </div>
+  </div>
+
+  <!-- AdFit 인라인 광고 -->
+  <div class="ad-container" id="adfit-inline">
+    <!--
+      카카오 AdFit 인라인 광고 (320x100)
+      실제 서비스 시: data-ad-unit 값을 AdFit 대시보드에서 발급받은 단위 ID로 교체
+    -->
+    <ins class="kakao_ad_area"
+         style="display:none;"
+         data-ad-unit="DAN-YYYYYYYYYYYYYYYY"
+         data-ad-width="320"
+         data-ad-height="100"></ins>
+    <script async src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
+  </div>
+
+  <!-- 오늘의 금융 브리핑 -->
+  <div class="briefing-section">
+    <div class="briefing-title">오늘의 금융 브리핑</div>
+    <div class="briefing-items">
+      <div class="briefing-item">
+        <div class="briefing-icon">🐷</div>
+        <div>
+          <div class="briefing-item-title">잔돈 저축 활성화 중</div>
+          <div class="briefing-item-desc">이번 주 잔돈 모으기로 42,500원을 비상금에 적립했습니다.</div>
+        </div>
+      </div>
+      <div class="briefing-item">
+        <div class="briefing-icon">⚠️</div>
+        <div>
+          <div class="briefing-item-title">구독료 주의 알림</div>
+          <div class="briefing-item-desc">거의 사용하지 않는 스트리밍 구독 3건이 매달 45,000원씩 지출되고 있습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="navbar">
+  <a class="nav-item" href="/"><span class="nav-icon">🏠</span><span class="nav-label">홈</span></a>
+  <a class="nav-item active"><span class="nav-icon">📊</span><span class="nav-label">분석</span></a>
+  <a class="nav-item" href="/history"><span class="nav-icon">🕐</span><span class="nav-label">기록</span></a>
+  <a class="nav-item" href="/profile"><span class="nav-icon">👤</span><span class="nav-label">프로필</span></a>
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+window.addEventListener('load', drawChart);
+
+function drawChart() {
+  const canvas = document.getElementById('assetChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth, H = 160;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  const pts = [[0,95],[40,75],[80,85],[120,60],[160,70],[200,45],[240,80],[280,30],[320,55],[W,42]];
+
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(26,107,255,.18)');
+  grad.addColorStop(1,'rgba(26,107,255,0)');
+
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i=1;i<pts.length;i++) {
+    const cx=(pts[i-1][0]+pts[i][0])/2;
+    ctx.bezierCurveTo(cx,pts[i-1][1],cx,pts[i][1],pts[i][0],pts[i][1]);
+  }
+  ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i=1;i<pts.length;i++) {
+    const cx=(pts[i-1][0]+pts[i][0])/2;
+    ctx.bezierCurveTo(cx,pts[i-1][1],cx,pts[i][1],pts[i][0],pts[i][1]);
+  }
+  ctx.strokeStyle='#1A6BFF'; ctx.lineWidth=2.5; ctx.stroke();
+
+  ctx.fillStyle='#9CA3AF'; ctx.font='11px Noto Sans KR'; ctx.textAlign='center';
+  [['2024',24],['2029',W/2],['2034',W-24]].forEach(([l,x])=>ctx.fillText(l,x,H-6));
+}
+</script>
+{% endblock %}
