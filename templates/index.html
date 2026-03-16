@@ -1,157 +1,94 @@
 {% extends "base.html" %}
-{% block title %}홈{% endblock %}
-
-{% block extra_head %}
-<style>
-.top-header {
-  padding:56px 24px 8px;
-  display:flex; justify-content:space-between; align-items:flex-start;
-}
-.greeting-name { font-size:26px; font-weight:800; color:var(--dark); line-height:1.2; }
-.greeting-sub  { font-size:14px; color:var(--gray); margin-top:4px; }
-.notif-btn {
-  width:44px; height:44px; background:var(--dark);
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-size:18px; cursor:pointer; flex-shrink:0;
-}
-.score-card {
-  margin:20px 24px 0;
-  background:linear-gradient(135deg,#1A6BFF 0%,#1254CC 100%);
-  border-radius:20px; padding:20px 22px;
-  display:flex; align-items:center; gap:16px;
-  box-shadow:0 6px 24px rgba(26,107,255,.3);
-  animation:slideDown .5s ease;
-}
-@keyframes slideDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
-.score-icon-wrap {
-  width:52px; height:52px; background:rgba(255,255,255,.2);
-  border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;
-}
-.score-label { font-size:12px; color:rgba(255,255,255,.8); font-weight:500; margin-bottom:2px; }
-.score-title { font-size:20px; font-weight:800; color:#fff; }
-.score-number { margin-left:auto; text-align:right; flex-shrink:0; }
-.score-number .num   { font-size:42px; font-weight:900; color:#fff; line-height:1; }
-.score-number .denom { font-size:14px; color:rgba(255,255,255,.7); }
-.section-title { font-size:18px; font-weight:800; color:var(--dark); padding:24px 24px 12px; }
-.menu-cards { display:flex; flex-direction:column; gap:12px; padding:0 24px; }
-.menu-card {
-  background:#fff; border:1.5px solid #E5E7EB; border-radius:18px;
-  padding:18px; display:flex; align-items:center; gap:16px;
-  cursor:pointer; transition:all .2s; text-decoration:none; color:inherit;
-  animation:fadeUp .4s ease both;
-}
-.menu-card:nth-child(1){animation-delay:.05s}
-.menu-card:nth-child(2){animation-delay:.12s}
-.menu-card:nth-child(3){animation-delay:.19s}
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-.menu-card:active { transform:scale(.98); background:var(--gray-light); }
-.menu-card-img {
-  width:64px; height:64px; border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:28px; flex-shrink:0;
-}
-.menu-card-img.gold   { background:#FFF3CD; }
-.menu-card-img.blue   { background:#DBEAFE; }
-.menu-card-img.green  { background:#D1FAE5; }
-.menu-card-tag { font-size:11px; font-weight:700; letter-spacing:.05em; margin-bottom:4px; text-transform:uppercase; }
-.menu-card-tag.gold  { color:var(--gold-dark); }
-.menu-card-tag.blue  { color:var(--blue); }
-.menu-card-tag.green { color:var(--green); }
-.menu-card-title { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:3px; }
-.menu-card-desc  { font-size:13px; color:var(--gray); line-height:1.4; }
-.insight-section { padding:24px 24px 0; }
-.insight-title   { font-size:18px; font-weight:800; color:var(--dark); margin-bottom:12px; }
-.insight-card {
-  background:#EFF6FF; border-radius:16px;
-  padding:18px 20px; display:flex; gap:14px; align-items:flex-start;
-}
-.insight-icon { font-size:22px; flex-shrink:0; margin-top:2px; }
-.insight-text { font-size:14px; line-height:1.65; color:var(--dark); }
-</style>
-{% endblock %}
+{% block title %}AI 재물운 센터 — 오늘의 금전운 테스트{% endblock %}
 
 {% block content %}
-<div class="scroll-area">
-  <div class="top-header">
+
+<!-- ── 히어로 섹션 ─────────────────────────── -->
+<section class="hero-card">
+  <div class="hero-badge">🔮 오늘 지수 {{ today_score }}점 · 매일 바뀌는 테스트</div>
+  <h1>가볍게 확인하는<br>재물운 · 소비습관 · 미래자산</h1>
+  <p class="hero-desc">
+    질문풀 100개 이상에서 랜덤으로 출제돼요.<br>
+    같은 테스트를 다시 해도 매번 질문 조합이 달라집니다.
+  </p>
+
+  <!-- 참여 지표 — 신뢰감/참여율 높이는 용도 -->
+  <div class="hero-stats">
     <div>
-      <div class="greeting-name">안녕하세요, 재물운 님</div>
-      <div class="greeting-sub">오늘의 금전적 기운을 확인해보세요</div>
+      <strong>18,532명</strong>
+      <span>오늘 참여</span>
     </div>
-    <div class="notif-btn">🔔</div>
-  </div>
-
-  <!-- 오늘 금전운 점수 -->
-  <div class="score-card">
-    <div class="score-icon-wrap">✨</div>
     <div>
-      <div class="score-label">오늘의 금전운</div>
-      <div class="score-title">
-        {% if today_score >= 85 %}매우 좋음
-        {% elif today_score >= 70 %}좋음
-        {% elif today_score >= 55 %}보통
-        {% else %}주의 필요{% endif %}
-      </div>
+      <strong>6문항</strong>
+      <span>평균 문항 수</span>
     </div>
-    <div class="score-number">
-      <div class="num">{{ today_score }}</div>
-      <div class="denom">/100</div>
+    <div>
+      <strong>30초</strong>
+      <span>평균 소요 시간</span>
     </div>
   </div>
+</section>
 
-  <!-- 메뉴 카드 -->
-  <div class="section-title">오늘의 운세</div>
-  <div class="menu-cards">
-    <a class="menu-card" href="/test/money">
-      <div class="menu-card-img gold">💰</div>
-      <div>
-        <div class="menu-card-tag gold">오늘의 운세</div>
-        <div class="menu-card-title">오늘의 금전운 확인하기</div>
-        <div class="menu-card-desc">오늘 당신의 부가 어디로 흐르는지 확인하세요</div>
-      </div>
-    </a>
-    <a class="menu-card" href="/test/spending">
-      <div class="menu-card-img blue">🛍️</div>
-      <div>
-        <div class="menu-card-tag blue">성향 분석</div>
-        <div class="menu-card-title">나의 소비 습관 테스트</div>
-        <div class="menu-card-desc">절약가인가요, 아니면 즉흥적인 소비인가요?</div>
-      </div>
-    </a>
-    <a class="menu-card" href="/test/future">
-      <div class="menu-card-img green">🌱</div>
-      <div>
-        <div class="menu-card-tag green">미래 비전</div>
-        <div class="menu-card-title">미래 자산 예측</div>
-        <div class="menu-card-desc">당신의 10년 뒤 금융 목표를 미리 엿보세요</div>
-      </div>
-    </a>
-  </div>
+<!-- ── 테스트 카드 3개 ────────────────────── -->
+<section class="cards-3">
 
-  <!-- 인사이트 -->
-  <div class="insight-section">
-    <div class="insight-title">오늘의 금융 인사이트</div>
-    <div class="insight-card">
-      <div class="insight-icon">💡</div>
-      <div class="insight-text">
-        별들이 오늘은 구독 서비스를 재검토하기에 완벽한 날이라고 속삭이네요.
-        잊고 있었던 월간 결제 항목에서 새어 나가는 재물을 발견할 수도 있습니다.
-      </div>
-    </div>
-  </div>
-</div>
+  <!-- 테스트 1: 오늘 금전운 -->
+  <article class="menu-card">
+    <div class="menu-emoji">💰</div>
+    <div class="menu-badge">데일리</div>
+    <h2>오늘 금전운 보기</h2>
+    <p>오늘 지출 감각과 금전 흐름을 빠르게 확인합니다. 매일 다른 질문 조합으로 재방문할수록 재밌어요.</p>
+    <ul class="meta-list">
+      <li>✅ 질문풀 30개 이상</li>
+      <li>✅ 랜덤 6문항 출제</li>
+      <li>✅ 매일 다른 흐름</li>
+    </ul>
+    <a class="btn btn-primary btn-full" href="{{ url_for('test_page', test_type='money') }}">
+      테스트 시작 →
+    </a>
+  </article>
 
-<nav class="navbar">
-  <a class="nav-item active" href="/">
-    <span class="nav-icon">🏠</span>
-    <span class="nav-label">홈</span>
-  </a>
-  <a class="nav-item" href="/history">
-    <span class="nav-icon">🕐</span>
-    <span class="nav-label">기록</span>
-  </a>
-  <a class="nav-item" href="/profile">
-    <span class="nav-icon">👤</span>
-    <span class="nav-label">프로필</span>
-  </a>
-</nav>
+  <!-- 테스트 2: 소비 성향 -->
+  <article class="menu-card">
+    <div class="menu-emoji">🛍️</div>
+    <div class="menu-badge">성향 분석</div>
+    <h2>소비 성향 테스트</h2>
+    <p>저축 습관, 충동구매 패턴, 예산 관리 능력을 카테고리별로 균형 있게 파악합니다.</p>
+    <ul class="meta-list">
+      <li>✅ 질문풀 35개 이상</li>
+      <li>✅ 카테고리 균형 랜덤</li>
+      <li>✅ 공유용 결과 문구</li>
+    </ul>
+    <a class="btn btn-primary btn-full" href="{{ url_for('test_page', test_type='spending') }}">
+      테스트 시작 →
+    </a>
+  </article>
+
+  <!-- 테스트 3: 미래 자산 -->
+  <article class="menu-card">
+    <div class="menu-emoji">📈</div>
+    <div class="menu-badge">자산 진단</div>
+    <h2>미래 자산 테스트</h2>
+    <p>장기 자산 습관, 투자 성향, 목표 관리 수준을 측정해 성장형/안정형/주의형을 분류합니다.</p>
+    <ul class="meta-list">
+      <li>✅ 질문풀 35개 이상</li>
+      <li>✅ 매번 다른 조합</li>
+      <li>✅ 프리미엄 리포트 연계</li>
+    </ul>
+    <a class="btn btn-primary btn-full" href="{{ url_for('test_page', test_type='future') }}">
+      테스트 시작 →
+    </a>
+  </article>
+
+</section>
+
+<!-- ── 서비스 설명 ────────────────────────── -->
+<section class="info-card">
+  <h3>💡 왜 질문이 매번 달라지나요?</h3>
+  <p>
+    질문 100개를 DB에 저장해두고, 테스트 시작 시 카테고리별로 균형 있게 6문항을 뽑아 세션에 고정합니다.
+    같은 사람이 다시 들어와도 다른 조합을 경험할 수 있어 재방문율이 높아지고, 결과 신뢰도도 올라갑니다.
+  </p>
+</section>
+
 {% endblock %}

@@ -1,98 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1A6BFF">
-<title>{% block title %}운세 마스터{% endblock %} — 재물운 센터</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-:root {
-  --gold: #FFB800; --gold-dark: #E09900; --gold-light: #FFF3CD;
-  --blue: #1A6BFF; --blue-dark: #1254CC; --blue-light: #EFF6FF;
-  --dark: #111827; --gray: #6B7280; --gray-light: #F3F4F6;
-  --white: #FFFFFF; --green: #10B981; --red: #EF4444;
-  --radius: 16px; --shadow: 0 4px 24px rgba(0,0,0,0.08);
-}
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body {
-  font-family:'Noto Sans KR',sans-serif;
-  background:#F0F2F5;
-  display:flex; justify-content:center;
-  min-height:100vh;
-}
-.phone {
-  width:390px; min-height:100vh;
-  background:#fff;
-  position:relative;
-  overflow-x:hidden;
-}
-.scroll-area {
-  overflow-y:auto; overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  padding-bottom:90px;
-}
-.scroll-area::-webkit-scrollbar { display:none; }
-.navbar {
-  position:fixed; bottom:0; width:390px; height:70px;
-  background:#fff; border-top:1px solid #E5E7EB;
-  display:flex; align-items:center; justify-content:space-around;
-  z-index:100; padding-bottom:env(safe-area-inset-bottom);
-}
-.nav-item {
-  display:flex; flex-direction:column; align-items:center; gap:4px;
-  cursor:pointer; padding:8px 16px; border-radius:12px;
-  transition:background .2s; text-decoration:none;
-}
-.nav-item:active { background:var(--gray-light); }
-.nav-icon { font-size:20px; }
-.nav-label { font-size:11px; color:var(--gray); font-weight:500; }
-.nav-item.active .nav-label { color:var(--blue); }
-.btn-primary {
-  width:100%; padding:17px;
-  background:var(--blue); color:#fff;
-  border:none; border-radius:14px;
-  font-size:16px; font-weight:700; font-family:'Noto Sans KR',sans-serif;
-  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
-  transition:background .2s, transform .1s;
-}
-.btn-primary:active { background:var(--blue-dark); transform:scale(.98); }
-.btn-secondary {
-  width:100%; padding:17px;
-  background:var(--gray-light); color:var(--dark);
-  border:none; border-radius:14px;
-  font-size:16px; font-weight:600; font-family:'Noto Sans KR',sans-serif;
-  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
-  transition:background .2s, transform .1s;
-}
-.btn-secondary:active { background:#E5E7EB; transform:scale(.98); }
-.back-btn {
-  width:40px; height:40px;
-  display:flex; align-items:center; justify-content:center;
-  background:#fff; border-radius:12px; cursor:pointer;
-  font-size:18px; border:1.5px solid #E5E7EB; flex-shrink:0;
-  transition:transform .1s; text-decoration:none; color:var(--dark);
-}
-.back-btn:active { transform:scale(.9); }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1220">
 
-/* Flash messages */
-.flash { padding:12px 20px; margin:12px 24px; border-radius:10px; font-size:14px; font-weight:500; }
-.flash.error { background:#FEE2E2; color:#991B1B; }
-.flash.success { background:#D1FAE5; color:#065F46; }
-</style>
-{% block extra_head %}{% endblock %}
+  <!-- SEO / OG (공유 미리보기용) -->
+  <meta property="og:title" content="{% block og_title %}AI 재물운 센터{% endblock %}">
+  <meta property="og:description" content="{% block og_desc %}매번 달라지는 질문으로 오늘의 금전운, 소비습관, 미래자산을 알아보세요.{% endblock %}">
+  <meta property="og:type" content="website">
+
+  <title>{% block title %}AI 재물운 센터{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jaemulun.css') }}">
 </head>
 <body>
-<div class="phone">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for cat, msg in messages %}
-      <div class="flash {{ cat }}">{{ msg }}</div>
-    {% endfor %}
-  {% endwith %}
-  {% block content %}{% endblock %}
-</div>
-<script src="/static/js/jaemulun.js"></script>
-{% block extra_js %}{% endblock %}
+  <div class="app-shell">
+
+    <!-- 상단 네비게이션 바 -->
+    <header class="topbar">
+      <a class="brand" href="{{ url_for('index') }}">💸 재물운 센터</a>
+      <nav class="topbar-nav">
+        <a href="{{ url_for('index') }}">홈</a>
+      </nav>
+    </header>
+
+    <!-- 플래시 메시지 (결제 성공/실패 등) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <section class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </section>
+      {% endif %}
+    {% endwith %}
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="page-wrap">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="app-footer">
+      <p>© 2025 AI 재물운 센터 · 재미로 즐기는 테스트입니다</p>
+    </footer>
+
+  </div>
+
+  {% block scripts %}{% endblock %}
 </body>
 </html>

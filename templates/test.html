@@ -1,186 +1,78 @@
 {% extends "base.html" %}
-{% block title %}재물운 테스트{% endblock %}
-
-{% block extra_head %}
-<style>
-#screen-test  { background:#F8FAFF; min-height:100vh; display:flex; flex-direction:column; }
-.test-header  { padding:56px 24px 20px; display:flex; align-items:center; gap:12px; }
-.test-header-title { font-size:18px; font-weight:700; color:var(--dark); }
-.progress-wrap { padding:0 24px 24px; }
-.progress-meta {
-  display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;
-}
-.progress-label { font-size:13px; font-weight:700; color:var(--blue); }
-.progress-label span { color:var(--gray); font-weight:400; }
-.progress-count { font-size:22px; font-weight:900; color:var(--dark); }
-.progress-count span { font-size:14px; color:var(--gray); font-weight:400; }
-.progress-bar-bg { height:6px; background:#E5E7EB; border-radius:99px; overflow:hidden; }
-.progress-bar-fill {
-  height:100%; background:var(--blue); border-radius:99px;
-  transition:width .5s cubic-bezier(.4,0,.2,1);
-}
-.question-area {
-  flex:1; display:flex; flex-direction:column; align-items:center;
-  padding:20px 24px 100px;
-}
-.question-emoji-wrap {
-  width:80px; height:80px; background:#fff; border-radius:50%;
-  display:flex; align-items:center; justify-content:center; font-size:38px;
-  margin-bottom:28px; box-shadow:0 4px 16px rgba(0,0,0,.08);
-  animation:popIn .35s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes popIn { from{transform:scale(.6);opacity:0} to{transform:scale(1);opacity:1} }
-.question-text {
-  font-size:24px; font-weight:800; color:var(--dark);
-  text-align:center; line-height:1.4; margin-bottom:8px;
-  white-space:pre-line;
-}
-.question-sub { font-size:14px; color:var(--gray); text-align:center; margin-bottom:32px; }
-.choices { width:100%; display:flex; flex-direction:column; gap:12px; }
-.choice-btn {
-  width:100%; padding:18px 20px;
-  background:#fff; border:1.5px solid #E5E7EB; border-radius:14px;
-  font-size:15px; font-weight:600; font-family:'Noto Sans KR',sans-serif;
-  color:var(--dark); cursor:pointer;
-  display:flex; align-items:center; justify-content:space-between;
-  transition:all .18s; text-align:left;
-  animation:fadeUp .3s ease both;
-}
-.choice-btn:nth-child(1){animation-delay:.05s}
-.choice-btn:nth-child(2){animation-delay:.10s}
-.choice-btn:nth-child(3){animation-delay:.15s}
-.choice-btn:nth-child(4){animation-delay:.20s}
-@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-.choice-btn:hover { border-color:var(--blue); background:var(--blue-light); }
-.choice-btn.selected { border-color:var(--blue); background:var(--blue-light); color:var(--blue); }
-.choice-btn.selected .choice-check { background:var(--blue); border-color:var(--blue); color:#fff; }
-.choice-check {
-  width:24px; height:24px; border-radius:50%; border:1.5px solid #D1D5DB;
-  display:flex; align-items:center; justify-content:center; font-size:12px;
-  flex-shrink:0; transition:all .18s;
-}
-
-/* 분석 중 오버레이 */
-#analyzing-overlay {
-  display:none; position:fixed; inset:0;
-  background:linear-gradient(160deg,#FFF8E1 0%,#FFF3CD 40%,#FFEAA7 100%);
-  z-index:200; flex-direction:column; align-items:center; justify-content:center; text-align:center;
-  padding:40px;
-}
-#analyzing-overlay.active { display:flex; animation:fadeIn .3s ease; }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-.analyzing-emoji { font-size:72px; margin-bottom:24px; animation:pulse 1.5s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
-.analyzing-title { font-size:26px; font-weight:800; color:var(--dark); margin-bottom:10px; }
-.analyzing-sub   { font-size:15px; color:var(--gray); line-height:1.6; }
-.loader-dots { display:flex; gap:8px; justify-content:center; margin-top:32px; }
-.dot { width:10px; height:10px; background:var(--gold); border-radius:50%; animation:bounce 1.4s ease-in-out infinite; }
-.dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
-@keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-14px)} }
-</style>
-{% endblock %}
+{% block title %}{{ test_label }} — AI 재물운 센터{% endblock %}
 
 {% block content %}
-<div id="screen-test">
-  <div class="test-header">
-    <a class="back-btn" href="/">←</a>
-    <div class="test-header-title">재물운 테스트</div>
-  </div>
 
-  <div class="progress-wrap">
-    <div class="progress-meta">
-      <div class="progress-label">질문<br><span id="progress-sub">당신의 재물운을 분석 중입니다...</span></div>
-      <div class="progress-count" id="q-counter">1 <span>/ {{ questions|length }}</span></div>
-    </div>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="progress-fill" style="width:{{ (1/questions|length*100)|round }}%"></div>
-    </div>
-  </div>
-
-  <div class="question-area" id="question-area">
-    <!-- JS로 렌더링 -->
-  </div>
+<!-- test_type 값을 JS에 전달하기 위한 숨긴 input -->
+<!-- JS는 이 값을 읽어 /api/start 호출 시 사용 -->
+<div id="js-config"
+     data-test-type="{{ test_type }}"
+     data-api-start="/api/start"
+     data-api-answer="/api/answer"
+     data-api-finish="/api/finish"
+     style="display:none">
 </div>
 
-<!-- 분석 중 오버레이 -->
-<div id="analyzing-overlay">
-  <div class="analyzing-emoji">🔮</div>
-  <div class="analyzing-title">재물운 분석 중...</div>
-  <div class="analyzing-sub">별자리와 소비 패턴을 분석하여<br>당신만의 재물운 리포트를 생성 중입니다</div>
-  <div class="loader-dots">
-    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+<section class="test-shell">
+
+  <!-- 상단: 테스트 제목 + 진행 바 -->
+  <div class="test-head">
+    <div class="test-head-info">
+      <div class="eyebrow">{{ test_label }}</div>
+      <h1 id="test-title">질문을 준비하고 있습니다…</h1>
+      <p id="test-subtitle">질문풀에서 랜덤 조합을 만드는 중입니다.</p>
+    </div>
+    <div class="progress-box">
+      <span id="progress-text" class="progress-label">0 / 0</span>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
   </div>
-</div>
+
+  <!-- 로딩 상태 -->
+  <div id="loading-box" class="loading-box">
+    <div class="loading-spinner">⏳</div>
+    <p>질문을 불러오는 중…</p>
+  </div>
+
+  <!-- 오류 상태 (질문 없을 때) -->
+  <div id="error-box" class="error-box is-hidden">
+    <p id="error-message">질문 데이터를 불러오지 못했습니다.</p>
+    <a class="btn btn-secondary" href="{{ url_for('index') }}">홈으로 돌아가기</a>
+  </div>
+
+  <!-- 질문 카드 -->
+  <article id="question-card" class="question-card is-hidden">
+    <div class="question-meta">
+      <span id="question-badge" class="question-badge">1번 질문</span>
+      <span id="question-category" class="question-category">-</span>
+    </div>
+    <h2 id="question-text" class="question-text">질문 텍스트</h2>
+    <p id="question-sub" class="question-sub">보조 설명</p>
+
+    <!-- 선택지 버튼 목록 (JS가 동적 생성) -->
+    <div id="choice-list" class="choice-list" role="list"></div>
+  </article>
+
+  <!-- 완료 박스 (모든 질문 답변 후 표시) -->
+  <section id="finish-box" class="finish-box is-hidden">
+    <div class="finish-icon">🎉</div>
+    <h2>모든 질문에 답했어요!</h2>
+    <p>지금 결과를 계산해서 보여드릴게요.</p>
+    <button id="finish-btn" class="btn btn-primary btn-full">
+      결과 보기 →
+    </button>
+  </section>
+
+</section>
+
 {% endblock %}
 
-{% block extra_js %}
+{% block scripts %}
+<!-- JS에서 window.JAEMULUN_TEST_TYPE 으로 test_type 사용 가능 -->
 <script>
-// ── 서버에서 넘어온 질문 데이터 ──
-const QUESTIONS = {{ questions | tojson }};
-const TEST_TYPE = "{{ test_type }}";
-const TOTAL     = QUESTIONS.length;
-
-let currentQ    = 0;
-let sessionId   = null;
-let selectedChoice = null;
-
-// 세션 시작
-(async () => {
-  const data = await API.start(TEST_TYPE);
-  sessionId = data.session_id;
-  renderQuestion();
-})();
-
-function renderQuestion() {
-  const q = QUESTIONS[currentQ];
-  selectedChoice = null;
-
-  // 진행바
-  document.getElementById('q-counter').innerHTML =
-    `${currentQ+1} <span>/ ${TOTAL}</span>`;
-  document.getElementById('progress-fill').style.width =
-    `${((currentQ+1)/TOTAL)*100}%`;
-
-  // 질문 영역 렌더링
-  const area = document.getElementById('question-area');
-  area.innerHTML = `
-    <div class="question-emoji-wrap">${q.emoji}</div>
-    <div class="question-text">${q.text}</div>
-    <div class="question-sub">평소 습관과 가장 가까운 항목을 선택해 주세요.</div>
-    <div class="choices">
-      ${q.choices.map(c => `
-        <button class="choice-btn" onclick="selectChoice(${q.id}, ${c.id}, this)">
-          <span>${c.text}</span>
-          <div class="choice-check"></div>
-        </button>
-      `).join('')}
-    </div>
-  `;
-}
-
-async function selectChoice(questionId, choiceId, btn) {
-  if (selectedChoice !== null) return;
-  selectedChoice = choiceId;
-
-  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  btn.querySelector('.choice-check').textContent = '✓';
-
-  await API.answer(sessionId, questionId, choiceId);
-
-  setTimeout(async () => {
-    if (currentQ < TOTAL - 1) {
-      currentQ++;
-      renderQuestion();
-    } else {
-      // 완료 → 분석 중 오버레이
-      document.getElementById('analyzing-overlay').classList.add('active');
-      const result = await API.finish(sessionId);
-      setTimeout(() => {
-        window.location.href = `/result/${result.session_id}`;
-      }, 2400);
-    }
-  }, 420);
-}
+  window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
 </script>
+<script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
 {% endblock %}

@@ -1,265 +1,137 @@
 {% extends "base.html" %}
-{% block title %}AI 금융 인사이트{% endblock %}
-
-{% block extra_head %}
-<style>
-.insight-header {
-  padding:56px 24px 20px; display:flex;
-  align-items:center; justify-content:space-between;
-}
-.insight-header-title { font-size:18px; font-weight:700; color:var(--dark); }
-.more-btn { font-size:22px; cursor:pointer; color:var(--gray); }
-
-.ai-summary-card {
-  margin:0 24px 24px; background:var(--blue-light); border-radius:16px;
-  padding:18px 20px; display:flex; gap:12px; align-items:flex-start;
-}
-.ai-badge {
-  background:var(--blue); color:#fff; font-size:11px; font-weight:700;
-  padding:3px 8px; border-radius:6px; flex-shrink:0; margin-top:2px;
-}
-.ai-summary-text { font-size:14px; line-height:1.65; color:var(--dark); }
-.ai-summary-text strong { font-weight:700; }
-
-/* Chart */
-.chart-section { padding:0 24px 24px; }
-.chart-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
-.chart-title { font-size:18px; font-weight:800; color:var(--dark); }
-.chart-sub   { font-size:12px; color:var(--gray); }
-.chart-amount { font-size:28px; font-weight:900; color:var(--dark); }
-.chart-change { font-size:13px; color:var(--green); font-weight:600; }
-.chart-canvas-wrap {
-  background:#fff; border-radius:16px; border:1.5px solid #E5E7EB;
-  overflow:hidden; padding:16px 0 8px;
-}
-canvas#assetChart { width:100%; height:160px; display:block; }
-
-/* Consumption */
-.consumption-section { padding:0 24px 24px; }
-.consumption-title { font-size:18px; font-weight:800; color:var(--dark); margin-bottom:14px; }
-.consumption-grid { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; }
-.consumption-grid::-webkit-scrollbar { display:none; }
-.cons-card {
-  min-width:110px; background:#fff; border:1.5px solid #E5E7EB;
-  border-radius:14px; padding:14px; flex-shrink:0;
-}
-.cons-icon     { font-size:24px; margin-bottom:8px; }
-.cons-category { font-size:12px; color:var(--gray); font-weight:500; margin-bottom:4px; }
-.cons-amount   { font-size:15px; font-weight:800; color:var(--dark); }
-.cons-change   { font-size:11px; font-weight:600; margin-top:2px; }
-.cons-change.up   { color:var(--red); }
-.cons-change.down { color:var(--green); }
-.cons-change.flat { color:var(--gray); }
-
-/* AI action */
-.ai-action-card {
-  margin:0 24px 24px; background:var(--dark); border-radius:18px;
-  padding:20px 22px; position:relative; overflow:hidden;
-}
-.ai-action-card::before {
-  content:''; position:absolute; top:-30px; right:-30px;
-  width:120px; height:120px; background:rgba(255,255,255,.04); border-radius:50%;
-}
-.ai-action-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
-.ai-action-badge {
-  background:var(--gold); color:var(--dark); font-size:11px; font-weight:800;
-  padding:3px 8px; border-radius:6px;
-}
-.ai-action-text { font-size:13px; color:rgba(255,255,255,.7); line-height:1.6; margin-bottom:18px; }
-.ai-action-text strong { color:#fff; font-weight:700; }
-.ai-action-btns { display:flex; gap:10px; }
-.ai-action-btn-w {
-  flex:1; padding:12px; background:#fff; border:none; border-radius:10px;
-  font-size:14px; font-weight:700; font-family:'Noto Sans KR',sans-serif;
-  color:var(--dark); cursor:pointer; transition:transform .1s;
-}
-.ai-action-btn-w:active { transform:scale(.97); }
-.ai-action-btn-d {
-  flex:1; padding:12px; background:#374151; border:none; border-radius:10px;
-  font-size:14px; font-weight:700; font-family:'Noto Sans KR',sans-serif;
-  color:#fff; cursor:pointer; transition:transform .1s;
-}
-.ai-action-btn-d:active { transform:scale(.97); }
-
-/* Briefing */
-.briefing-section { padding:0 24px; }
-.briefing-title { font-size:18px; font-weight:800; color:var(--dark); margin-bottom:14px; }
-.briefing-items { display:flex; flex-direction:column; gap:12px; }
-.briefing-item {
-  display:flex; gap:14px; align-items:flex-start;
-  background:#fff; border:1.5px solid #E5E7EB; border-radius:14px; padding:14px 16px;
-}
-.briefing-icon { font-size:22px; flex-shrink:0; margin-top:1px; }
-.briefing-item-title { font-size:14px; font-weight:700; color:var(--dark); margin-bottom:3px; }
-.briefing-item-desc  { font-size:13px; color:var(--gray); line-height:1.5; }
-
-/* AdFit */
-.ad-container { margin:0 24px 16px; text-align:center; min-height:50px; }
-</style>
-{% endblock %}
+{% block title %}상세 AI 인사이트 — AI 재물운 센터{% endblock %}
 
 {% block content %}
-<div class="scroll-area">
-  <div class="insight-header">
-    <a class="back-btn" href="/result/{{ ts.id }}">←</a>
-    <div class="insight-header-title">AI 금융 인사이트</div>
-    <div class="more-btn">⋯</div>
-  </div>
 
-  <!-- AI 요약 -->
-  <div class="ai-summary-card">
-    <span class="ai-badge">✦ AI 요약</span>
-    <div class="ai-summary-text">
-      현재의 소비 습관을 유지한다면, <strong>'내 집 마련'</strong> 목표를
-      예상보다 4개월 일찍 달성할 수 있습니다.
-    </div>
-  </div>
+{% set rtype = result.result_type if result else 'bronze' %}
 
-  <!-- 자산 예측 차트 -->
-  <div class="chart-section">
-    <div class="chart-header">
-      <div>
-        <div class="chart-title">자산 예측</div>
-        <div class="chart-sub">Estimated net worth by 2034</div>
-      </div>
-      <div style="text-align:right;">
-        <div class="chart-amount">$850,200</div>
-        <div class="chart-change">↑ +12.4%</div>
-      </div>
-    </div>
-    <div class="chart-canvas-wrap">
-      <canvas id="assetChart"></canvas>
-    </div>
-  </div>
+<section class="insight-shell">
 
-  <!-- 소비 패턴 -->
-  <div class="consumption-section">
-    <div class="consumption-title">소비 패턴 분석</div>
-    <div class="consumption-grid">
-      <div class="cons-card">
-        <div class="cons-icon">🍽️</div>
-        <div class="cons-category">외식/배달</div>
-        <div class="cons-amount">$420.50</div>
-        <div class="cons-change up">+12% 지난달 대비</div>
-      </div>
-      <div class="cons-card">
-        <div class="cons-icon">🛍️</div>
-        <div class="cons-category">쇼핑</div>
-        <div class="cons-amount">$215.00</div>
-        <div class="cons-change down">-5% 지난달 대비</div>
-      </div>
-      <div class="cons-card">
-        <div class="cons-icon">✈️</div>
-        <div class="cons-category">여행</div>
-        <div class="cons-amount">$80.00</div>
-        <div class="cons-change flat">유지</div>
-      </div>
-      <div class="cons-card">
-        <div class="cons-icon">📱</div>
-        <div class="cons-category">구독</div>
-        <div class="cons-amount">$45.00</div>
-        <div class="cons-change up">+8% 지난달 대비</div>
-      </div>
-    </div>
-  </div>
+  <!-- 상단: 결과 요약 -->
+  <article class="result-hero result-{{ rtype }}">
+    <div class="eyebrow">상세 AI 인사이트 · 잠금 해제됨 ✅</div>
 
-  <!-- AI 추천 액션 -->
-  <div class="ai-action-card">
-    <div class="ai-action-header">
-      <span class="ai-action-badge">⚡ AI 추천 액션</span>
+    <div class="score-circle">
+      <span class="score-num">{{ result.final_score if result else 0 }}</span>
+      <span class="score-unit">점</span>
     </div>
-    <div class="ai-action-text">
-      낮은 이자율 계좌에 <strong>$1,240</strong>이 잠들어 있습니다.
-      인덱스 펀드로 이동하면 올해 <strong>$142 더</strong> 벌 수 있습니다.
-    </div>
-    <div class="ai-action-btns">
-      <button class="ai-action-btn-w">바로 실행하기</button>
-      <button class="ai-action-btn-d">Remind Me</button>
-    </div>
-  </div>
 
-  <!-- AdFit 인라인 광고 -->
-  <div class="ad-container" id="adfit-inline">
+    <h1>{{ result.result_title if result else '분석 결과' }}</h1>
+    <p>{{ result.result_desc if result else '' }}</p>
+  </article>
+
+  <!-- 인사이트 본문 영역 -->
+  <div class="insight-body">
+
+    <!-- 소비 패턴 요약 -->
+    <article class="info-card">
+      <h3>📊 소비 패턴 요약</h3>
+      <p>
+        이 영역은 OpenAI / Claude API 연동 시 개인 맞춤형 분석 문장을 넣기 좋은 자리입니다.
+        현재는 기본 결과 문구를 표시합니다.
+      </p>
+      <!-- TODO: OpenAI / Claude API 연동 후 아래 동적 컨텐츠 교체 -->
+      <!-- TODO: 요청 예시
+           system: "당신은 재무 코치입니다. 사용자의 소비 성향 테스트 결과를 분석해 짧은 문단으로 요약하세요."
+           user: "점수: {{ result.final_score }}, 유형: {{ result.result_type }}, 테스트: {{ ts.test_type }}"
+      -->
+      <ul class="insight-list">
+        <li>
+          <span class="insight-icon">💡</span>
+          <span>현재 소비 패턴은 <strong>{{ result.result_title }}</strong> 유형에 해당합니다.</span>
+        </li>
+        <li>
+          <span class="insight-icon">📌</span>
+          <span>{{ result.result_desc }}</span>
+        </li>
+      </ul>
+    </article>
+
+    <!-- 주의 포인트 -->
+    <article class="info-card">
+      <h3>⚠️ 주의해야 할 지출 포인트</h3>
+      <!-- TODO: AI API 연동 후 유형별 주의 포인트 동적 생성 -->
+      <ul class="insight-list">
+        {% if rtype == 'caution' %}
+          <li><span class="insight-icon">🔴</span><span>충동 구매 전 24시간 대기 규칙을 실천해보세요.</span></li>
+          <li><span class="insight-icon">🔴</span><span>세일 기간에는 예산 상한선을 미리 정해두세요.</span></li>
+          <li><span class="insight-icon">🔴</span><span>월말 결산을 꼭 하는 습관을 들여보세요.</span></li>
+        {% elif rtype == 'bronze' %}
+          <li><span class="insight-icon">🟡</span><span>카드 할부 사용 빈도를 체크해보세요.</span></li>
+          <li><span class="insight-icon">🟡</span><span>고정비와 변동비를 분리해 관리하면 좋습니다.</span></li>
+          <li><span class="insight-icon">🟡</span><span>소액이라도 정기 저축 자동이체를 설정해두세요.</span></li>
+        {% elif rtype == 'silver' %}
+          <li><span class="insight-icon">🟢</span><span>투자 비중을 조금 더 높여볼 시기입니다.</span></li>
+          <li><span class="insight-icon">🟢</span><span>비상금 3~6개월치 확보 여부를 점검하세요.</span></li>
+          <li><span class="insight-icon">🟢</span><span>세금 혜택이 있는 절세 상품을 활용해보세요.</span></li>
+        {% else %}
+          <li><span class="insight-icon">🌟</span><span>자산 배분 비율을 주기적으로 리밸런싱하세요.</span></li>
+          <li><span class="insight-icon">🌟</span><span>N잡·부수입 채널을 하나 더 추가하는 것을 고려해보세요.</span></li>
+          <li><span class="insight-icon">🌟</span><span>장기 투자 목표가 있다면 포트폴리오를 점검해보세요.</span></li>
+        {% endif %}
+      </ul>
+    </article>
+
+    <!-- 이번 주 실천 팁 -->
+    <article class="info-card">
+      <h3>✅ 이번 주 실천 팁</h3>
+      <!-- TODO: AI API 연동 후 개인화된 팁 생성 -->
+      <ol class="tip-list">
+        <li>오늘 지출 내역을 앱이나 노트에 기록해보세요.</li>
+        <li>이번 주 불필요한 구독 서비스가 있는지 확인하세요.</li>
+        <li>다음 달 예산 계획을 10분만 투자해서 잡아보세요.</li>
+      </ol>
+    </article>
+
+    <!-- TODO: 광고 영역 (AdFit / AdMob) -->
     <!--
-      카카오 AdFit 인라인 광고 (320x100)
-      실제 서비스 시: data-ad-unit 값을 AdFit 대시보드에서 발급받은 단위 ID로 교체
+    <article class="info-card ad-card">
+      <div class="ad-placeholder">
+        광고 영역 (AdFit 728x90 또는 320x50 모바일)
+        data-ad-unit="YOUR_AD_UNIT_ID" 를 채워주세요
+      </div>
+    </article>
     -->
-    <ins class="kakao_ad_area"
-         style="display:none;"
-         data-ad-unit="DAN-YYYYYYYYYYYYYYYY"
-         data-ad-width="320"
-         data-ad-height="100"></ins>
-    <script async src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
-  </div>
 
-  <!-- 오늘의 금융 브리핑 -->
-  <div class="briefing-section">
-    <div class="briefing-title">오늘의 금융 브리핑</div>
-    <div class="briefing-items">
-      <div class="briefing-item">
-        <div class="briefing-icon">🐷</div>
-        <div>
-          <div class="briefing-item-title">잔돈 저축 활성화 중</div>
-          <div class="briefing-item-desc">이번 주 잔돈 모으기로 42,500원을 비상금에 적립했습니다.</div>
-        </div>
-      </div>
-      <div class="briefing-item">
-        <div class="briefing-icon">⚠️</div>
-        <div>
-          <div class="briefing-item-title">구독료 주의 알림</div>
-          <div class="briefing-item-desc">거의 사용하지 않는 스트리밍 구독 3건이 매달 45,000원씩 지출되고 있습니다.</div>
-        </div>
-      </div>
+    <!-- 다시 테스트 유도 -->
+    <div class="action-stack">
+      <a class="btn btn-primary btn-full" href="{{ url_for('index') }}">
+        다른 테스트 해보기 →
+      </a>
+      <button class="btn btn-ghost btn-full" id="share-insight-btn" data-session-id="{{ ts.id }}">
+        결과 공유하기 📤
+      </button>
     </div>
-  </div>
-</div>
 
-<nav class="navbar">
-  <a class="nav-item" href="/"><span class="nav-icon">🏠</span><span class="nav-label">홈</span></a>
-  <a class="nav-item active"><span class="nav-icon">📊</span><span class="nav-label">분석</span></a>
-  <a class="nav-item" href="/history"><span class="nav-icon">🕐</span><span class="nav-label">기록</span></a>
-  <a class="nav-item" href="/profile"><span class="nav-icon">👤</span><span class="nav-label">프로필</span></a>
-</nav>
+  </div>
+
+</section>
+
 {% endblock %}
 
-{% block extra_js %}
+{% block scripts %}
 <script>
-window.addEventListener('load', drawChart);
+  // 인사이트 페이지 공유 버튼
+  document.getElementById('share-insight-btn')?.addEventListener('click', async () => {
+    const sessionId = Number(document.getElementById('share-insight-btn').dataset.sessionId);
 
-function drawChart() {
-  const canvas = document.getElementById('assetChart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const W = canvas.parentElement.clientWidth, H = 160;
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  ctx.scale(dpr, dpr);
+    await fetch('/api/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
 
-  const pts = [[0,95],[40,75],[80,85],[120,60],[160,70],[200,45],[240,80],[280,30],[320,55],[W,42]];
-
-  const grad = ctx.createLinearGradient(0,0,0,H);
-  grad.addColorStop(0,'rgba(26,107,255,.18)');
-  grad.addColorStop(1,'rgba(26,107,255,0)');
-
-  ctx.beginPath();
-  ctx.moveTo(pts[0][0], pts[0][1]);
-  for (let i=1;i<pts.length;i++) {
-    const cx=(pts[i-1][0]+pts[i][0])/2;
-    ctx.bezierCurveTo(cx,pts[i-1][1],cx,pts[i][1],pts[i][0],pts[i][1]);
-  }
-  ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
-  ctx.fillStyle=grad; ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(pts[0][0], pts[0][1]);
-  for (let i=1;i<pts.length;i++) {
-    const cx=(pts[i-1][0]+pts[i][0])/2;
-    ctx.bezierCurveTo(cx,pts[i-1][1],cx,pts[i][1],pts[i][0],pts[i][1]);
-  }
-  ctx.strokeStyle='#1A6BFF'; ctx.lineWidth=2.5; ctx.stroke();
-
-  ctx.fillStyle='#9CA3AF'; ctx.font='11px Noto Sans KR'; ctx.textAlign='center';
-  [['2024',24],['2029',W/2],['2034',W-24]].forEach(([l,x])=>ctx.fillText(l,x,H-6));
-}
+    if (navigator.share) {
+      navigator.share({
+        title: 'AI 재물운 상세 인사이트',
+        text: '나의 재물운 상세 분석 결과를 확인해보세요!',
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => alert('링크가 복사되었습니다!'))
+        .catch(() => {});
+    }
+  });
 </script>
 {% endblock %}
