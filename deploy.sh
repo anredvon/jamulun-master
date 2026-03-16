@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-#  deploy.sh — PythonAnywhere 배포 자동화 스크립트
+#  deploy.sh — PythonAnywhere 배포 자동화
 #  사용법: bash deploy.sh YOUR_PYTHONANYWHERE_USERNAME
 # ============================================================
 
@@ -12,67 +12,61 @@ echo ""
 echo "🚀  재물운 앱 배포 시작 — PythonAnywhere: $USERNAME"
 echo "=================================================="
 
-# ── 1. 패키지 설치 ──
+# 1. 패키지 설치
 echo ""
 echo "📦  패키지 설치 중..."
 pip install -r requirements.txt --user -q
-pip install pymysql --user -q   # MySQL 사용 시
+# MySQL 사용 시 아래 주석 해제
+# pip install pymysql --user -q
 
-# ── 2. .env 파일 생성 (없을 경우) ──
+# 2. .env 파일 없으면 생성
 if [ ! -f ".env" ]; then
   echo ""
   echo "⚙️   .env 파일 생성 중..."
   cp .env.example .env
-  # 랜덤 SECRET_KEY 자동 생성
   SECRET=$(python3 -c "import secrets; print(secrets.token_hex(32))")
-  sed -i "s/your-super-secret-key-here/$SECRET/" .env
+  sed -i "s/your-super-secret-key-here-change-this/$SECRET/" .env
   echo "   ✅  SECRET_KEY 자동 생성 완료"
-  echo "   ⚠️   DATABASE_URL은 직접 수정하세요: $PA_HOME/.env"
+  echo "   ⚠️   DATABASE_URL 은 수동으로 수정: $PA_HOME/.env"
 fi
 
-# ── 3. DB 초기화 & 시드 ──
+# 3. DB 초기화 (테이블 생성)
 echo ""
-echo "🗄️   데이터베이스 초기화 중..."
+echo "🗄️   DB 테이블 생성 중..."
 python3 -c "
-from app import app, db, seed_data
+from app import app, db
 with app.app_context():
     db.create_all()
-    seed_data()
-print('   ✅  DB 초기화 & 시드 완료')
+print('   ✅  DB 테이블 생성 완료')
 "
 
-# ── 4. wsgi.py 에 username 자동 삽입 ──
+# 4. 질문 시드 데이터 삽입
 echo ""
-echo "🔧  wsgi.py 설정 중..."
-sed -i "s/YOUR_USERNAME/$USERNAME/g" wsgi.py
-echo "   ✅  wsgi.py 업데이트 완료"
+echo "🌱  질문 데이터 시드 중..."
+python3 seed_db.py
+echo "   ✅  시드 완료"
 
-# ── 5. Static 파일 경로 확인 ──
+# 5. wsgi.py 에 username 삽입
 echo ""
-echo "📁  파일 구조 확인:"
-echo "   프로젝트 : $PA_HOME"
-echo "   Static   : $PA_HOME/static"
-echo "   Templates: $PA_HOME/templates"
-echo "   WSGI     : $PA_HOME/wsgi.py"
+echo "🔧  wsgi.py 업데이트 중..."
+sed -i "s/YOUR_USERNAME/$USERNAME/g" wsgi.py
+echo "   ✅  wsgi.py 완료"
 
 echo ""
 echo "=================================================="
 echo "✅  배포 준비 완료!"
 echo ""
 echo "📋  남은 수동 작업:"
-echo "   1. PythonAnywhere 대시보드 → Web → Add web app"
-echo "   2. Framework: Manual configuration (Python 3.10)"
-echo "   3. WSGI file: wsgi.py 내용으로 교체"
+echo "   1. PythonAnywhere → Web → Add web app"
+echo "   2. Framework: Manual configuration (Python 3.10+)"
+echo "   3. WSGI file: $PA_HOME/wsgi.py 내용으로 교체"
 echo "   4. Static files 설정:"
 echo "      URL: /static/  →  Directory: $PA_HOME/static"
-echo "   5. 'Reload' 버튼 클릭"
+echo "   5. Reload 버튼 클릭"
 echo ""
-echo "   🔑  교체 필요한 키값:"
+echo "   🔑  운영 전 반드시 수정:"
+echo "      .env → SECRET_KEY (이미 자동 생성됨)"
 echo "      .env → DATABASE_URL (MySQL 사용 시)"
-echo "      templates/result.html → TOSS_CLIENT_KEY"
-echo "      templates/result.html → Kakao App Key (카카오 개발자센터)"
-echo "      templates/result.html → data-ad-unit (AdFit 단위 ID)"
-echo "      templates/insight.html → data-ad-unit (AdFit 단위 ID)"
-echo ""
-echo "   📖  전체 가이드: README.md"
+echo "      result.html → 결제 PG 키 (토스페이먼츠 등)"
+echo "      result.html → 카카오 앱 키 (공유 기능)"
 echo "=================================================="

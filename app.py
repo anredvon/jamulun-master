@@ -1,238 +1,554 @@
+# ============================================================
+#  app.py — Flask 메인 애플리케이션
+#
+#  역할:
+#    - Flask 앱 초기화 및 설정
+#    - 페이지 라우트 (HTML 반환)
+#    - API 라우트 (JSON 반환)
+#    - 결제 콜백 처리
+#    - 헬퍼 함수 (랜덤 질문 출제, 점수 계산 등)
+#
+#  의존성: models.py, .env (환경변수)
+# ============================================================
+
 from flask import Flask, render_template, request, jsonify, redirect, flash
 from models import db, Question, Choice, TestSession, TestResult
 from datetime import datetime
+from collections import defaultdict
 import random
+import json
 import os
 
+# ──────────────────────────────────────────────────────────────
+#  Flask 앱 초기화
+# ──────────────────────────────────────────────────────────────
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-change-in-prod')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///jaemulun.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# 환경변수에서 설정 로드 (.env 파일 또는 실제 환경변수)
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
+# ↑ 반드시 운영 환경에서 강력한 랜덤 키로 교체할 것
+
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL", "sqlite:///jaemulun.db"
+)
+# SQLite: 로컬 개발용 (파일 기반)
+# MySQL:  운영 배포용 (PythonAnywhere 등)
+
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# 불필요한 이벤트 추적 비활성화 (성능 향상)
 
 db.init_app(app)
 
 
-# ────────────────────────────────────────
-#  PAGES
-# ────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────
+#  상수 정의
+# ──────────────────────────────────────────────────────────────
 
-@app.route('/')
+# 허용된 테스트 타입 (유효성 검사에 사용)
+VALID_TEST_TYPES = {"money", "spending", "future"}
+
+# 테스트 타입별 출제 문항 수
+QUESTION_COUNT = {
+    "money":    6,
+    "spending": 6,
+    "future":   6,
+}
+
+# 테스트 타입 표시 이름
+TEST_TYPE_LABELS = {
+    "money":    "오늘 금전운 보기",
+    "spending": "소비 성향 테스트",
+    "future":   "미래 자산 테스트",
+}
+
+
+# ══════════════════════════════════════════════════════════════
+#  SECTION 1 — 페이지 라우트 (HTML 렌더링)
+# ══════════════════════════════════════════════════════════════
+
+@app.route("/")
 def index():
+    """메인 페이지 — 3개 테스트 카드 + 오늘의 점수 표시"""
     today_score = _today_score()
-    return render_template('index.html', today_score=today_score)
+    return render_template("index.html", today_score=today_score)
 
 
-@app.route('/test/<test_type>')
+@app.route("/test/<test_type>")
 def test_page(test_type):
-    if test_type not in ['money', 'spending', 'future']:
-        return redirect('/')
-    questions = Question.query.filter_by(test_type=test_type).order_by(Question.order).all()
-    return render_template('test.html', test_type=test_type, questions=questions)
+    """
+    테스트 진행 페이지.
+    실제 질문 데이터는 JS가 /api/start 를 호출해서 받아옴.
+    서버는 test_type만 템플릿에 전달.
+    """
+    if test_type not in VALID_TEST_TYPES:
+        return redirect("/")
+    label = TEST_TYPE_LABELS.get(test_type, test_type)
+    return render_template("test.html", test_type=test_type, test_label=label)
 
 
-@app.route('/result/<int:session_id>')
+@app.route("/result/<int:session_id>")
 def result_page(session_id):
+    """
+    결과 페이지.
+    기본 결과 + 잠금 해제(광고/결제) 유도 UI
+    """
     ts = TestSession.query.get_or_404(session_id)
     result = TestResult.query.filter_by(session_id=session_id).first()
-    return render_template('result.html', ts=ts, result=result)
+    return render_template("result.html", ts=ts, result=result)
 
 
-@app.route('/insight/<int:session_id>')
+@app.route("/insight/<int:session_id>")
 def insight_page(session_id):
+    """
+    상세 인사이트 페이지.
+    unlocked=True 인 경우에만 접근 가능.
+    미잠금 상태면 result 페이지로 리다이렉트.
+    """
     ts = TestSession.query.get_or_404(session_id)
     if not ts.unlocked:
-        return redirect(f'/result/{session_id}')
+        # 잠금 해제 안 됨 → 결과 페이지로 돌려보냄
+        return redirect(f"/result/{session_id}")
     result = TestResult.query.filter_by(session_id=session_id).first()
-    return render_template('insight.html', ts=ts, result=result)
+    return render_template("insight.html", ts=ts, result=result)
 
 
-@app.route('/history')
-def history_page():
-    return render_template('history.html')
+# ══════════════════════════════════════════════════════════════
+#  SECTION 2 — API 라우트 (JSON 응답)
+# ══════════════════════════════════════════════════════════════
 
-
-@app.route('/profile')
-def profile_page():
-    return render_template('profile.html')
-
-
-# ────────────────────────────────────────
-#  API
-# ────────────────────────────────────────
-
-@app.route('/api/start', methods=['POST'])
+@app.route("/api/start", methods=["POST"])
 def api_start():
-    data = request.get_json()
-    ts = TestSession(test_type=data.get('test_type', 'money'), started_at=datetime.utcnow())
+    """
+    테스트 세션 시작.
+
+    1. test_type 유효성 검사
+    2. DB 질문풀에서 카테고리 균형 랜덤 출제
+    3. 새 TestSession 생성 및 저장
+    4. 선택된 질문 목록을 JSON으로 반환
+
+    요청 body: { "test_type": "money" | "spending" | "future" }
+    응답: { ok, session_id, test_type, questions: [...] }
+    """
+    data = request.json or {}
+    test_type = data.get("test_type", "money")
+
+    # 유효성 검사
+    if test_type not in VALID_TEST_TYPES:
+        return jsonify({"ok": False, "message": "유효하지 않은 test_type입니다."}), 400
+
+    # 질문 랜덤 출제 (카테고리 균형 반영)
+    count = QUESTION_COUNT.get(test_type, 6)
+    selected_questions = _get_balanced_questions(test_type=test_type, count=count)
+
+    if not selected_questions:
+        return jsonify({
+            "ok": False,
+            "message": "질문 데이터가 없습니다. seed_db.py를 먼저 실행해주세요."
+        }), 404
+
+    selected_ids = [q.id for q in selected_questions]
+
+    # 세션 생성
+    ts = TestSession(
+        test_type=test_type,
+        selected_question_ids=",".join(map(str, selected_ids)),
+        answered_question_ids="",
+        meta_json=json.dumps({
+            "question_count": len(selected_ids),
+            "version": "pool-v1",
+        }, ensure_ascii=False),
+        started_at=datetime.utcnow(),
+    )
     db.session.add(ts)
     db.session.commit()
-    return jsonify({'session_id': ts.id})
 
-
-@app.route('/api/answer', methods=['POST'])
-def api_answer():
-    data = request.get_json()
-    ts     = TestSession.query.get_or_404(data.get('session_id'))
-    choice = Choice.query.get_or_404(data.get('choice_id'))
-    ts.score        = (ts.score or 0) + choice.score
-    ts.answer_count = (ts.answer_count or 0) + 1
-    db.session.commit()
-    return jsonify({'ok': True, 'current_score': ts.score})
-
-
-@app.route('/api/finish', methods=['POST'])
-def api_finish():
-    data = request.get_json()
-    ts   = TestSession.query.get_or_404(data.get('session_id'))
-    total_possible = _max_score(ts.test_type)
-    normalized = min(100, round((ts.score / total_possible) * 100)) if total_possible else 50
-    result_type, title, desc = _calc_result(normalized)
-    db.session.add(TestResult(
-        session_id=ts.id, final_score=normalized,
-        result_type=result_type, result_title=title,
-        result_desc=desc, created_at=datetime.utcnow()
-    ))
-    ts.finished_at = datetime.utcnow()
-    db.session.commit()
-    return jsonify({'session_id': ts.id, 'final_score': normalized,
-                    'result_type': result_type, 'result_title': title})
-
-
-@app.route('/api/unlock', methods=['POST'])
-def api_unlock():
-    data = request.get_json()
-    ts = TestSession.query.get_or_404(data.get('session_id'))
-    ts.unlocked = True
-    db.session.commit()
-    return jsonify({'ok': True, 'redirect': f'/insight/{ts.id}'})
-
-
-@app.route('/api/share', methods=['POST'])
-def api_share():
-    data = request.get_json()
-    ts = TestSession.query.get_or_404(data.get('session_id'))
-    ts.share_count = (ts.share_count or 0) + 1
-    db.session.commit()
-    return jsonify({'ok': True})
-
-
-@app.route('/api/stats', methods=['GET'])
-def api_stats():
-    total    = TestSession.query.count()
-    finished = TestSession.query.filter(TestSession.finished_at.isnot(None)).count()
-    unlocked = TestSession.query.filter_by(unlocked=True).count()
     return jsonify({
-        'total_sessions':  total,
-        'finished':        finished,
-        'unlocked':        unlocked,
-        'conversion_rate': round(unlocked / finished * 100, 1) if finished else 0
+        "ok": True,
+        "session_id": ts.id,
+        "test_type": test_type,
+        "questions": [q.to_dict() for q in selected_questions],
     })
 
 
-# ────────────────────────────────────────
-#  PAYMENT
-# ────────────────────────────────────────
+@app.route("/api/answer", methods=["POST"])
+def api_answer():
+    """
+    답변 제출 및 점수 누적.
 
-@app.route('/payment/success')
+    검증 항목:
+    - 해당 question이 이 세션에 포함되어 있는지
+    - choice가 해당 question에 속하는지
+    - 이미 답변한 question인지 (중복 방지)
+
+    요청 body: { "session_id": int, "question_id": int, "choice_id": int }
+    응답: { ok, current_score, answer_count }
+    """
+    data = request.json or {}
+    session_id  = data.get("session_id")
+    question_id = data.get("question_id")
+    choice_id   = data.get("choice_id")
+
+    ts     = TestSession.query.get_or_404(session_id)
+    choice = Choice.query.get_or_404(choice_id)
+
+    selected_ids = _parse_ids(ts.selected_question_ids)
+    answered_ids = set(_parse_ids(ts.answered_question_ids))
+
+    # 검증 1: 이 세션의 질문인가?
+    if question_id not in selected_ids:
+        return jsonify({"ok": False, "message": "이 세션에 포함되지 않은 질문입니다."}), 400
+
+    # 검증 2: 선택지가 해당 질문에 속하는가?
+    if choice.question_id != question_id:
+        return jsonify({"ok": False, "message": "선택지와 질문이 일치하지 않습니다."}), 400
+
+    # 검증 3: 이미 답변한 질문인가?
+    if question_id in answered_ids:
+        return jsonify({"ok": False, "message": "이미 답변한 질문입니다."}), 400
+
+    # 점수 누적 및 상태 업데이트
+    ts.score = (ts.score or 0) + choice.score
+    answered_ids.add(question_id)
+    ts.answer_count = len(answered_ids)
+    ts.answered_question_ids = ",".join(map(str, sorted(answered_ids)))
+    db.session.commit()
+
+    return jsonify({
+        "ok": True,
+        "current_score": ts.score,
+        "answer_count": ts.answer_count,
+    })
+
+
+@app.route("/api/finish", methods=["POST"])
+def api_finish():
+    """
+    테스트 완료 처리 및 결과 계산.
+
+    - raw score를 0~100으로 정규화
+    - test_type + score 구간에 따라 result_type, title, desc 결정
+    - TestResult 저장
+    - 이미 결과가 있으면 재계산 없이 기존 값 반환
+
+    요청 body: { "session_id": int }
+    응답: { ok, session_id, final_score, result_type, result_title }
+    """
+    data = request.json or {}
+    session_id = data.get("session_id")
+    ts = TestSession.query.get_or_404(session_id)
+
+    # 이미 결과가 계산된 경우 → 그냥 반환 (중복 생성 방지)
+    if ts.result:
+        return jsonify({
+            "ok":           True,
+            "session_id":   session_id,
+            "final_score":  ts.result.final_score,
+            "result_type":  ts.result.result_type,
+            "result_title": ts.result.result_title,
+        })
+
+    # 선택된 질문들의 최고 가능 점수 계산 → 정규화 기준
+    selected_ids   = _parse_ids(ts.selected_question_ids)
+    max_possible   = _calc_max_score(selected_ids)
+    normalized     = min(100, round((ts.score / max_possible) * 100)) if max_possible else 50
+
+    # 결과 유형 계산
+    result_type, title, desc = _calc_result(normalized, ts.test_type)
+
+    # 결과 저장
+    result = TestResult(
+        session_id=session_id,
+        final_score=normalized,
+        result_type=result_type,
+        result_title=title,
+        result_desc=desc,
+        created_at=datetime.utcnow(),
+    )
+    db.session.add(result)
+    ts.finished_at = datetime.utcnow()
+    db.session.commit()
+
+    return jsonify({
+        "ok":           True,
+        "session_id":   session_id,
+        "final_score":  normalized,
+        "result_type":  result_type,
+        "result_title": title,
+    })
+
+
+@app.route("/api/unlock", methods=["POST"])
+def api_unlock():
+    """
+    잠금 해제 처리.
+    광고 시청 완료 or 결제 완료 후 호출.
+
+    TODO: 실제 광고 SDK 콜백 검증 로직 추가
+    TODO: 결제의 경우 /payment/success 에서 처리하도록 분리
+
+    요청 body: { "session_id": int }
+    응답: { ok, redirect }
+    """
+    data = request.json or {}
+    session_id = data.get("session_id")
+    ts = TestSession.query.get_or_404(session_id)
+
+    ts.unlocked = True
+    db.session.commit()
+
+    return jsonify({"ok": True, "redirect": f"/insight/{session_id}"})
+
+
+@app.route("/api/share", methods=["POST"])
+def api_share():
+    """
+    공유 이벤트 기록.
+    카카오/링크복사 등 공유 버튼 클릭 시 호출.
+
+    TODO: platform 값 저장 (meta_json 에 추가 가능)
+    TODO: 공유 후 보상(잠금 해제 등) 로직 추가 가능
+
+    요청 body: { "session_id": int }
+    응답: { ok }
+    """
+    data = request.json or {}
+    session_id = data.get("session_id")
+    ts = TestSession.query.get_or_404(session_id)
+
+    ts.share_count = (ts.share_count or 0) + 1
+    db.session.commit()
+
+    return jsonify({"ok": True})
+
+
+@app.route("/api/stats")
+def api_stats():
+    """
+    관리자용 통계 API.
+    전체 세션 수, 완료율, 잠금해제율, 평균 점수 반환.
+
+    TODO: 인증 미들웨어 추가 (관리자만 접근 가능하게)
+    TODO: 일별/주별 통계 추가
+    """
+    total    = TestSession.query.count()
+    finished = TestSession.query.filter(TestSession.finished_at.isnot(None)).count()
+    unlocked = TestSession.query.filter_by(unlocked=True).count()
+    avg_score = db.session.query(db.func.avg(TestResult.final_score)).scalar() or 0
+
+    return jsonify({
+        "total_sessions":  total,
+        "finished":        finished,
+        "unlocked":        unlocked,
+        "conversion_rate": round(unlocked / finished * 100, 1) if finished else 0,
+        "avg_score":       round(float(avg_score), 1),
+    })
+
+
+# ══════════════════════════════════════════════════════════════
+#  SECTION 3 — 결제 콜백 라우트
+# ══════════════════════════════════════════════════════════════
+
+@app.route("/payment/success")
 def payment_success():
-    session_id = request.args.get('session')
-    # TODO: 토스페이먼츠 서버-to-서버 승인 API 호출
+    """
+    결제 성공 콜백.
+    토스페이먼츠/아임포트 등 PG사에서 리다이렉트.
+
+    TODO: 서버-to-서버 결제 검증 API 호출 (orderId, paymentKey, amount 검증)
+    TODO: 결제 금액과 예상 금액 일치 여부 확인
+    TODO: 이중 결제 방지 로직 추가
+    """
+    session_id = request.args.get("session")
     if session_id:
         ts = TestSession.query.get(int(session_id))
         if ts:
             ts.unlocked = True
             db.session.commit()
-            flash('결제가 완료되었습니다! AI 리포트를 확인하세요.', 'success')
-            return redirect(f'/insight/{session_id}')
-    return redirect('/')
+            flash("결제가 완료되었습니다! AI 리포트를 확인하세요.", "success")
+            return redirect(f"/insight/{session_id}")
+    return redirect("/")
 
 
-@app.route('/payment/fail')
+@app.route("/payment/fail")
 def payment_fail():
-    session_id = request.args.get('session')
-    flash('결제가 취소되었습니다.', 'error')
-    return redirect(f'/result/{session_id}' if session_id else '/')
+    """결제 실패/취소 콜백."""
+    session_id = request.args.get("session")
+    flash("결제가 취소되었습니다.", "error")
+    return redirect(f"/result/{session_id}" if session_id else "/")
 
 
-# ────────────────────────────────────────
-#  HELPERS
-# ────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════
+#  SECTION 4 — 헬퍼 함수
+# ══════════════════════════════════════════════════════════════
 
-def _today_score():
-    random.seed(int(datetime.utcnow().strftime('%Y%m%d')))
-    return random.randint(50, 99)
+def _today_score() -> int:
+    """
+    오늘 날짜 기반 고정 점수 생성.
+    같은 날 접속하면 항상 같은 값 → 신뢰감 부여
+    날짜가 바뀌면 값도 바뀜
+    """
+    seed = int(datetime.utcnow().strftime("%Y%m%d"))
+    random.seed(seed)
+    return random.randint(65, 98)
 
 
-def _max_score(test_type):
-    questions = Question.query.filter_by(test_type=test_type).all()
-    return sum(max((c.score for c in q.choices), default=0) for q in questions) or 20
+def _parse_ids(raw: str) -> list:
+    """
+    쉼표 구분 문자열을 정수 리스트로 변환.
+    예: "3,15,22" → [3, 15, 22]
+    빈 문자열이나 None → []
+    """
+    if not raw:
+        return []
+    return [int(x) for x in raw.split(",") if x.strip().isdigit()]
 
 
-def _calc_result(score):
+def _weighted_sample(pool: list) -> object:
+    """
+    weight 값 기반 가중 랜덤 선택.
+    weight=3 이면 weight=1 짜리보다 3배 확률로 선택됨.
+    """
+    expanded = []
+    for item in pool:
+        expanded.extend([item] * max(1, item.weight))
+    return random.choice(expanded)
+
+
+def _get_balanced_questions(test_type: str, count: int = 6) -> list:
+    """
+    카테고리 균형 랜덤 출제 로직.
+
+    동작 방식:
+    1단계: is_active=True 질문 전체 조회 후 카테고리별 그룹화
+    2단계: 카테고리를 셔플하여 각 카테고리에서 1개씩 선택 (균형 보장)
+    3단계: count에 미달하면 나머지 풀에서 추가로 채움
+    4단계: 전체 섞어서 반환 (카테고리 순서 노출 방지)
+
+    예: money 카테고리가 daily/luck/money_habit 3종이면
+        각각 1개씩 = 3개 선택 후 부족하면 잔여에서 추가 채움
+    """
+    # is_active=True 인 질문만 조회
+    all_questions = Question.query.filter_by(
+        test_type=test_type,
+        is_active=True,
+    ).all()
+
+    if not all_questions:
+        return []
+
+    # 카테고리별 그룹화
+    grouped = defaultdict(list)
+    for q in all_questions:
+        grouped[q.category].append(q)
+
+    selected  = []
+    used_ids  = set()
+
+    # 1단계: 카테고리별 1개씩 균형 출제
+    category_keys = list(grouped.keys())
+    random.shuffle(category_keys)  # 카테고리 순서도 랜덤
+
+    for cat in category_keys:
+        candidates = [q for q in grouped[cat] if q.id not in used_ids]
+        if not candidates:
+            continue
+        picked = _weighted_sample(candidates)
+        selected.append(picked)
+        used_ids.add(picked.id)
+        if len(selected) >= count:
+            break
+
+    # 2단계: 부족하면 나머지 풀에서 보충
+    if len(selected) < count:
+        remaining = [q for q in all_questions if q.id not in used_ids]
+        random.shuffle(remaining)
+        while remaining and len(selected) < count:
+            picked = _weighted_sample(remaining)
+            selected.append(picked)
+            used_ids.add(picked.id)
+            remaining = [q for q in remaining if q.id not in used_ids]
+
+    # 최종 섞어서 반환 (카테고리 패턴 노출 방지)
+    random.shuffle(selected)
+    return selected[:count]
+
+
+def _calc_max_score(question_ids: list) -> int:
+    """
+    선택된 질문들의 최대 획득 가능 점수 계산.
+    각 질문에서 가장 높은 score 선택지 값의 합.
+    질문 없으면 기본값 20 반환 (0 나누기 방지).
+    """
+    if not question_ids:
+        return 20
+
+    questions = Question.query.filter(Question.id.in_(question_ids)).all()
+    total = sum(
+        max((c.score for c in q.choices), default=0)
+        for q in questions
+    )
+    return total or 20
+
+
+def _calc_result(score: int, test_type: str) -> tuple:
+    """
+    점수 + 테스트 타입에 따라 결과 유형, 제목, 설명 반환.
+
+    점수 구간:
+    90 이상 → gold
+    75~89   → silver
+    55~74   → bronze
+    55 미만  → caution
+
+    각 test_type별로 결과 문구를 다르게 구성.
+    TODO: 문구가 많아지면 별도 constants.py 파일로 분리 추천
+    """
+    result_copy = {
+        "money": {
+            "gold":    ("황금빛 돈 자석",       "오늘 재물 에너지가 최고조입니다. 작은 기회도 놓치지 말고 적극적으로 행동해보세요."),
+            "silver":  ("은빛 재물의 흐름",      "안정적인 돈 감각이 살아 있는 날입니다. 작은 절약과 현명한 지출이 성과로 이어집니다."),
+            "bronze":  ("균형 잡힌 지갑 감각",   "무리하지 않으면 무난한 하루입니다. 충동 지출만 조심하면 안정적인 흐름을 유지할 수 있어요."),
+            "caution": ("지출 점검 모드",         "오늘은 큰 지출을 미루고 계획적인 소비를 실천하는 것이 유리합니다."),
+        },
+        "spending": {
+            "gold":    ("계획형 소비 마스터",     "필요와 욕구를 잘 구분하는 편입니다. 이런 패턴이 장기적으로 자산 형성에 큰 도움이 됩니다."),
+            "silver":  ("안정형 소비 컨트롤러",   "대체로 좋은 소비 습관을 유지하고 있습니다. 지출 기록을 더 자주 확인하면 더욱 좋아집니다."),
+            "bronze":  ("감정과 계획 사이",        "상황에 따라 소비가 흔들릴 수 있습니다. 월 예산선을 정하는 것만으로도 개선 폭이 큽니다."),
+            "caution": ("충동 지출 주의형",        "세일·기분·분위기의 영향을 받기 쉬운 편입니다. 구매 전 10분 멈춤 습관이 효과적입니다."),
+        },
+        "future": {
+            "gold":    ("장기 자산 설계형",        "목표와 습관이 잘 연결된 유형입니다. 꾸준히 쌓으면 복리 효과를 극대화할 수 있습니다."),
+            "silver":  ("성장형 자산 준비자",      "기초 체력이 좋은 편입니다. 수입 확장이나 투자 공부를 더하면 빠른 속도로 성장합니다."),
+            "bronze":  ("가능성 축적형",           "방향은 맞지만 루틴 고정이 필요합니다. 목표 금액과 기간을 글로 적어두면 성과가 빨라집니다."),
+            "caution": ("기초 체력 보강형",         "지금은 큰 수익보다 현금 흐름과 비상금 관리부터 다지는 것이 가장 중요합니다."),
+        },
+    }
+
+    # 점수 구간 판정
     if score >= 90:
-        return 'gold',    '황금빛 돈 자석',  '별들이 당신의 재물 하우스로 모이고 있습니다. 기회가 직접 찾아올 거예요.'
+        key = "gold"
     elif score >= 75:
-        return 'silver',  '은빛 재물의 흐름', '꾸준한 노력이 빛을 발하는 시기입니다. 작은 기회를 놓치지 마세요.'
+        key = "silver"
     elif score >= 55:
-        return 'bronze',  '동전의 양면',      '재물운이 균형을 찾는 시기입니다. 신중한 판단이 필요합니다.'
+        key = "bronze"
     else:
-        return 'caution', '절약의 지혜',      '지금은 지출을 줄이고 내실을 다지는 것이 유리합니다.'
+        key = "caution"
+
+    # test_type이 없으면 money 기준으로 fallback
+    copy = result_copy.get(test_type, result_copy["money"])
+    title, desc = copy[key]
+    return key, title, desc
 
 
-# ────────────────────────────────────────
-#  DB SEED
-# ────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════
+#  실행 진입점
+# ══════════════════════════════════════════════════════════════
 
-def seed_data():
-    if Question.query.count() > 0:
-        return
-
-    data = [
-        ('money',1,'💰','오늘 아침 눈을 떴을 때 가장 먼저 한 생각은?','평소 습관과 가장 가까운 항목을 선택해 주세요.',
-         [('오늘 할 일 체크',3),('잔고 확인',4),('더 자고 싶다',1),('뭔가 좋은 일 있을 것 같아',5)]),
-        ('money',2,'🎯','이번 달 가장 큰 지출은 무엇인가요?','솔직하게 선택해 주세요.',
-         [('식비/외식',3),('쇼핑',2),('취미/자기계발',4),('저축/투자',5)]),
-        ('money',3,'💳','보너스를 받으면 주로 어떻게 사용하시나요?','평소 습관과 가장 가까운 항목을 선택해 주세요.',
-         [('전부 저축한다',5),('나를 위해 플렉스한다',2),('주식이나 코인에 투자한다',4),('대출이나 빚을 갚는다',3)]),
-        ('money',4,'🌙','잠자리에 들기 전 주로 생각하는 것은?','가장 솔직한 답을 골라주세요.',
-         [('오늘 얼마 썼지?',4),('내일 일이 잘 됐으면...',3),('빨리 부자가 되고 싶다',3),('그냥 잠이나 자자',1)]),
-        ('money',5,'🔮','로또 1등에 당첨된다면 가장 먼저 할 것은?','솔직한 마음 속 1순위를 선택해 주세요.',
-         [('부동산 투자',5),('가족에게 나눠준다',4),('여행을 떠난다',3),('은행에 넣어둔다',4)]),
-        ('spending',1,'🛍️','쇼핑할 때 나의 스타일은?','평소 소비 패턴과 가장 가까운 항목을 선택해 주세요.',
-         [('미리 리스트 작성 후 구매',5),('눈에 띄면 바로 구매',1),('가격 비교 후 최저가 구매',4),('충동구매 후 자주 반품',2)]),
-        ('spending',2,'💸','월급날 가장 먼저 하는 것은?','솔직하게 선택해 주세요.',
-         [('적금/투자 자동이체 확인',5),('밀린 쇼핑몰 장바구니 결제',1),('한 달 예산 계획 수립',4),('맛있는 거 먹으러 간다',3)]),
-        ('spending',3,'📊','가계부/지출 관리를 하시나요?','현재 나의 상태와 가장 가까운 항목을 선택해 주세요.',
-         [('매일 꼼꼼히 기록',5),('앱으로 자동 관리',4),('가끔 확인',2),('전혀 안 한다',1)]),
-        ('spending',4,'🎁','친구 생일 선물 예산은?','평소 기준으로 선택해 주세요.',
-         [('3만원 이하로 실용적으로',4),('10만원 이상 아낌없이',2),('형편에 맞게 유동적으로',5),('선물 대신 밥 사준다',3)]),
-        ('spending',5,'🏷️','세일 기간에 나의 행동은?','솔직한 마음 속 1순위를 선택해 주세요.',
-         [('필요한 것만 할인가에 구매',5),('없어도 되는 것까지 다 산다',1),('세일 전 가격부터 비교한다',4),('세일에 별로 관심 없다',3)]),
-        ('future',1,'🏠','10년 후 나의 가장 큰 자산 목표는?','현재 계획과 가장 가까운 항목을 선택해 주세요.',
-         [('내 집 마련',5),('주식/코인 투자 수익',4),('사업 자금 마련',4),('아직 생각 안 해봤다',1)]),
-        ('future',2,'📈','현재 투자를 하고 있나요?','현재 상황을 솔직하게 선택해 주세요.',
-         [('매월 정기 투자 중',5),('가끔 관심 있을 때만',2),('공부 중이지만 아직 미투자',3),('투자는 위험해서 안 한다',1)]),
-        ('future',3,'💼','노후 준비는 어떻게 하고 있나요?','현재 상황과 가장 가까운 항목을 선택해 주세요.',
-         [('연금저축/IRP 납입 중',5),('국민연금만 믿는다',2),('아직 젊어서 생각 안 함',1),('부동산으로 대비 중',4)]),
-        ('future',4,'🌍','5년 안에 달성하고 싶은 재정 목표는?','가장 현실적인 목표를 선택해 주세요.',
-         [('종잣돈 5000만원 만들기',5),('연봉 1억 달성',4),('부채 전액 상환',4),('목표가 없다',1)]),
-        ('future',5,'⚡','부수입(N잡)에 대한 생각은?','솔직한 마음 속 1순위를 선택해 주세요.',
-         [('이미 하고 있다',5),('준비 중이다',4),('관심은 있지만 엄두가 안 난다',2),('본업에 집중하는 게 낫다',3)]),
-    ]
-
-    for test_type, order, emoji, text, sub, choices in data:
-        q = Question(test_type=test_type, order=order, emoji=emoji, text=text, sub=sub)
-        db.session.add(q)
-        db.session.flush()
-        for i, (t, s) in enumerate(choices):
-            db.session.add(Choice(question_id=q.id, text=t, score=s, order=i))
-
-    db.session.commit()
-    print('✅ Seed data inserted.')
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     with app.app_context():
+        # 테이블 없으면 자동 생성 (개발 환경용)
+        # 운영에서는 DB 마이그레이션 도구(Flask-Migrate 등) 사용 권장
         db.create_all()
-        seed_data()
+        print("✅ DB 테이블 생성 완료")
+        print("⚠️  질문 데이터는 'python seed_db.py' 로 별도 삽입 필요")
     app.run(debug=True, port=5000)
