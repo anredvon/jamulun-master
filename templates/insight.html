@@ -1,136 +1,98 @@
 {% extends "base.html" %}
-{% block title %}상세 AI 인사이트 — AI 재물운 센터{% endblock %}
+{% block title %}상세 인사이트{% endblock %}
 
 {% block content %}
-
 {% set rtype = result.result_type if result else 'bronze' %}
 
-<section class="insight-shell">
+<div class="insight-shell">
 
-  <!-- 상단: 결과 요약 -->
-  <article class="result-hero result-{{ rtype }}">
-    <div class="eyebrow">상세 AI 인사이트 · 잠금 해제됨 ✅</div>
-
-    <div class="score-circle">
-      <span class="score-num">{{ result.final_score if result else 0 }}</span>
-      <span class="score-unit">점</span>
+  <!-- 점수 헤더 -->
+  <div class="result-score-card result-card-{{ rtype }}">
+    <p class="result-score-label">상세 AI 인사이트 · ✅ 잠금 해제</p>
+    <div class="result-score-big">
+      <span class="result-score-num">{{ result.final_score if result else 0 }}</span>
+      <span class="result-score-denom">/100</span>
     </div>
-
-    <h1>{{ result.result_title if result else '분석 결과' }}</h1>
-    <p>{{ result.result_desc if result else '' }}</p>
-  </article>
-
-  <!-- 인사이트 본문 영역 -->
-  <div class="insight-body">
-
-    <!-- 소비 패턴 요약 -->
-    <article class="info-card">
-      <h3>📊 소비 패턴 요약</h3>
-      <p>
-        이 영역은 OpenAI / Claude API 연동 시 개인 맞춤형 분석 문장을 넣기 좋은 자리입니다.
-        현재는 기본 결과 문구를 표시합니다.
-      </p>
-      <!-- TODO: OpenAI / Claude API 연동 후 아래 동적 컨텐츠 교체 -->
-      <!-- TODO: 요청 예시
-           system: "당신은 재무 코치입니다. 사용자의 소비 성향 테스트 결과를 분석해 짧은 문단으로 요약하세요."
-           user: "점수: {{ result.final_score }}, 유형: {{ result.result_type }}, 테스트: {{ ts.test_type }}"
-      -->
-      <ul class="insight-list">
-        <li>
-          <span class="insight-icon">💡</span>
-          <span>현재 소비 패턴은 <strong>{{ result.result_title }}</strong> 유형에 해당합니다.</span>
-        </li>
-        <li>
-          <span class="insight-icon">📌</span>
-          <span>{{ result.result_desc }}</span>
-        </li>
-      </ul>
-    </article>
-
-    <!-- 주의 포인트 -->
-    <article class="info-card">
-      <h3>⚠️ 주의해야 할 지출 포인트</h3>
-      <!-- TODO: AI API 연동 후 유형별 주의 포인트 동적 생성 -->
-      <ul class="insight-list">
-        {% if rtype == 'caution' %}
-          <li><span class="insight-icon">🔴</span><span>충동 구매 전 24시간 대기 규칙을 실천해보세요.</span></li>
-          <li><span class="insight-icon">🔴</span><span>세일 기간에는 예산 상한선을 미리 정해두세요.</span></li>
-          <li><span class="insight-icon">🔴</span><span>월말 결산을 꼭 하는 습관을 들여보세요.</span></li>
-        {% elif rtype == 'bronze' %}
-          <li><span class="insight-icon">🟡</span><span>카드 할부 사용 빈도를 체크해보세요.</span></li>
-          <li><span class="insight-icon">🟡</span><span>고정비와 변동비를 분리해 관리하면 좋습니다.</span></li>
-          <li><span class="insight-icon">🟡</span><span>소액이라도 정기 저축 자동이체를 설정해두세요.</span></li>
-        {% elif rtype == 'silver' %}
-          <li><span class="insight-icon">🟢</span><span>투자 비중을 조금 더 높여볼 시기입니다.</span></li>
-          <li><span class="insight-icon">🟢</span><span>비상금 3~6개월치 확보 여부를 점검하세요.</span></li>
-          <li><span class="insight-icon">🟢</span><span>세금 혜택이 있는 절세 상품을 활용해보세요.</span></li>
-        {% else %}
-          <li><span class="insight-icon">🌟</span><span>자산 배분 비율을 주기적으로 리밸런싱하세요.</span></li>
-          <li><span class="insight-icon">🌟</span><span>N잡·부수입 채널을 하나 더 추가하는 것을 고려해보세요.</span></li>
-          <li><span class="insight-icon">🌟</span><span>장기 투자 목표가 있다면 포트폴리오를 점검해보세요.</span></li>
-        {% endif %}
-      </ul>
-    </article>
-
-    <!-- 이번 주 실천 팁 -->
-    <article class="info-card">
-      <h3>✅ 이번 주 실천 팁</h3>
-      <!-- TODO: AI API 연동 후 개인화된 팁 생성 -->
-      <ol class="tip-list">
-        <li>오늘 지출 내역을 앱이나 노트에 기록해보세요.</li>
-        <li>이번 주 불필요한 구독 서비스가 있는지 확인하세요.</li>
-        <li>다음 달 예산 계획을 10분만 투자해서 잡아보세요.</li>
-      </ol>
-    </article>
-
-    <!-- TODO: 광고 영역 (AdFit / AdMob) -->
-    <!--
-    <article class="info-card ad-card">
-      <div class="ad-placeholder">
-        광고 영역 (AdFit 728x90 또는 320x50 모바일)
-        data-ad-unit="YOUR_AD_UNIT_ID" 를 채워주세요
-      </div>
-    </article>
-    -->
-
-    <!-- 다시 테스트 유도 -->
-    <div class="action-stack">
-      <a class="btn btn-primary btn-full" href="{{ url_for('index') }}">
-        다른 테스트 해보기 →
-      </a>
-      <button class="btn btn-ghost btn-full" id="share-insight-btn" data-session-id="{{ ts.id }}">
-        결과 공유하기 📤
-      </button>
+    <div class="result-score-bar-wrap">
+      <div class="result-score-bar" style="width:{{ result.final_score if result else 0 }}%"></div>
     </div>
-
+    <p class="insight-hero-title">{{ result.result_title if result else '' }}</p>
   </div>
 
-</section>
+  <!-- 결과 설명 -->
+  <div class="insight-section-card">
+    <h3 class="insight-section-title">📊 소비 패턴 요약</h3>
+    <p class="insight-section-body">{{ result.result_desc if result else '' }}</p>
+    <ul class="insight-list">
+      <li>
+        <span class="insight-dot dot-{{ rtype }}"></span>
+        <span>현재 유형은 <strong>{{ result.result_title if result else '' }}</strong>입니다.</span>
+      </li>
+      <li>
+        <span class="insight-dot dot-{{ rtype }}"></span>
+        <span>테스트 유형: <strong>{{ {'money':'오늘 금전운', 'spending':'소비 성향', 'future':'미래 자산'}.get(ts.test_type, ts.test_type) }}</strong></span>
+      </li>
+    </ul>
+  </div>
 
+  <!-- 주의 포인트 -->
+  <div class="insight-section-card">
+    <h3 class="insight-section-title">⚠️ 주의해야 할 지출 포인트</h3>
+    <ul class="insight-list">
+      {% if rtype == 'caution' %}
+        <li><span class="insight-dot dot-red"></span><span>충동 구매 전 24시간 대기 규칙을 실천해보세요.</span></li>
+        <li><span class="insight-dot dot-red"></span><span>세일 기간에는 예산 상한선을 미리 정해두세요.</span></li>
+        <li><span class="insight-dot dot-red"></span><span>월말 결산을 꼭 하는 습관을 들여보세요.</span></li>
+      {% elif rtype == 'bronze' %}
+        <li><span class="insight-dot dot-yellow"></span><span>카드 할부 사용 빈도를 체크해보세요.</span></li>
+        <li><span class="insight-dot dot-yellow"></span><span>고정비와 변동비를 분리해 관리하면 좋습니다.</span></li>
+        <li><span class="insight-dot dot-yellow"></span><span>소액이라도 정기 저축 자동이체를 설정해두세요.</span></li>
+      {% elif rtype == 'silver' %}
+        <li><span class="insight-dot dot-blue"></span><span>투자 비중을 조금 더 높여볼 시기입니다.</span></li>
+        <li><span class="insight-dot dot-blue"></span><span>비상금 3~6개월치 확보 여부를 점검하세요.</span></li>
+        <li><span class="insight-dot dot-blue"></span><span>세금 혜택이 있는 절세 상품을 활용해보세요.</span></li>
+      {% else %}
+        <li><span class="insight-dot dot-green"></span><span>자산 배분 비율을 주기적으로 리밸런싱하세요.</span></li>
+        <li><span class="insight-dot dot-green"></span><span>N잡·부수입 채널 추가를 고려해보세요.</span></li>
+        <li><span class="insight-dot dot-green"></span><span>장기 투자 목표가 있다면 포트폴리오를 점검해보세요.</span></li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <!-- 이번 주 실천 팁 -->
+  <div class="insight-section-card">
+    <h3 class="insight-section-title">✅ 이번 주 실천 팁</h3>
+    <ol class="insight-tip-list">
+      <li>오늘 지출 내역을 앱이나 노트에 기록해보세요.</li>
+      <li>이번 주 불필요한 구독 서비스가 있는지 확인하세요.</li>
+      <li>다음 달 예산 계획을 10분만 투자해서 잡아보세요.</li>
+    </ol>
+  </div>
+
+  <!-- 홈으로 + 공유 -->
+  <div class="insight-action-row">
+    <a class="toss-btn toss-btn-primary" href="{{ url_for('index') }}">다른 테스트 해보기</a>
+    <button class="toss-btn toss-btn-outline" id="insight-share-btn" data-session-id="{{ ts.id }}">
+      결과 공유하기 📤
+    </button>
+  </div>
+
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  // 인사이트 페이지 공유 버튼
-  document.getElementById('share-insight-btn')?.addEventListener('click', async () => {
-    const sessionId = Number(document.getElementById('share-insight-btn').dataset.sessionId);
-
+  document.getElementById('insight-share-btn')?.addEventListener('click', async () => {
+    const sid = Number(document.getElementById('insight-share-btn').dataset.sessionId);
     await fetch('/api/share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: sessionId }),
+      body: JSON.stringify({ session_id: sid })
     });
-
     if (navigator.share) {
-      navigator.share({
-        title: 'AI 재물운 상세 인사이트',
-        text: '나의 재물운 상세 분석 결과를 확인해보세요!',
-        url: window.location.href,
-      }).catch(() => {});
+      navigator.share({ title: 'AI 재물운 인사이트', url: window.location.href }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(window.location.href)
-        .then(() => alert('링크가 복사되었습니다!'))
-        .catch(() => {});
+      navigator.clipboard?.writeText(window.location.href).then(() => alert('링크 복사됨!'));
     }
   });
 </script>
