@@ -3,47 +3,57 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f1220">
-
-  <!-- SEO / OG (공유 미리보기용) -->
+  <meta name="theme-color" content="#ffffff">
   <meta property="og:title" content="{% block og_title %}AI 재물운 센터{% endblock %}">
-  <meta property="og:description" content="{% block og_desc %}매번 달라지는 질문으로 오늘의 금전운, 소비습관, 미래자산을 알아보세요.{% endblock %}">
-  <meta property="og:type" content="website">
-
+  <meta property="og:description" content="{% block og_desc %}매번 달라지는 질문으로 오늘의 금전운을 확인해보세요.{% endblock %}">
   <title>{% block title %}AI 재물운 센터{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/jaemulun.css') }}">
 </head>
 <body>
   <div class="app-shell">
 
-    <!-- 상단 네비게이션 바 -->
+    <!-- 상단 네비 (토스 미니앱 스타일) -->
     <header class="topbar">
-      <a class="brand" href="{{ url_for('index') }}">💸 재물운 센터</a>
+      <a class="brand" href="{{ url_for('index') }}">
+        <span class="brand-icon">✨</span>
+        <span class="brand-text">재물운 센터</span>
+      </a>
       <nav class="topbar-nav">
-        <a href="{{ url_for('index') }}">홈</a>
+        <a href="{{ url_for('index') }}" class="nav-home-btn">홈</a>
       </nav>
     </header>
 
-    <!-- 플래시 메시지 (결제 성공/실패 등) -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <section class="flash-stack">
+        <div class="flash-stack">
           {% for category, message in messages %}
             <div class="flash flash-{{ category }}">{{ message }}</div>
           {% endfor %}
-        </section>
+        </div>
       {% endif %}
     {% endwith %}
 
-    <!-- 메인 콘텐츠 영역 -->
     <main class="page-wrap">
       {% block content %}{% endblock %}
     </main>
 
-    <!-- 푸터 -->
-    <footer class="app-footer">
-      <p>© 2025 AI 재물운 센터 · 재미로 즐기는 테스트입니다</p>
-    </footer>
+    <!-- 하단 탭바 (토스 스타일) -->
+    <nav class="bottom-tab">
+      <a href="{{ url_for('index') }}" class="tab-item tab-active">
+        <span class="tab-icon">🏠</span>
+        <span class="tab-label">홈</span>
+      </a>
+      <a href="{{ url_for('index') }}" class="tab-item">
+        <span class="tab-icon">📊</span>
+        <span class="tab-label">기록</span>
+      </a>
+      <a href="{{ url_for('index') }}" class="tab-item">
+        <span class="tab-icon">👤</span>
+        <span class="tab-label">프로필</span>
+      </a>
+    </nav>
 
   </div>
 
