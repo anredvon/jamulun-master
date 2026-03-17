@@ -1,78 +1,78 @@
 {% extends "base.html" %}
-{% block title %}{{ test_label }} — AI 재물운 센터{% endblock %}
+{% block title %}재물운 테스트{% endblock %}
 
 {% block content %}
+<div id="js-config" data-test-type="{{ test_type }}" style="display:none"></div>
 
-<!-- test_type 값을 JS에 전달하기 위한 숨긴 input -->
-<!-- JS는 이 값을 읽어 /api/start 호출 시 사용 -->
-<div id="js-config"
-     data-test-type="{{ test_type }}"
-     data-api-start="/api/start"
-     data-api-answer="/api/answer"
-     data-api-finish="/api/finish"
-     style="display:none">
+<div class="quiz-shell">
+
+  <!-- 상단 헤더 -->
+  <div class="quiz-topbar">
+    <a href="{{ url_for('index') }}" class="quiz-back-btn">←</a>
+    <span class="quiz-topbar-title">재물운 테스트</span>
+  </div>
+
+  <!-- 진행 바 영역 -->
+  <div class="quiz-progress-area">
+    <div class="quiz-progress-labels">
+      <div>
+        <span class="quiz-progress-tag">질문</span>
+        <p class="quiz-progress-sub">당신의 재물운을 분석 중입니다...</p>
+      </div>
+      <span class="quiz-progress-counter" id="progress-text">0 / 0</span>
+    </div>
+    <div class="quiz-progress-bar">
+      <div class="quiz-progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- 로딩 -->
+  <div id="loading-box" class="quiz-loading">
+    <div class="quiz-loading-spinner">⏳</div>
+    <p>질문을 불러오는 중...</p>
+  </div>
+
+  <!-- 오류 -->
+  <div id="error-box" class="quiz-error is-hidden">
+    <p id="error-message">질문을 불러오지 못했습니다.</p>
+    <a class="toss-btn toss-btn-secondary" href="{{ url_for('index') }}">홈으로</a>
+  </div>
+
+  <!-- 질문 본문 -->
+  <div id="question-card" class="quiz-body is-hidden">
+    <div class="quiz-emoji-wrap">
+      <div class="quiz-emoji-circle" id="question-emoji">💰</div>
+    </div>
+    <h2 class="quiz-question-text" id="question-text">질문 로딩 중...</h2>
+    <p class="quiz-question-sub" id="question-sub"></p>
+    <div class="quiz-choices" id="choice-list"></div>
+  </div>
+
+  <!-- 완료 -->
+  <div id="finish-box" class="quiz-finish is-hidden">
+    <div class="quiz-finish-icon">🎉</div>
+    <h2>모든 질문에 답했어요!</h2>
+    <p>지금 결과를 분석해드릴게요</p>
+    <button id="finish-btn" class="toss-btn toss-btn-primary">결과 보기</button>
+  </div>
+
 </div>
 
-<section class="test-shell">
-
-  <!-- 상단: 테스트 제목 + 진행 바 -->
-  <div class="test-head">
-    <div class="test-head-info">
-      <div class="eyebrow">{{ test_label }}</div>
-      <h1 id="test-title">질문을 준비하고 있습니다…</h1>
-      <p id="test-subtitle">질문풀에서 랜덤 조합을 만드는 중입니다.</p>
-    </div>
-    <div class="progress-box">
-      <span id="progress-text" class="progress-label">0 / 0</span>
-      <div class="progress-bar">
-        <div id="progress-fill" class="progress-fill"></div>
-      </div>
+<!-- 분석 중 오버레이 -->
+<div id="analyzing-overlay" class="analyzing-overlay is-hidden">
+  <div class="analyzing-content">
+    <div class="analyzing-orb">🔮</div>
+    <h2 class="analyzing-title">재물운 분석 중...</h2>
+    <p class="analyzing-desc">별자리와 소비 패턴을 분석하여<br>당신만의 재물운 리포트를 생성 중입니다</p>
+    <div class="analyzing-dots">
+      <span></span><span></span><span></span>
     </div>
   </div>
-
-  <!-- 로딩 상태 -->
-  <div id="loading-box" class="loading-box">
-    <div class="loading-spinner">⏳</div>
-    <p>질문을 불러오는 중…</p>
-  </div>
-
-  <!-- 오류 상태 (질문 없을 때) -->
-  <div id="error-box" class="error-box is-hidden">
-    <p id="error-message">질문 데이터를 불러오지 못했습니다.</p>
-    <a class="btn btn-secondary" href="{{ url_for('index') }}">홈으로 돌아가기</a>
-  </div>
-
-  <!-- 질문 카드 -->
-  <article id="question-card" class="question-card is-hidden">
-    <div class="question-meta">
-      <span id="question-badge" class="question-badge">1번 질문</span>
-      <span id="question-category" class="question-category">-</span>
-    </div>
-    <h2 id="question-text" class="question-text">질문 텍스트</h2>
-    <p id="question-sub" class="question-sub">보조 설명</p>
-
-    <!-- 선택지 버튼 목록 (JS가 동적 생성) -->
-    <div id="choice-list" class="choice-list" role="list"></div>
-  </article>
-
-  <!-- 완료 박스 (모든 질문 답변 후 표시) -->
-  <section id="finish-box" class="finish-box is-hidden">
-    <div class="finish-icon">🎉</div>
-    <h2>모든 질문에 답했어요!</h2>
-    <p>지금 결과를 계산해서 보여드릴게요.</p>
-    <button id="finish-btn" class="btn btn-primary btn-full">
-      결과 보기 →
-    </button>
-  </section>
-
-</section>
+</div>
 
 {% endblock %}
 
 {% block scripts %}
-<!-- JS에서 window.JAEMULUN_TEST_TYPE 으로 test_type 사용 가능 -->
-<script>
-  window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
-</script>
+<script>window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};</script>
 <script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
 {% endblock %}
