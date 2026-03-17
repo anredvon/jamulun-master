@@ -1,94 +1,88 @@
 {% extends "base.html" %}
-{% block title %}AI 재물운 센터 — 오늘의 금전운 테스트{% endblock %}
+{% block title %}AI 재물운 센터{% endblock %}
 
 {% block content %}
 
-<!-- ── 히어로 섹션 ─────────────────────────── -->
-<section class="hero-card">
-  <div class="hero-badge">🔮 오늘 지수 {{ today_score }}점 · 매일 바뀌는 테스트</div>
-  <h1>가볍게 확인하는<br>재물운 · 소비습관 · 미래자산</h1>
-  <p class="hero-desc">
-    질문풀 100개 이상에서 랜덤으로 출제돼요.<br>
-    같은 테스트를 다시 해도 매번 질문 조합이 달라집니다.
-  </p>
+<!-- 인사 헤더 -->
+<div class="home-greeting">
+  <div class="greeting-left">
+    <p class="greeting-sub">오늘의 금전적 기운을 확인해보세요</p>
+    <h1 class="greeting-title">안녕하세요, <br>재물운 님 👋</h1>
+  </div>
+  <button class="notif-btn">🔔</button>
+</div>
 
-  <!-- 참여 지표 — 신뢰감/참여율 높이는 용도 -->
-  <div class="hero-stats">
-    <div>
-      <strong>18,532명</strong>
-      <span>오늘 참여</span>
+<!-- 오늘의 금전운 점수 카드 (파란 카드) -->
+<div class="score-hero-card">
+  <div class="score-hero-left">
+    <div class="score-hero-icon-wrap">
+      <span class="score-hero-icon">✨</span>
     </div>
     <div>
-      <strong>6문항</strong>
-      <span>평균 문항 수</span>
-    </div>
-    <div>
-      <strong>30초</strong>
-      <span>평균 소요 시간</span>
+      <p class="score-hero-label">오늘의 금전운</p>
+      <p class="score-hero-grade">
+        {% if today_score >= 85 %}매우 좋음
+        {% elif today_score >= 70 %}좋음
+        {% elif today_score >= 55 %}보통
+        {% else %}주의{% endif %}
+      </p>
     </div>
   </div>
-</section>
+  <div class="score-hero-right">
+    <span class="score-hero-num">{{ today_score }}</span>
+    <span class="score-hero-denom">/100</span>
+  </div>
+</div>
 
-<!-- ── 테스트 카드 3개 ────────────────────── -->
-<section class="cards-3">
+<!-- 섹션 타이틀 -->
+<div class="section-title">오늘의 운세</div>
 
-  <!-- 테스트 1: 오늘 금전운 -->
-  <article class="menu-card">
-    <div class="menu-emoji">💰</div>
-    <div class="menu-badge">데일리</div>
-    <h2>오늘 금전운 보기</h2>
-    <p>오늘 지출 감각과 금전 흐름을 빠르게 확인합니다. 매일 다른 질문 조합으로 재방문할수록 재밌어요.</p>
-    <ul class="meta-list">
-      <li>✅ 질문풀 30개 이상</li>
-      <li>✅ 랜덤 6문항 출제</li>
-      <li>✅ 매일 다른 흐름</li>
-    </ul>
-    <a class="btn btn-primary btn-full" href="{{ url_for('test_page', test_type='money') }}">
-      테스트 시작 →
-    </a>
-  </article>
+<!-- 테스트 메뉴 리스트 (토스 스타일 리스트 카드) -->
+<div class="menu-list">
 
-  <!-- 테스트 2: 소비 성향 -->
-  <article class="menu-card">
-    <div class="menu-emoji">🛍️</div>
-    <div class="menu-badge">성향 분석</div>
-    <h2>소비 성향 테스트</h2>
-    <p>저축 습관, 충동구매 패턴, 예산 관리 능력을 카테고리별로 균형 있게 파악합니다.</p>
-    <ul class="meta-list">
-      <li>✅ 질문풀 35개 이상</li>
-      <li>✅ 카테고리 균형 랜덤</li>
-      <li>✅ 공유용 결과 문구</li>
-    </ul>
-    <a class="btn btn-primary btn-full" href="{{ url_for('test_page', test_type='spending') }}">
-      테스트 시작 →
-    </a>
-  </article>
+  <!-- 금전운 -->
+  <a href="{{ url_for('test_page', test_type='money') }}" class="menu-list-item">
+    <div class="menu-list-icon" style="background:#FFF3CD;">💰</div>
+    <div class="menu-list-body">
+      <span class="menu-list-tag">오늘의 운세</span>
+      <p class="menu-list-title">오늘의 금전운 확인하기</p>
+      <p class="menu-list-desc">오늘 당신의 부가 어디로 흐르는지 확인하세요</p>
+    </div>
+    <span class="menu-list-arrow">›</span>
+  </a>
 
-  <!-- 테스트 3: 미래 자산 -->
-  <article class="menu-card">
-    <div class="menu-emoji">📈</div>
-    <div class="menu-badge">자산 진단</div>
-    <h2>미래 자산 테스트</h2>
-    <p>장기 자산 습관, 투자 성향, 목표 관리 수준을 측정해 성장형/안정형/주의형을 분류합니다.</p>
-    <ul class="meta-list">
-      <li>✅ 질문풀 35개 이상</li>
-      <li>✅ 매번 다른 조합</li>
-      <li>✅ 프리미엄 리포트 연계</li>
-    </ul>
-    <a class="btn btn-primary btn-full" href="{{ url_for('test_page', test_type='future') }}">
-      테스트 시작 →
-    </a>
-  </article>
+  <div class="menu-divider"></div>
 
-</section>
+  <!-- 소비 성향 -->
+  <a href="{{ url_for('test_page', test_type='spending') }}" class="menu-list-item">
+    <div class="menu-list-icon" style="background:#E8F4FD;">🛍️</div>
+    <div class="menu-list-body">
+      <span class="menu-list-tag" style="color:#3B82F6;">성향 분석</span>
+      <p class="menu-list-title">나의 소비 습관 테스트</p>
+      <p class="menu-list-desc">절약가인가요, 아니면 즉흥적인 소비인가요?</p>
+    </div>
+    <span class="menu-list-arrow">›</span>
+  </a>
 
-<!-- ── 서비스 설명 ────────────────────────── -->
-<section class="info-card">
-  <h3>💡 왜 질문이 매번 달라지나요?</h3>
-  <p>
-    질문 100개를 DB에 저장해두고, 테스트 시작 시 카테고리별로 균형 있게 6문항을 뽑아 세션에 고정합니다.
-    같은 사람이 다시 들어와도 다른 조합을 경험할 수 있어 재방문율이 높아지고, 결과 신뢰도도 올라갑니다.
-  </p>
-</section>
+  <div class="menu-divider"></div>
+
+  <!-- 미래 자산 -->
+  <a href="{{ url_for('test_page', test_type='future') }}" class="menu-list-item">
+    <div class="menu-list-icon" style="background:#E8F8EF;">🌱</div>
+    <div class="menu-list-body">
+      <span class="menu-list-tag" style="color:#10B981;">미래 비전</span>
+      <p class="menu-list-title">미래 자산 예측</p>
+      <p class="menu-list-desc">당신의 10년 뒤 금융 목표를 미리 엿보세요</p>
+    </div>
+    <span class="menu-list-arrow">›</span>
+  </a>
+
+</div>
+
+<!-- 안내 카드 -->
+<div class="info-pill-card">
+  <span class="info-pill-icon">💡</span>
+  <span class="info-pill-text">질문풀 100개에서 매번 다르게 랜덤 출제돼요</span>
+</div>
 
 {% endblock %}
