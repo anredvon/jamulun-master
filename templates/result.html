@@ -1,155 +1,171 @@
 {% extends "base.html" %}
-{% block title %}테스트 결과 — AI 재물운 센터{% endblock %}
-{% block og_title %}내 재물운 결과: {{ result.result_title if result else '결과 보기' }}{% endblock %}
-{% block og_desc %}{{ result.result_desc if result else '지금 테스트해보세요!' }}{% endblock %}
+{% block title %}테스트 결과{% endblock %}
 
 {% block content %}
-
-<!-- 결과 타입 클래스를 article 에 적용 → CSS로 색상 구분 -->
 {% set rtype = result.result_type if result else 'bronze' %}
+{% set score = result.final_score if result else 0 %}
 
-<section class="result-shell">
+<div class="result-shell">
 
-  <!-- 결과 헤더 카드 -->
-  <article class="result-hero result-{{ rtype }}">
-    <div class="eyebrow">테스트 결과 · {{ {'money':'오늘 금전운', 'spending':'소비 성향', 'future':'미래 자산'}.get(ts.test_type, '') }}</div>
-
-    <!-- 점수 원형 뱃지 -->
-    <div class="score-circle">
-      <span class="score-num">{{ result.final_score if result else 0 }}</span>
-      <span class="score-unit">점</span>
+  <!-- 상단 점수 카드 -->
+  <div class="result-score-card result-card-{{ rtype }}">
+    <p class="result-score-label">재물운 점수</p>
+    <div class="result-score-big">
+      <span class="result-score-num">{{ score }}</span>
+      <span class="result-score-denom">/100</span>
     </div>
-
-    <h1 class="result-title">{{ result.result_title if result else '결과 준비 중' }}</h1>
-    <p class="result-desc">{{ result.result_desc if result else '결과를 다시 계산해 주세요.' }}</p>
-
-    <!-- 결과 유형 뱃지 -->
-    <div class="result-type-badge result-badge-{{ rtype }}">
-      {% if rtype == 'gold' %}🥇 황금형
-      {% elif rtype == 'silver' %}🥈 은형
-      {% elif rtype == 'bronze' %}🥉 동형
-      {% else %}⚠️ 주의형
-      {% endif %}
+    <!-- 점수 바 -->
+    <div class="result-score-bar-wrap">
+      <div class="result-score-bar" style="width:{{ score }}%"></div>
     </div>
-  </article>
-
-  <!-- 세션 정보 + 액션 영역 -->
-  <div class="result-actions-wrap">
-
-    <!-- 세션 요약 -->
-    <article class="info-card">
-      <h3>📋 세션 정보</h3>
-      <ul class="meta-list">
-        <li>테스트 종류: <strong>{{ {'money':'오늘 금전운', 'spending':'소비 성향', 'future':'미래 자산'}.get(ts.test_type, ts.test_type) }}</strong></li>
-        <li>답변 수: <strong>{{ ts.answer_count }}문항</strong></li>
-        <li>공유 수: <strong>{{ ts.share_count }}회</strong></li>
-        <li>상세 리포트: <strong>{{ '잠금 해제됨 ✅' if ts.unlocked else '잠금 중 🔒' }}</strong></li>
-      </ul>
-    </article>
-
-    <!-- 상세 결과 유도 (광고 or 결제) -->
-    {% if not ts.unlocked %}
-    <article class="info-card unlock-card">
-      <h3>🔓 상세 AI 인사이트 보기</h3>
-      <p>소비 패턴 요약, 주의해야 할 지출 포인트, 이번 주 실천 팁까지 확인해보세요.</p>
-
-      <!-- TODO: 광고 SDK 연동 (카카오 애드핏 / 구글 AdMob) -->
-      <button class="btn btn-primary btn-full" id="unlock-btn" data-session-id="{{ ts.id }}">
-        광고 보고 전체 결과 보기 (무료)
-      </button>
-
-      <!-- TODO: 토스페이먼츠 / 아임포트 결제 연동 -->
-      <!-- 결제 버튼: /payment/success?session=세션ID 로 리다이렉트 -->
-      <a class="btn btn-secondary btn-full" href="/payment/success?session={{ ts.id }}">
-        광고 없이 보기 — 690원
-      </a>
-
-      <!-- 공유 버튼 -->
-      <button class="btn btn-ghost btn-full" id="share-btn" data-session-id="{{ ts.id }}">
-        결과 공유하기 📤
-      </button>
-    </article>
-    {% else %}
-    <article class="info-card">
-      <h3>✅ 상세 리포트 이용 가능</h3>
-      <p>잠금이 해제되었습니다. 상세 AI 인사이트를 확인하세요.</p>
-      <a class="btn btn-primary btn-full" href="{{ url_for('insight_page', session_id=ts.id) }}">
-        상세 인사이트 보기 →
-      </a>
-    </article>
-    {% endif %}
-
-  </div>
-
-  <!-- 다시 테스트 유도 -->
-  <div class="retry-section">
-    <p>질문이 매번 달라져요. 다른 테스트도 해보세요!</p>
-    <div class="retry-btns">
-      <a class="btn btn-ghost" href="{{ url_for('test_page', test_type='money') }}">💰 금전운 다시</a>
-      <a class="btn btn-ghost" href="{{ url_for('test_page', test_type='spending') }}">🛍️ 소비 성향</a>
-      <a class="btn btn-ghost" href="{{ url_for('test_page', test_type='future') }}">📈 미래 자산</a>
+    <div class="result-type-row">
+      <span class="result-type-badge-sm">
+        {% if rtype == 'gold' %}🥇{% elif rtype == 'silver' %}🥈{% elif rtype == 'bronze' %}🥉{% else %}⚠️{% endif %}
+        {{ result.result_title if result else '-' }}
+      </span>
     </div>
   </div>
 
-</section>
+  <!-- 결과 설명 -->
+  <div class="result-desc-card">
+    <p class="result-desc-text">{{ result.result_desc if result else '' }}</p>
+  </div>
+
+  <!-- 세션 정보 -->
+  <div class="result-info-row">
+    <div class="result-info-chip">{{ {'money':'💰 금전운', 'spending':'🛍️ 소비 성향', 'future':'📈 미래 자산'}.get(ts.test_type, ts.test_type) }}</div>
+    <div class="result-info-chip">📝 {{ ts.answer_count }}문항 완료</div>
+    <div class="result-info-chip">{{ '🔓 잠금 해제' if ts.unlocked else '🔒 잠금 중' }}</div>
+  </div>
+
+  <!-- 액션 버튼 영역 -->
+  {% if not ts.unlocked %}
+  <div class="result-action-card">
+    <h3 class="result-action-title">🔓 상세 AI 인사이트 보기</h3>
+    <p class="result-action-desc">소비 패턴 요약 · 주의 지출 포인트 · 이번 주 실천 팁</p>
+    <button class="toss-btn toss-btn-primary" id="unlock-btn" data-session-id="{{ ts.id }}">
+      광고 보고 전체 결과 보기
+    </button>
+    <a class="toss-btn toss-btn-outline" href="/payment/success?session={{ ts.id }}">
+      광고 없이 보기 — 690원
+    </a>
+  </div>
+  {% else %}
+  <div class="result-action-card">
+    <h3 class="result-action-title">✅ 상세 리포트 이용 가능</h3>
+    <a class="toss-btn toss-btn-primary" href="{{ url_for('insight_page', session_id=ts.id) }}">
+      상세 인사이트 보기 →
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- 공유 버튼 -->
+  <button class="share-row-btn" id="share-btn" data-session-id="{{ ts.id }}">
+    <span>💬 카카오톡으로 공유하기</span>
+    <span class="share-row-arrow">›</span>
+  </button>
+
+  <!-- 다시 테스트 -->
+  <div class="retry-row">
+    <p class="retry-row-label">다른 테스트도 해보세요</p>
+    <div class="retry-chips">
+      <a class="retry-chip" href="{{ url_for('test_page', test_type='money') }}">💰 금전운</a>
+      <a class="retry-chip" href="{{ url_for('test_page', test_type='spending') }}">🛍️ 소비 성향</a>
+      <a class="retry-chip" href="{{ url_for('test_page', test_type='future') }}">📈 미래 자산</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- 카카오 공유 모달 (이미지 5번 스타일) -->
+<div id="share-modal" class="share-modal is-hidden">
+  <div class="share-modal-backdrop" id="modal-backdrop"></div>
+  <div class="share-modal-sheet">
+    <div class="share-modal-header">
+      <span class="share-modal-header-icon">💬</span>
+      <span class="share-modal-header-title">카카오톡 공유하기</span>
+      <button class="share-modal-close" id="modal-close">✕</button>
+    </div>
+    <!-- 미리보기 카드 -->
+    <div class="share-preview">
+      <div class="share-preview-inner">
+        <div class="share-preview-emoji">💰</div>
+        <p class="share-preview-text">오늘 나의 재물운은?</p>
+      </div>
+    </div>
+    <!-- 결과 요약 -->
+    <div class="share-result-preview">
+      <span class="share-result-tag">RESULT</span>
+      <p class="share-result-title">{{ result.result_title if result else '' }} 💰</p>
+      <p class="share-result-desc">지금 바로 당신의 미래 자산 점수를 확인해보세요. 운세 마스터가 알려주는 특별한 부자 지수!</p>
+    </div>
+    <button class="toss-btn toss-btn-kakao" id="kakao-share-btn">
+      💬 카카오톡으로 공유하기
+    </button>
+    <!-- 운세 마스터 프로필 -->
+    <div class="share-profile-row">
+      <div class="share-profile-icon">✨</div>
+      <div>
+        <p class="share-profile-name">운세 마스터</p>
+        <p class="share-profile-sub">방금 테스트를 완료했습니다</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
 
 {% block scripts %}
 <script>
-  // ── 잠금 해제 버튼 (광고 시청 후) ──────────────
-  // TODO: 광고 시청 완료 콜백 후 아래 fetch 호출하도록 변경
+  const SESSION_ID = {{ ts.id }};
+
+  // 잠금 해제 버튼
   document.getElementById('unlock-btn')?.addEventListener('click', async () => {
     const btn = document.getElementById('unlock-btn');
-    const sessionId = Number(btn.dataset.sessionId);
-
     btn.disabled = true;
-    btn.textContent = '처리 중…';
-
+    btn.textContent = '처리 중...';
     try {
       const res = await fetch('/api/unlock', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: sessionId }),
+        body: JSON.stringify({ session_id: SESSION_ID })
       });
       const data = await res.json();
-      if (data.redirect) {
-        location.href = data.redirect;
-      } else {
-        alert('오류가 발생했습니다. 다시 시도해주세요.');
-        btn.disabled = false;
-        btn.textContent = '광고 보고 전체 결과 보기 (무료)';
-      }
-    } catch (err) {
-      console.error(err);
+      if (data.redirect) location.href = data.redirect;
+    } catch(e) {
       btn.disabled = false;
-      btn.textContent = '광고 보고 전체 결과 보기 (무료)';
+      btn.textContent = '광고 보고 전체 결과 보기';
     }
   });
 
-  // ── 공유 버튼 ──────────────────────────────────
-  // TODO: 카카오 SDK / Web Share API 연동
-  document.getElementById('share-btn')?.addEventListener('click', async () => {
-    const btn = document.getElementById('share-btn');
-    const sessionId = Number(btn.dataset.sessionId);
+  // 공유 모달 열기
+  document.getElementById('share-btn')?.addEventListener('click', () => {
+    document.getElementById('share-modal').classList.remove('is-hidden');
+  });
 
-    // 공유 횟수 기록
+  // 모달 닫기
+  document.getElementById('modal-close')?.addEventListener('click', closeModal);
+  document.getElementById('modal-backdrop')?.addEventListener('click', closeModal);
+  function closeModal() {
+    document.getElementById('share-modal').classList.add('is-hidden');
+  }
+
+  // 카카오 공유 (Web Share API 폴백)
+  document.getElementById('kakao-share-btn')?.addEventListener('click', async () => {
     await fetch('/api/share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: sessionId }),
+      body: JSON.stringify({ session_id: SESSION_ID })
     });
-
-    // Web Share API 지원 여부 확인
+    closeModal();
     if (navigator.share) {
       navigator.share({
         title: '내 재물운 테스트 결과',
-        text: '나의 재물운 점수가 궁금하다면?',
-        url: window.location.href,
+        text: '오늘 나의 재물운은? 지금 확인해보세요!',
+        url: window.location.href
       }).catch(() => {});
     } else {
-      // 폴백: 링크 복사
-      navigator.clipboard.writeText(window.location.href)
+      navigator.clipboard?.writeText(window.location.href)
         .then(() => alert('링크가 복사되었습니다!'))
         .catch(() => alert('링크: ' + window.location.href));
     }
