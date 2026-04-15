@@ -1,7 +1,4 @@
 -- 재물운 앱 질문 100개 + 선택지 400개 시드 데이터
-BEGIN TRANSACTION;
-DELETE FROM choices;
-DELETE FROM questions;
 INSERT INTO questions (id, test_type, category, emoji, question_text, question_subtext, is_active, weight, created_at) VALUES (1, 'money', 'daily', '💰', '오늘 아침 지갑이나 계좌를 떠올렸을 때 가장 먼저 든 생각은?', '평소와 가장 가까운 반응을 골라주세요.', 1, 1, CURRENT_TIMESTAMP);
 INSERT INTO choices (id, question_id, choice_text, score, choice_order) VALUES (1, 1, '오늘 쓸 돈부터 계산한다', 8, 1);
 INSERT INTO choices (id, question_id, choice_text, score, choice_order) VALUES (2, 1, '별생각 없이 넘어간다', 4, 2);
@@ -502,4 +499,3 @@ INSERT INTO choices (id, question_id, choice_text, score, choice_order) VALUES (
 INSERT INTO choices (id, question_id, choice_text, score, choice_order) VALUES (398, 100, '꾸준히 모으기', 9, 2);
 INSERT INTO choices (id, question_id, choice_text, score, choice_order) VALUES (399, 100, '모르는 것은 공부하고 투자하기', 10, 3);
 INSERT INTO choices (id, question_id, choice_text, score, choice_order) VALUES (400, 100, '남과 비교하지 않기', 8, 4);
-COMMIT;
