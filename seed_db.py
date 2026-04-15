@@ -19,10 +19,83 @@
 import sys
 import os
 from pathlib import Path
+import re
 
 # app.py 에서 Flask 앱 + db 임포트
 from app import app, db
 from models import Question, Choice
+
+
+_ALLOWED_SQL_PREFIXES = (
+    "INSERT INTO questions",
+    "INSERT INTO choices",
+)
+
+
+def _resolve_and_check_seed_path(sql_path: str) -> Path:
+    """
+    - 파일 존재 여부/접근 가능 여부 확인
+    - seeds/ 디렉터리 내부 파일만 허용 (경로 주입 방지)
+    """
+    sql_file = Path(sql_path)
+    try:
+        if not sql_file.exists():
+            raise FileNotFoundError(sql_path)
+    except OSError as e:
+        raise OSError(f"SQL 파일 존재 여부 확인 실패: {sql_path} ({e})") from e
+
+    seeds_dir = (Path(__file__).resolve().parent / "seeds").resolve()
+    try:
+        resolved = sql_file.resolve()
+    except OSError as e:
+        raise OSError(f"SQL 파일 경로 확인 실패: {sql_path} ({e})") from e
+
+    if seeds_dir not in resolved.parents and resolved != seeds_dir:
+        raise PermissionError("허용되지 않은 경로입니다. seeds/ 디렉터리 내부 파일만 실행 가능합니다.")
+
+    return resolved
+
+
+def _read_text_utf8(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as e:
+        raise UnicodeDecodeError(
+            e.encoding, e.object, e.start, e.end, f"SQL 파일 인코딩 오류(utf-8): {path}"
+        ) from e
+    except OSError as e:
+        raise OSError(f"SQL 파일 열기/읽기 실패: {path} ({e})") from e
+
+
+def _strip_sql_comments(sql: str) -> str:
+    # remove -- line comments
+    sql = re.sub(r"(?m)^\s*--.*$", "", sql)
+    # remove /* ... */ block comments
+    sql = re.sub(r"/\*.*?\*/", "", sql, flags=re.S)
+    return sql
+
+
+def _validate_seed_sql(sql: str) -> list[str]:
+    """
+    seeds SQL은 질문/선택지 INSERT만 허용.
+    위험한 DDL/DML(예: DROP/ALTER/PRAGMA/ATTACH 등) 실행을 차단.
+    """
+    cleaned = _strip_sql_comments(sql)
+    parts = [p.strip() for p in cleaned.split(";")]
+    statements: list[str] = []
+
+    for stmt in parts:
+        if not stmt:
+            continue
+        s_norm = " ".join(stmt.split())
+        s_up = s_norm.upper()
+        if not s_up.startswith(_ALLOWED_SQL_PREFIXES):
+            raise RuntimeError(f"Refusing to execute non-INSERT statement: {s_norm[:80]}...")
+        statements.append(stmt)
+
+    if not statements:
+        raise RuntimeError("SQL file contained no executable INSERT statements.")
+    return statements
 
 
 # ──────────────────────────────────────────
@@ -34,30 +107,41 @@ def seed_from_sql(sql_path: str = "seeds/02_questions_100_seed.sql", reset: bool
     SQLite 에서는 executescript() 사용.
     MySQL 사용 시 아래 TODO 참고.
     """
-    sql_file = Path(sql_path)
-    if not sql_file.exists():
+    try:
+        resolved = _resolve_and_check_seed_path(sql_path)
+    except FileNotFoundError:
         print(f"❌ SQL 파일을 찾을 수 없습니다: {sql_path}")
         return
+    except PermissionError as e:
+        print(f"❌ {e}")
+        return
+    except OSError as e:
+        print(f"❌ {e}")
+        return
 
-    sql = sql_file.read_text(encoding="utf-8")
+    try:
+        sql = _read_text_utf8(resolved)
+    except Exception as e:
+        print(f"❌ {e}")
+        return
 
     with app.app_context():
-        db.create_all()
-
-        if reset:
-            print("🗑️  기존 데이터 삭제 중...")
-            db.session.execute(db.text("DELETE FROM choices"))
-            db.session.execute(db.text("DELETE FROM questions"))
-            db.session.commit()
-            print("   ✅ 삭제 완료")
-
-        # SQLite 전용: executescript 는 자동 커밋
-        conn = db.engine.raw_connection()
         try:
-            conn.executescript(sql)
-            conn.commit()
-        finally:
-            conn.close()
+            db.create_all()
+
+            if reset:
+                print("🗑️  기존 데이터 삭제 중...")
+                db.session.execute(db.text("DELETE FROM choices"))
+                db.session.execute(db.text("DELETE FROM questions"))
+                db.session.commit()
+                print("   ✅ 삭제 완료")
+
+            statements = _validate_seed_sql(sql)
+
+            # DB 엔진에 상관없이 statement 단위 실행 (DDL/DML 화이트리스트 검증 후)
+            with db.engine.begin() as conn:
+                for stmt in statements:
+                    conn.execute(db.text(stmt))
 
         # TODO: MySQL 사용 시 아래 방식으로 교체
         # with db.engine.connect() as conn:
@@ -67,10 +151,20 @@ def seed_from_sql(sql_path: str = "seeds/02_questions_100_seed.sql", reset: bool
         #             conn.execute(db.text(stmt))
         #     conn.commit()
 
-        q_count = Question.query.count()
-        c_count = Choice.query.count()
-        print(f"✅ 시드 완료: 질문 {q_count}개, 선택지 {c_count}개")
-        _print_summary()
+            q_count = Question.query.count()
+            c_count = Choice.query.count()
+            print(f"✅ 시드 완료: 질문 {q_count}개, 선택지 {c_count}개")
+            _print_summary()
+        except Exception as e:
+            db.session.rollback()
+            print("❌ 시드 작업 중 오류가 발생했습니다.")
+            print(f"   {e}")
+            return
+        finally:
+            try:
+                db.session.remove()
+            except Exception:
+                pass
 
 
 # ──────────────────────────────────────────
