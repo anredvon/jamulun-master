@@ -495,7 +495,7 @@ def _calc_result(score: int, test_type: str) -> tuple:
     점수 + 테스트 타입에 따라 결과 유형, 제목, 설명 반환.
 
     점수 구간:
-    90 이상 → gold
+    90 이상 → golds
     75~89   → silver
     55~74   → bronze
     55 미만  → caution
