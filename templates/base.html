@@ -8,6 +8,7 @@
   <meta property="og:description" content="{% block og_desc %}매번 달라지는 질문으로 오늘의 금전운을 확인해보세요.{% endblock %}">
   <title>{% block title %}AI 재물운 센터{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/jaemulun.css') }}">
 </head>
@@ -54,6 +55,24 @@
         <span class="tab-label">프로필</span>
       </a>
     </nav>
+
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+      const setVh = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      setVh();
+      window.addEventListener('resize', setVh, { passive: true });
+      window.addEventListener('orientationchange', setVh, { passive: true });
+    })();
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
 
   </div>
 
