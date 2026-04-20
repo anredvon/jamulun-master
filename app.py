@@ -11,7 +11,7 @@
 #  의존성: models.py, .env (환경변수)
 # ============================================================
 
-from flask import Flask, render_template, request, jsonify, redirect, flash
+from flask import Flask, render_template, request, jsonify, redirect, flash, url_for
 from models import db, Question, Choice, TestSession, TestResult
 from datetime import datetime
 from collections import defaultdict
@@ -49,16 +49,16 @@ VALID_TEST_TYPES = {"money", "spending", "future"}
 
 # 테스트 타입별 출제 문항 수
 QUESTION_COUNT = {
-    "money":    6,
-    "spending": 6,
-    "future":   6,
+    "money":    5,
+    "spending": 5,
+    "future":   5,
 }
 
 # 테스트 타입 표시 이름
 TEST_TYPE_LABELS = {
-    "money":    "오늘 금전운 보기",
-    "spending": "소비 성향 테스트",
-    "future":   "미래 자산 테스트",
+    "money":    "오늘의 재물운",
+    "spending": "소비 성향 퀴즈",
+    "future":   "빠른 진단",
 }
 
 
@@ -68,9 +68,65 @@ TEST_TYPE_LABELS = {
 
 @app.route("/")
 def index():
-    """메인 페이지 — 3개 테스트 카드 + 오늘의 점수 표시"""
+    """스플래시 화면."""
+    return render_template("index.html")
+
+
+@app.route("/home")
+def home_page():
+    """개선된 홈 화면 — 3개 진단 모드 선택."""
     today_score = _today_score()
-    return render_template("index.html", today_score=today_score)
+    return render_template("home.html", today_score=today_score)
+
+
+@app.route("/intro/<test_type>")
+def intro_page(test_type):
+    """진단 시작 전 공통 안내 화면."""
+    if test_type not in VALID_TEST_TYPES:
+        return redirect(url_for("home_page"))
+
+    intro_map = {
+        "future": {
+            "intro_title": "빠른 진단",
+            "intro_badge": "초간단 진단 모드",
+            "intro_heading_before": "지금 내 상태를",
+            "intro_heading_highlight": "빠르게 확인",
+            "intro_desc": "짧은 질문 5개로 현재의 금전 흐름을 가볍게 살펴보는 모드입니다.",
+            "intro_bullets": [
+                "부담 없이 짧게 진행할 수 있어 첫 진입 사용자에게 적합합니다.",
+                "현재 소비 심리와 판단 흐름을 중심으로 결과를 보여줍니다.",
+                "결과 화면은 공통 UI를 사용하고, 내부 문구만 모드에 맞게 달라집니다.",
+            ],
+        },
+        "spending": {
+            "intro_title": "소비 성향 퀴즈",
+            "intro_badge": "소비 패턴 분석",
+            "intro_heading_before": "나의 소비 습관을",
+            "intro_heading_highlight": "유형으로 확인",
+            "intro_desc": "평소 소비 패턴을 기준으로 계획형인지, 즉흥형인지 가볍게 확인합니다.",
+            "intro_bullets": [
+                "일상적인 소비 습관을 기준으로 성향을 분석합니다.",
+                "답변 흐름은 가볍지만 결과 문구는 신뢰감 있게 구성합니다.",
+                "퀴즈 UI는 공통으로 사용하되 제목과 결과 메시지만 다르게 적용합니다.",
+            ],
+        },
+        "money": {
+            "intro_title": "오늘의 재물운",
+            "intro_badge": "오늘의 금전운",
+            "intro_heading_before": "오늘 하루의",
+            "intro_heading_highlight": "재물 흐름 확인",
+            "intro_desc": "오늘 소비해도 괜찮을지, 금전운의 분위기를 가볍게 체크해보는 모드입니다.",
+            "intro_bullets": [
+                "오늘의 소비 흐름과 지출 판단 감각을 중심으로 결과를 보여줍니다.",
+                "현재 화면 톤은 유지하고 문구와 액션만 더 직관적으로 정리했습니다.",
+                "마지막에는 결과 확인 후 다른 진단 또는 공유 화면으로 이동할 수 있습니다.",
+            ],
+        },
+    }
+
+    context = intro_map[test_type].copy()
+    context["test_type"] = test_type
+    return render_template("intro.html", **context)
 
 
 @app.route("/test/<test_type>")
@@ -81,7 +137,7 @@ def test_page(test_type):
     서버는 test_type만 템플릿에 전달.
     """
     if test_type not in VALID_TEST_TYPES:
-        return redirect("/")
+        return redirect(url_for("home_page"))
     label = TEST_TYPE_LABELS.get(test_type, test_type)
     return render_template("test.html", test_type=test_type, test_label=label)
 
@@ -94,22 +150,28 @@ def result_page(session_id):
     """
     ts = TestSession.query.get_or_404(session_id)
     result = TestResult.query.filter_by(session_id=session_id).first()
-    return render_template("result.html", ts=ts, result=result)
+    result_heading = TEST_TYPE_LABELS.get(ts.test_type, "진단 결과")
+    result_tags = _result_tags(ts.test_type, result.result_type if result else None)
+    return render_template("result.html", ts=ts, result=result, result_heading=result_heading, result_tags=result_tags)
 
 
 @app.route("/insight/<int:session_id>")
 def insight_page(session_id):
-    """
-    상세 인사이트 페이지.
-    unlocked=True 인 경우에만 접근 가능.
-    미잠금 상태면 result 페이지로 리다이렉트.
-    """
+    """상세 인사이트 페이지 (기존 기능 유지용)."""
     ts = TestSession.query.get_or_404(session_id)
     if not ts.unlocked:
-        # 잠금 해제 안 됨 → 결과 페이지로 돌려보냄
-        return redirect(f"/result/{session_id}")
+        return redirect(url_for("result_page", session_id=session_id))
     result = TestResult.query.filter_by(session_id=session_id).first()
     return render_template("insight.html", ts=ts, result=result)
+
+
+@app.route("/share/<int:session_id>")
+def share_page(session_id):
+    """결과 공유 전용 페이지."""
+    ts = TestSession.query.get_or_404(session_id)
+    result = TestResult.query.filter_by(session_id=session_id).first()
+    result_tags = _result_tags(ts.test_type, result.result_type if result else None)
+    return render_template("share.html", ts=ts, result=result, result_tags=result_tags)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -365,8 +427,8 @@ def payment_success():
             ts.unlocked = True
             db.session.commit()
             flash("결제가 완료되었습니다! AI 리포트를 확인하세요.", "success")
-            return redirect(f"/insight/{session_id}")
-    return redirect("/")
+            return redirect(url_for("insight_page", session_id=session_id))
+    return redirect(url_for("home_page"))
 
 
 @app.route("/payment/fail")
@@ -374,7 +436,7 @@ def payment_fail():
     """결제 실패/취소 콜백."""
     session_id = request.args.get("session")
     flash("결제가 취소되었습니다.", "error")
-    return redirect(f"/result/{session_id}" if session_id else "/")
+    return redirect(url_for("result_page", session_id=session_id) if session_id else url_for("home_page"))
 
 
 # ══════════════════════════════════════════════════════════════
@@ -538,6 +600,22 @@ def _calc_result(score: int, test_type: str) -> tuple:
     copy = result_copy.get(test_type, result_copy["money"])
     title, desc = copy[key]
     return key, title, desc
+
+
+
+
+def _result_tags(test_type: str, result_type: str | None) -> list:
+    tags_map = {
+        "money": ["오늘 운세", "지출 관리", "리스크 점검"],
+        "spending": ["소비 패턴", "예산 감각", "유형 분석"],
+        "future": ["빠른 진단", "현재 흐름", "즉시 확인"],
+    }
+    tags = list(tags_map.get(test_type, ["재물운", "테스트 결과", "흐름 확인"]))
+    if result_type == "gold":
+        tags[0] = "상위 흐름"
+    elif result_type == "caution":
+        tags[-1] = "주의 필요"
+    return tags
 
 
 # ══════════════════════════════════════════════════════════════
