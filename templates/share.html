@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}결과 공유{% endblock %}
+{% block body %}
+<div class="page-shell">
+  <div class="shell">
+    <div class="topbar-lite">
+      <div class="brand"><div class="logo"></div><span>재물운 마스터</span></div>
+      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
+    </div>
+
+    <section class="hero">
+      <div class="hero-badge"><span class="dot"></span>공유 화면</div>
+      <h2>결과를 <span class="grad">가볍게 공유</span></h2>
+      <p>앱별 공유 기능은 가능한 환경에서는 시스템 공유를 사용하고,<br>그 외에는 링크 복사로 동작하도록 구성했습니다.</p>
+    </section>
+
+    <div class="share-card">
+      <div class="share-label">TODAY MONEY SCORE</div>
+      <div class="share-score">{{ result.final_score if result else 0 }}</div>
+      <div class="share-meta">{{ result.result_title if result else '' }} · 결과 공유 카드 미리보기</div>
+      <div class="result-tags" style="margin-top:18px">
+        {% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}
+      </div>
+    </div>
+
+    <div class="social social-buttons">
+      <button class="btn kakao" data-share-platform="kakao">카카오톡</button>
+      <button class="btn insta" data-share-platform="system">공유하기</button>
+      <button class="btn copy" data-share-platform="copy">링크 복사</button>
+    </div>
+
+    <a href="{{ url_for('home_page') }}" class="cta cta-primary">처음으로</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const sessionId = {{ ts.id | tojson }};
+  const shareUrl = {{ url_for('result_page', session_id=ts.id, _external=True) | tojson }};
+  const shareTitle = {{ ('내 재물운 테스트 결과 - ' ~ (result.result_title if result else '결과')) | tojson }};
+  const shareText = {{ (result.result_desc if result else '내 결과를 확인해보세요.') | tojson }};
+
+  async function trackShare() {
+    try {
+      await fetch('/api/share', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({session_id: sessionId})
+      });
+    } catch (_) {}
+  }
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      alert('링크가 복사되었습니다.');
+    } catch (_) {
+      prompt('아래 링크를 복사하세요.', shareUrl);
+    }
+  }
+
+  document.querySelectorAll('[data-share-platform]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const platform = btn.dataset.sharePlatform;
+      await trackShare();
+
+      if (platform === 'copy') {
+        await copyLink();
+        return;
+      }
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+          return;
+        } catch (_) {}
+      }
+
+      await copyLink();
+    });
+  });
+})();
+</script>
+{% endblock %}

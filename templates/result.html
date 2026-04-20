@@ -1,174 +1,35 @@
 {% extends "base.html" %}
-{% block title %}테스트 결과{% endblock %}
-
-{% block content %}
-{% set rtype = result.result_type if result else 'bronze' %}
-{% set score = result.final_score if result else 0 %}
-
-<div class="result-shell">
-
-  <!-- 상단 점수 카드 -->
-  <div class="result-score-card result-card-{{ rtype }}">
-    <p class="result-score-label">재물운 점수</p>
-    <div class="result-score-big">
-      <span class="result-score-num">{{ score }}</span>
-      <span class="result-score-denom">/100</span>
+{% block title %}{{ result.result_title if result else '결과' }}{% endblock %}
+{% block body %}
+<div class="page-shell">
+  <div class="shell">
+    <div class="topbar-lite">
+      <div class="brand"><div class="logo"></div><span>재물운 마스터</span></div>
+      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
     </div>
-    <!-- 점수 바 -->
-    <div class="result-score-bar-wrap">
-      <div class="result-score-bar" style="width:{{ score }}%"></div>
-    </div>
-    <div class="result-type-row">
-      <span class="result-type-badge-sm">
-        {% if rtype == 'gold' %}🥇{% elif rtype == 'silver' %}🥈{% elif rtype == 'bronze' %}🥉{% else %}⚠️{% endif %}
-        {{ result.result_title if result else '-' }}
-      </span>
-    </div>
-  </div>
 
-  <!-- 결과 설명 -->
-  <div class="result-desc-card">
-    <p class="result-desc-text">{{ result.result_desc if result else '' }}</p>
-  </div>
+    <section class="hero">
+      <div class="hero-badge"><span class="dot"></span>결과 확인 완료</div>
+      <h2><span class="grad">{{ result_heading }}</span></h2>
+      <p>공통 결과 화면을 유지하면서 내부 값과 문구만 모드에 맞게 달라지도록 구성했습니다.</p>
+    </section>
 
-  <!-- 세션 정보 -->
-  <div class="result-info-row">
-    <div class="result-info-chip">{{ {'money':'💰 금전운', 'spending':'🛍️ 소비 성향', 'future':'📈 미래 자산'}.get(ts.test_type, ts.test_type) }}</div>
-    <div class="result-info-chip">📝 {{ ts.answer_count }}문항 완료</div>
-    <div class="result-info-chip">{{ '🔓 잠금 해제' if ts.unlocked else '🔒 잠금 중' }}</div>
-  </div>
-
-  <!-- 액션 버튼 영역 -->
-  {% if not ts.unlocked %}
-  <div class="result-action-card">
-    <h3 class="result-action-title">🔓 상세 AI 인사이트 보기</h3>
-    <p class="result-action-desc">소비 패턴 요약 · 주의 지출 포인트 · 이번 주 실천 팁</p>
-    <button class="toss-btn toss-btn-primary" id="unlock-btn" data-session-id="{{ ts.id }}">
-      광고 보고 전체 결과 보기
-    </button>
-    <a class="toss-btn toss-btn-outline" href="/payment/success?session={{ ts.id }}">
-      광고 없이 보기 — 690원
-    </a>
-  </div>
-  {% else %}
-  <div class="result-action-card">
-    <h3 class="result-action-title">✅ 상세 리포트 이용 가능</h3>
-    <a class="toss-btn toss-btn-primary" href="{{ url_for('insight_page', session_id=ts.id) }}">
-      상세 인사이트 보기 →
-    </a>
-  </div>
-  {% endif %}
-
-  <!-- 공유 버튼 -->
-  <button class="share-row-btn" id="share-btn" data-session-id="{{ ts.id }}">
-    <span>💬 카카오톡으로 공유하기</span>
-    <span class="share-row-arrow">›</span>
-  </button>
-
-  <!-- 다시 테스트 -->
-  <div class="retry-row">
-    <p class="retry-row-label">다른 테스트도 해보세요</p>
-    <div class="retry-chips">
-      <a class="retry-chip" href="{{ url_for('test_page', test_type='money') }}">💰 금전운</a>
-      <a class="retry-chip" href="{{ url_for('test_page', test_type='spending') }}">🛍️ 소비 성향</a>
-      <a class="retry-chip" href="{{ url_for('test_page', test_type='future') }}">📈 미래 자산</a>
-    </div>
-  </div>
-
-</div>
-
-<!-- 카카오 공유 모달 (이미지 5번 스타일) -->
-<div id="share-modal" class="share-modal is-hidden">
-  <div class="share-modal-backdrop" id="modal-backdrop"></div>
-  <div class="share-modal-sheet">
-    <div class="share-modal-header">
-      <span class="share-modal-header-icon">💬</span>
-      <span class="share-modal-header-title">카카오톡 공유하기</span>
-      <button class="share-modal-close" id="modal-close">✕</button>
-    </div>
-    <!-- 미리보기 카드 -->
-    <div class="share-preview">
-      <div class="share-preview-inner">
-        <div class="share-preview-emoji">💰</div>
-        <p class="share-preview-text">오늘 나의 재물운은?</p>
+    <div class="result-card">
+      <div class="score-ring">
+        <div class="score-inner">
+          <div class="score-num">{{ result.final_score if result else 0 }}</div>
+          <div class="score-label">{{ result.result_title if result else '-' }}</div>
+        </div>
+      </div>
+      <div class="result-title">{{ result.result_title if result else '-' }}</div>
+      <div class="result-desc">{{ result.result_desc if result else '' }}</div>
+      <div class="result-tags">
+        {% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}
       </div>
     </div>
-    <!-- 결과 요약 -->
-    <div class="share-result-preview">
-      <span class="share-result-tag">RESULT</span>
-      <p class="share-result-title">{{ result.result_title if result else '' }} 💰</p>
-      <p class="share-result-desc">지금 바로 당신의 미래 자산 점수를 확인해보세요. 운세 마스터가 알려주는 특별한 부자 지수!</p>
-    </div>
-    <button class="toss-btn toss-btn-kakao" id="kakao-share-btn">
-      💬 카카오톡으로 공유하기
-    </button>
-    <!-- 운세 마스터 프로필 -->
-    <div class="share-profile-row">
-      <div class="share-profile-icon">✨</div>
-      <div>
-        <p class="share-profile-name">운세 마스터</p>
-        <p class="share-profile-sub">방금 테스트를 완료했습니다</p>
-      </div>
-    </div>
+
+    <a href="{{ url_for('home_page') }}" class="cta cta-primary">다른 진단 해보기</a>
+    <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-secondary">공유하기</a>
   </div>
 </div>
-
-{% endblock %}
-
-{% block scripts %}
-<script>
-  const SESSION_ID = {{ ts.id }};
-
-  // 잠금 해제 버튼
-  document.getElementById('unlock-btn')?.addEventListener('click', async () => {
-    const btn = document.getElementById('unlock-btn');
-    btn.disabled = true;
-    btn.textContent = '처리 중...';
-    try {
-      const res = await fetch('/api/unlock', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: SESSION_ID })
-      });
-      const data = await res.json();
-      if (data.redirect) location.href = data.redirect;
-    } catch(e) {
-      btn.disabled = false;
-      btn.textContent = '광고 보고 전체 결과 보기';
-    }
-  });
-
-  // 공유 모달 열기
-  document.getElementById('share-btn')?.addEventListener('click', () => {
-    document.getElementById('share-modal').classList.remove('is-hidden');
-  });
-
-  // 모달 닫기
-  document.getElementById('modal-close')?.addEventListener('click', closeModal);
-  document.getElementById('modal-backdrop')?.addEventListener('click', closeModal);
-  function closeModal() {
-    document.getElementById('share-modal').classList.add('is-hidden');
-  }
-
-  // 카카오 공유 (Web Share API 폴백)
-  document.getElementById('kakao-share-btn')?.addEventListener('click', async () => {
-    await fetch('/api/share', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: SESSION_ID })
-    });
-    closeModal();
-    if (navigator.share) {
-      navigator.share({
-        title: '내 재물운 테스트 결과',
-        text: '오늘 나의 재물운은? 지금 확인해보세요!',
-        url: window.location.href
-      }).catch(() => {});
-    } else {
-      navigator.clipboard?.writeText(window.location.href)
-        .then(() => alert('링크가 복사되었습니다!'))
-        .catch(() => alert('링크: ' + window.location.href));
-    }
-  });
-</script>
 {% endblock %}

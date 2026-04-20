@@ -1,88 +1,13 @@
 {% extends "base.html" %}
-{% block title %}AI 재물운 센터{% endblock %}
-
-{% block content %}
-
-<!-- 인사 헤더 -->
-<div class="home-greeting">
-  <div class="greeting-left">
-    <p class="greeting-sub">오늘의 금전적 기운을 확인해보세요</p>
-    <h1 class="greeting-title">안녕하세요, <br>재물운 님 👋</h1>
-  </div>
-  <button class="notif-btn">🔔</button>
-</div>
-
-<!-- 오늘의 금전운 점수 카드 (파란 카드) -->
-<div class="score-hero-card">
-  <div class="score-hero-left">
-    <div class="score-hero-icon-wrap">
-      <span class="score-hero-icon">✨</span>
-    </div>
-    <div>
-      <p class="score-hero-label">오늘의 금전운</p>
-      <p class="score-hero-grade">
-        {% if today_score >= 85 %}매우 좋음
-        {% elif today_score >= 70 %}좋음
-        {% elif today_score >= 55 %}보통
-        {% else %}주의{% endif %}
-      </p>
-    </div>
-  </div>
-  <div class="score-hero-right">
-    <span class="score-hero-num">{{ today_score }}</span>
-    <span class="score-hero-denom">/100</span>
+{% block title %}재물운 마스터{% endblock %}
+{% block body %}
+<div class="splash-page">
+  <div class="splash-wrap">
+    <div class="logo-box"><div class="logo-circle"></div></div>
+    <div class="badge" style="margin-bottom:16px">MONEY INSIGHT APP</div>
+    <h1>재물운 <span class="grad">마스터</span></h1>
+    <p class="sub">오늘의 소비 흐름을 가볍게 확인하는 재물운 앱<br>30초 안에 확인하는 오늘의 금전운</p>
+    <a href="{{ url_for('home_page') }}" class="cta cta-primary" style="margin-top:28px">입장</a>
   </div>
 </div>
-
-<!-- 섹션 타이틀 -->
-<div class="section-title">오늘의 운세</div>
-
-<!-- 테스트 메뉴 리스트 (토스 스타일 리스트 카드) -->
-<div class="menu-list">
-
-  <!-- 금전운 -->
-  <a href="{{ url_for('test_page', test_type='money') }}" class="menu-list-item">
-    <div class="menu-list-icon" style="background:#FFF3CD;">💰</div>
-    <div class="menu-list-body">
-      <span class="menu-list-tag">오늘의 운세</span>
-      <p class="menu-list-title">오늘의 금전운 확인하기</p>
-      <p class="menu-list-desc">오늘 당신의 부가 어디로 흐르는지 확인하세요</p>
-    </div>
-    <span class="menu-list-arrow">›</span>
-  </a>
-
-  <div class="menu-divider"></div>
-
-  <!-- 소비 성향 -->
-  <a href="{{ url_for('test_page', test_type='spending') }}" class="menu-list-item">
-    <div class="menu-list-icon" style="background:#E8F4FD;">🛍️</div>
-    <div class="menu-list-body">
-      <span class="menu-list-tag" style="color:#3B82F6;">성향 분석</span>
-      <p class="menu-list-title">나의 소비 습관 테스트</p>
-      <p class="menu-list-desc">절약가인가요, 아니면 즉흥적인 소비인가요?</p>
-    </div>
-    <span class="menu-list-arrow">›</span>
-  </a>
-
-  <div class="menu-divider"></div>
-
-  <!-- 미래 자산 -->
-  <a href="{{ url_for('test_page', test_type='future') }}" class="menu-list-item">
-    <div class="menu-list-icon" style="background:#E8F8EF;">🌱</div>
-    <div class="menu-list-body">
-      <span class="menu-list-tag" style="color:#10B981;">미래 비전</span>
-      <p class="menu-list-title">미래 자산 예측</p>
-      <p class="menu-list-desc">당신의 10년 뒤 금융 목표를 미리 엿보세요</p>
-    </div>
-    <span class="menu-list-arrow">›</span>
-  </a>
-
-</div>
-
-<!-- 안내 카드 -->
-<div class="info-pill-card">
-  <span class="info-pill-icon">💡</span>
-  <span class="info-pill-text">질문풀 100개에서 매번 다르게 랜덤 출제돼요</span>
-</div>
-
 {% endblock %}

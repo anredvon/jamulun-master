@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ intro_title }}{% endblock %}
+{% block body %}
+<div class="page-shell">
+  <div class="shell">
+    <div class="topbar-lite">
+      <div class="brand"><div class="logo"></div><span>재물운 마스터</span></div>
+      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
+    </div>
+
+    <section class="hero">
+      <div class="hero-badge"><span class="dot"></span>{{ intro_badge }}</div>
+      <h2>{{ intro_heading_before|safe }}<br><span class="grad">{{ intro_heading_highlight }}</span></h2>
+      <p>{{ intro_desc|safe }}</p>
+    </section>
+
+    <div class="info-card">
+      <div class="badge">{{ intro_title }} 안내</div>
+      <div class="kv">
+        <div class="item"><div class="k">예상 시간</div><div class="v">30초</div></div>
+        <div class="item"><div class="k">문항 수</div><div class="v">5문항</div></div>
+        <div class="item"><div class="k">진행 방식</div><div class="v">선택형</div></div>
+      </div>
+      <ul class="bullets">
+        {% for bullet in intro_bullets %}
+        <li>{{ bullet }}</li>
+        {% endfor %}
+      </ul>
+      <a href="{{ url_for('test_page', test_type=test_type) }}" class="cta cta-primary">시작하기</a>
+      <a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
