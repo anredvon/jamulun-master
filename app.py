@@ -87,10 +87,54 @@ def intro_page(test_type):
 
     test_label = TEST_TYPE_LABELS.get(test_type, test_type)
 
+    intro_map = {
+        "spending": {
+            "badge": "소비 패턴 분석",
+            "heading_before": "나의 소비 습관을",
+            "heading_highlight": "유형으로 확인",
+            "desc": "평소 소비 패턴을 기준으로 계획형인지, 즉흥형인지 가볍게 확인합니다.",
+            "bullets": [
+                "일상적인 소비 습관을 기준으로 성향을 분석합니다.",
+                "답변 흐름은 가볍지만 결과 문구는 신뢰감 있게 구성합니다.",
+                "퀴즈 UI는 공통으로 사용되며 제목과 결과 메시지만 다르게 적용합니다."
+            ]
+        },
+        "money": {
+            "badge": "오늘의 금전운",
+            "heading_before": "오늘 하루의",
+            "heading_highlight": "재물 흐름 확인",
+            "desc": "오늘 소비해도 괜찮을지 금전운의 흐름을 가볍게 체크해보세요.",
+            "bullets": [
+                "간단한 질문으로 오늘의 금전운을 확인합니다.",
+                "현재 소비 타이밍이 좋은지 알려드립니다.",
+                "결과는 가볍지만 현실적인 방향을 제공합니다."
+            ]
+        },
+        "future": {
+            "badge": "빠른 진단",
+            "heading_before": "지금 내 상태를",
+            "heading_highlight": "빠르게 확인",
+            "desc": "짧은 질문으로 현재의 재물 흐름을 빠르게 확인합니다.",
+            "bullets": [
+                "빠르게 현재 상태를 파악할 수 있습니다.",
+                "직관적인 결과로 이해하기 쉽습니다.",
+                "짧지만 핵심적인 피드백을 제공합니다."
+            ]
+        }
+    }
+
+    data = intro_map.get(test_type, intro_map["money"])
+
     return render_template(
         "intro.html",
         test_type=test_type,
-        test_label=test_label
+        test_label=test_label,
+        intro_title=test_label,
+        intro_badge=data["badge"],
+        intro_heading_before=data["heading_before"],
+        intro_heading_highlight=data["heading_highlight"],
+        intro_desc=data["desc"],
+        intro_bullets=data["bullets"]
     )
 
 @app.route("/test/<test_type>")
