@@ -1,19 +1,26 @@
 {% extends "base.html" %}
 {% block title %}{{ test_label }}{% endblock %}
 {% block body %}
+
 <div class="page-shell">
   <div class="shell">
+
     <div class="topbar-lite">
-      <div class="brand"><div class="logo"></div><span>재물운 마스터</span></div>
+      <div class="brand">
+        <div class="logo"></div>
+        <span>재물운 마스터</span>
+      </div>
       <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
     </div>
 
+    <!-- 로딩 -->
     <div id="loading-box" class="question-card quiz-state-card">
       <div class="loading-emoji">⏳</div>
       <h3>질문을 불러오는 중이에요</h3>
       <p>잠시만 기다려 주세요.</p>
     </div>
 
+    <!-- 에러 -->
     <div id="error-box" class="question-card quiz-state-card is-hidden">
       <div class="loading-emoji">⚠️</div>
       <h3>문항을 불러오지 못했어요</h3>
@@ -21,42 +28,73 @@
       <a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
     </div>
 
+    <!-- 질문 -->
     <div id="question-box" class="is-hidden">
+
       <div class="progress-wrap">
-        <div class="progress-meta"><span>{{ test_label }}</span><span id="progress-text">1 / 5</span></div>
-        <div class="progress"><div class="bar" id="progress-fill" style="width:20%"></div></div>
+        <div class="progress-meta">
+          <span>{{ test_label }}</span>
+          <span id="progress-text">1 / 5</span>
+        </div>
+        <div class="progress">
+          <div class="bar" id="progress-fill" style="width:20%"></div>
+        </div>
       </div>
 
       <div class="question-card">
         <div class="q-tag" id="question-tag">QUESTION 1</div>
-        <div class="q-emoji-wrap"><div class="q-emoji" id="question-emoji">💰</div></div>
+
+        <div class="q-emoji-wrap">
+          <div class="q-emoji" id="question-emoji">💰</div>
+        </div>
+
         <div class="q-title" id="question-text">질문 로딩 중...</div>
         <div class="q-sub" id="question-sub"></div>
+
         <div id="choice-list"></div>
-        <button id="next-btn" class="cta cta-primary cta-inline is-disabled" disabled>다음</button>
+
+        <div class="auto-next-hint">
+          항목을 선택하면 자동으로 다음 질문으로 이동합니다.
+        </div>
+
+        <!-- 숨김 유지 -->
+        <button id="next-btn" class="cta cta-primary cta-inline is-hidden" disabled>
+          다음
+        </button>
       </div>
     </div>
 
+    <!-- 완료 -->
     <div id="finish-box" class="question-card quiz-state-card is-hidden">
       <div class="loading-emoji">🎉</div>
       <h3>모든 질문에 답했어요</h3>
       <p>이제 결과를 확인해보세요.</p>
       <button id="finish-btn" class="cta cta-primary">결과 확인</button>
     </div>
+
   </div>
 </div>
 
+<!-- 분석 -->
 <div id="analyzing-overlay" class="analyzing-overlay is-hidden">
   <div class="analyzing-content">
     <div class="analyzing-orb">🔮</div>
     <h2 class="analyzing-title">재물운 분석 중...</h2>
-    <p class="analyzing-desc">답변 흐름을 바탕으로<br>결과 리포트를 생성하고 있습니다.</p>
-    <div class="analyzing-dots"><span></span><span></span><span></span></div>
+    <p class="analyzing-desc">
+      답변 흐름을 바탕으로<br>
+      결과 리포트를 생성하고 있습니다.
+    </p>
+    <div class="analyzing-dots">
+      <span></span><span></span><span></span>
+    </div>
   </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
-<script>window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};</script>
+<script>
+  window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
+</script>
 <script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
 {% endblock %}
