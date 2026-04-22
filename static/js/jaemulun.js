@@ -29,7 +29,7 @@
     autoTimer: null
   };
 
-  const AUTO_DELAY = 220;
+  const AUTO_DELAY = 80;
 
   const show = (n) => n && n.classList.remove('is-hidden');
   const hide = (n) => n && n.classList.add('is-hidden');
@@ -128,5 +128,39 @@
     location.href = `/result/${res.session_id}`;
   };
 
+  function getShareData() {
+  const testType = window.JAEMULUN_TEST_TYPE;
+  const testLabel = window.JAEMULUN_TEST_LABEL;
+
+  return {
+    text: `${testLabel} 해봤어?\n너도 한번 해봐 👇`,
+    url: `${location.origin}/intro/${testType}`
+  };
+}
+
+function copyLink() {
+  const { url } = getShareData();
+  navigator.clipboard.writeText(url);
+  alert('링크가 복사되었습니다');
+}
+
+function shareTwitter() {
+  const { text, url } = getShareData();
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`);
+}
+
+function shareInstagram() {
+  alert('인스타는 링크 복사 방식으로 공유해주세요');
+}
+
+function shareKakao() {
+  const { text, url } = getShareData();
+
+  // 카카오 SDK 연결 시 교체
+  alert(text + '\n' + url);
+}
+
   start();
+
+
 })();

@@ -948,3 +948,82 @@ img{max-width:100%;display:block}
   color: var(--text-3);
   font-size: 12px;
 }
+
+/* ===== 공유 화면 ===== */
+
+.share-card {
+  margin-top:24px;
+  border-radius:28px;
+  background:linear-gradient(135deg,#13081f,#25103b);
+  color:#fff;
+  padding:26px 20px;
+  text-align:center;
+}
+
+.share-label {
+  font-size:11px;
+  letter-spacing:2px;
+  opacity:.6;
+}
+
+.score {
+  font-size:84px;
+  font-weight:900;
+  margin-top:10px;
+  color:#f3b5ff;
+}
+
+.meta {
+  margin-top:10px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  font-weight:800;
+}
+
+.meta .up { color:#86efac; }
+.meta .rank { opacity:.8; }
+
+.tags {
+  margin-top:16px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.tags span {
+  background:rgba(255,255,255,.1);
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:12px;
+}
+
+.share-btn.primary {
+  margin-top:18px;
+  width:100%;
+  background:#FEE500;
+  border-radius:16px;
+  padding:16px;
+  font-weight:900;
+  display:flex;
+  justify-content:space-between;
+}
+
+.share-grid {
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+
+.subbtn {
+  border-radius:16px;
+  padding:14px;
+  color:#fff;
+  font-weight:900;
+}
+
+.instagram { background:linear-gradient(135deg,#f59e0b,#ec4899); }
+.twitter { background:#111; }
+.copy { background:linear-gradient(135deg,#a855f7,#ec4899); }

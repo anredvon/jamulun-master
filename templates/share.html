@@ -1,86 +1,58 @@
 {% extends "base.html" %}
-{% block title %}결과 공유{% endblock %}
+{% block title %}공유하기{% endblock %}
+
 {% block body %}
 <div class="page-shell">
   <div class="shell">
-    <div class="topbar-lite">
-      <div class="brand"><div class="logo"></div><span>재물운 마스터</span></div>
-      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
-    </div>
 
-    <section class="hero">
-      <div class="hero-badge"><span class="dot"></span>공유 화면</div>
-      <h2>결과를 <span class="grad">가볍게 공유</span></h2>
-      <p>앱별 공유 기능은 가능한 환경에서는 시스템 공유를 사용하고,<br>그 외에는 링크 복사로 동작하도록 구성했습니다.</p>
+    <!-- 상단 카피 -->
+    <section class="hero" style="text-align:center; margin-top:10px;">
+      <h1 style="font-size:32px; font-weight:900; line-height:1.1;">
+        나의 <span class="grad">{{ test_label }}</span>을<br>
+        친구에게 보여주세요
+      </h1>
+
+      <p style="margin-top:14px; color:#6b7280; font-size:15px; line-height:1.7;">
+        가볍고 예쁘게 공유할 수 있어야 합니다.<br>
+        카드 한 장만으로도 결과가 전달되도록 구성했어요.
+      </p>
     </section>
 
+    <div style="text-align:center; margin-top:16px; font-weight:800; color:#6d28d9;">
+      친구는 오늘 소비해도 괜찮을까요?
+    </div>
+
+    <!-- 카드 -->
     <div class="share-card">
-      <div class="share-label">TODAY MONEY SCORE</div>
-      <div class="share-score">{{ result.final_score if result else 0 }}</div>
-      <div class="share-meta">{{ result.result_title if result else '' }} · 결과 공유 카드 미리보기</div>
-      <div class="result-tags" style="margin-top:18px">
-        {% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}
+      <div class="share-label">MY MONEY FLOW SCORE</div>
+
+      <div class="score">{{ result.score }}</div>
+
+      <div class="meta">
+        <span class="up">↑ {{ result.delta_text }}</span>
+        <span class="rank">• 상위 {{ result.rank }}%</span>
+      </div>
+
+      <div class="tags">
+        {% for tag in result.tags %}
+        <span>{{ tag }}</span>
+        {% endfor %}
       </div>
     </div>
 
-    <div class="social social-buttons">
-      <button class="btn kakao" data-share-platform="kakao">카카오톡</button>
-      <button class="btn insta" data-share-platform="system">공유하기</button>
-      <button class="btn copy" data-share-platform="copy">링크 복사</button>
+    <!-- 카카오 -->
+    <button class="share-btn primary" onclick="shareKakao()">
+      <span>💬 카카오톡으로 공유하기</span>
+      <span>→</span>
+    </button>
+
+    <!-- 기타 -->
+    <div class="share-grid">
+      <button class="subbtn instagram" onclick="shareInstagram()">📸 Instagram</button>
+      <button class="subbtn twitter" onclick="shareTwitter()">𝕏 Twitter / X</button>
+      <button class="subbtn copy" onclick="copyLink()">🔗 링크 복사</button>
     </div>
 
-    <a href="{{ url_for('home_page') }}" class="cta cta-primary">처음으로</a>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-(() => {
-  const sessionId = {{ ts.id | tojson }};
-  const shareUrl = {{ url_for('result_page', session_id=ts.id, _external=True) | tojson }};
-  const shareTitle = {{ ('내 재물운 테스트 결과 - ' ~ (result.result_title if result else '결과')) | tojson }};
-  const shareText = {{ (result.result_desc if result else '내 결과를 확인해보세요.') | tojson }};
-
-  async function trackShare() {
-    try {
-      await fetch('/api/share', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({session_id: sessionId})
-      });
-    } catch (_) {}
-  }
-
-  async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      alert('링크가 복사되었습니다.');
-    } catch (_) {
-      prompt('아래 링크를 복사하세요.', shareUrl);
-    }
-  }
-
-  document.querySelectorAll('[data-share-platform]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const platform = btn.dataset.sharePlatform;
-      await trackShare();
-
-      if (platform === 'copy') {
-        await copyLink();
-        return;
-      }
-
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
-          return;
-        } catch (_) {}
-      }
-
-      await copyLink();
-    });
-  });
-})();
-</script>
 {% endblock %}
