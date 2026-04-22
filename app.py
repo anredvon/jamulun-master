@@ -79,19 +79,19 @@ def home_page():
     return render_template("home.html", today_score=today_score)
 
 
+
 @app.route("/intro/<test_type>")
 def intro_page(test_type):
-    """진단 시작 전 안내 화면."""
     if test_type not in VALID_TEST_TYPES:
         return redirect(url_for("home_page"))
 
-    context = {
-        "test_type": test_type,
-        "intro_title": TEST_TYPE_LABELS.get(test_type, test_type)
-    }
+    test_label = TEST_TYPE_LABELS.get(test_type, test_type)
 
-    return render_template("intro.html", **context)
-
+    return render_template(
+        "intro.html",
+        test_type=test_type,
+        test_label=test_label
+    )
 
 @app.route("/test/<test_type>")
 def test_page(test_type):
