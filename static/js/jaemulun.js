@@ -152,12 +152,25 @@ function shareTwitter() {
 function shareInstagram() {
   alert('인스타는 링크 복사 방식으로 공유해주세요');
 }
-
+ 
 function shareKakao() {
-  const { text, url } = getShareData();
+  const testType = window.JAEMULUN_TEST_TYPE || "money";
+  const testLabel = window.JAEMULUN_TEST_LABEL || "재물운";
+  const shareUrl = `${location.origin}/intro/${testType}`;
+  const text = `${testLabel} 퀴즈를 친구에게 보여주세요\n${shareUrl}`;
 
-  // 카카오 SDK 연결 시 교체
-  alert(text + '\n' + url);
+  if (navigator.share) {
+    navigator.share({
+      title: testLabel,
+      text: `${testLabel} 퀴즈를 친구에게 보여주세요`,
+      url: shareUrl
+    }).catch(() => {});
+    return;
+  }
+
+  navigator.clipboard.writeText(text)
+    .then(() => alert("공유 링크가 복사되었습니다."))
+    .catch(() => alert(text));
 }
 
   start();

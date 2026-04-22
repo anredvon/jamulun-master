@@ -116,6 +116,7 @@ def result_page(session_id):
 
     result_heading = TEST_TYPE_LABELS.get(ts.test_type, "진단 결과")
     result_tags = _result_tags(ts.test_type, result.result_type if result else None)
+    test_label = TEST_TYPE_LABELS.get(ts.test_type, ts.test_type)
 
     return render_template(
         "result.html",
@@ -123,7 +124,8 @@ def result_page(session_id):
         result=result,
         result_heading=result_heading,
         result_tags=result_tags,
-        test_type=ts.test_type
+        test_type=ts.test_type,
+        test_label=test_label
     )
 
 
@@ -143,21 +145,27 @@ def insight_page(session_id):
         result=result
     )
 
-
+ 
 # ✅ 공유 화면 (핵심 수정 완료 버전)
 @app.route("/share/<int:session_id>")
 def share_page(session_id):
     ts = TestSession.query.get_or_404(session_id)
     result = TestResult.query.filter_by(session_id=session_id).first()
 
-    result_tags = _result_tags(ts.test_type, result.result_type if result else None)
     test_label = TEST_TYPE_LABELS.get(ts.test_type, ts.test_type)
+    result_tags = _result_tags(ts.test_type, result.result_type if result else None)
+
+    share_data = {
+        "score": result.final_score if result else 0,
+        "delta_text": "이번 주 +4점",
+        "rank": 28,
+        "tags": result_tags
+    }
 
     return render_template(
         "share.html",
         ts=ts,
-        result=result,
-        result_tags=result_tags,
+        result=share_data,
         test_type=ts.test_type,
         test_label=test_label
     )
