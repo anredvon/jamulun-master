@@ -1,50 +1,115 @@
 {% extends "base.html" %}
 {% block title %}진단 선택{% endblock %}
 {% block body %}
+
 <div class="page-shell">
   <div class="shell">
+
+    <!-- 상단 -->
     <div class="topbar-lite">
-      <div class="brand"><div class="logo"></div><span>재물운 마스터</span></div>
+      <div class="brand">
+        <div class="logo"></div>
+        <span>재물운 마스터</span>
+      </div>
     </div>
 
+    <!-- 타이틀 -->
     <section class="hero">
-      <div class="hero-badge"><span class="dot"></span>오늘의 소비 흐름을 30초 안에 확인</div>
-      <h2><span class="grad">어떤 진단</span>을 해볼까요?</h2>
-      <p>현재 기능은 유지하고, 더 직관적인 흐름으로 정리한 홈 화면입니다.<br>원하는 진단 하나를 선택해 바로 시작해보세요.</p>
+      <div class="hero-badge">
+        <span class="dot"></span> 5문항 · 30초 · 빠른 진단
+      </div>
+
+      <h2>
+        <span class="grad">지금 나의 금전 흐름</span><br>
+        확인해보세요
+      </h2>
+
+      <p>
+        간단한 선택만으로 현재 소비 패턴과<br>
+        금전 상태를 빠르게 확인할 수 있어요.
+      </p>
     </section>
 
-    <div class="today-score-card">
-      <div>
-        <div class="today-score-label">오늘의 금전운</div>
-        <div class="today-score-grade">
-          {% if today_score >= 85 %}매우 좋음
-          {% elif today_score >= 70 %}좋음
-          {% elif today_score >= 55 %}보통
-          {% else %}주의{% endif %}
-        </div>
-      </div>
-      <div class="today-score-num">{{ today_score }}</div>
-    </div>
-
+    <!-- 카드 -->
     <div class="stack">
+
+      <!-- 빠른 진단 -->
       <a href="{{ url_for('intro_page', test_type='future') }}" class="card card-link">
-        <div class="card-top"><div class="icon">⚡</div><div class="mini-badge">빠르게</div></div>
-        <h3>빠른 진단</h3>
-        <p>짧은 질문으로 현재 금전 흐름을 빠르게 확인하는 모드입니다.</p>
+        <div class="card-head">
+          <div class="icon quick">⏱</div>
+
+          <div class="head-copy">
+            <div class="head-top">
+              <h3 class="card-title">빠른 진단</h3>
+              <div class="mini-badge badge-quick">가장 빠른 시작</div>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          복잡한 분석 없이 현재 금전 상태를 빠르게 확인하는 가장 간단한 방법입니다.
+        </p>
+
+        <div class="card-foot">
+          <span class="meta">30초 안에 확인</span>
+          <span class="arrow">→</span>
+        </div>
       </a>
+
+      <!-- 소비 성향 -->
       <a href="{{ url_for('intro_page', test_type='spending') }}" class="card card-link">
-        <div class="card-top"><div class="icon">🧾</div><div class="mini-badge">분석형</div></div>
-        <h3>소비 성향 퀴즈</h3>
-        <p>평소 소비 패턴을 바탕으로 나의 소비 타입을 가볍게 진단합니다.</p>
+        <div class="card-head">
+          <div class="icon spending">📊</div>
+
+          <div class="head-copy">
+            <div class="head-top">
+              <h3 class="card-title">소비 성향 퀴즈</h3>
+              <div class="mini-badge badge-spending">패턴 분석</div>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          평소 소비 습관을 기반으로 나의 소비 타입과 지출 패턴을 분석합니다.
+        </p>
+
+        <div class="card-foot">
+          <span class="meta">유형 분석 중심</span>
+          <span class="arrow">→</span>
+        </div>
       </a>
+
+      <!-- 재물운 -->
       <a href="{{ url_for('intro_page', test_type='money') }}" class="card card-link">
-        <div class="card-top"><div class="icon">💸</div><div class="mini-badge">오늘 운세</div></div>
-        <h3>오늘의 재물운</h3>
-        <p>오늘 하루의 금전 흐름과 소비 리스크를 직관적으로 확인합니다.</p>
+        <div class="card-head">
+          <div class="icon money">💎</div>
+
+          <div class="head-copy">
+            <div class="head-top">
+              <h3 class="card-title">오늘의 재물운</h3>
+              <div class="mini-badge badge-money">오늘 기준</div>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          오늘 하루의 금전 흐름과 소비 리스크를 직관적으로 확인할 수 있습니다.
+        </p>
+
+        <div class="card-foot">
+          <span class="meta">오늘 흐름 확인</span>
+          <span class="arrow">→</span>
+        </div>
       </a>
+
     </div>
 
-    <div class="notice-card">질문풀에서 랜덤 출제되어 매번 조금씩 다른 흐름으로 진행됩니다.</div>
+    <!-- 하단 -->
+    <div class="notice-card">
+      모든 진단은 익명으로 진행되며, 결과는 저장되지 않습니다.
+    </div>
+
   </div>
 </div>
+
 {% endblock %}
