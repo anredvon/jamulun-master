@@ -74,105 +74,93 @@ def index():
 
 @app.route("/home")
 def home_page():
-    """개선된 홈 화면 — 3개 진단 모드 선택."""
+    """홈 화면."""
     today_score = _today_score()
     return render_template("home.html", today_score=today_score)
 
 
 @app.route("/intro/<test_type>")
 def intro_page(test_type):
-    """진단 시작 전 공통 안내 화면."""
+    """진단 시작 전 안내 화면."""
     if test_type not in VALID_TEST_TYPES:
         return redirect(url_for("home_page"))
 
-    intro_map = {
-        "future": {
-            "intro_title": "빠른 진단",
-            "intro_badge": "초간단 진단 모드",
-            "intro_heading_before": "지금 내 상태를",
-            "intro_heading_highlight": "빠르게 확인",
-            "intro_desc": "짧은 질문 5개로 현재의 금전 흐름을 가볍게 살펴보는 모드입니다.",
-            "intro_bullets": [
-                "부담 없이 짧게 진행할 수 있어 첫 진입 사용자에게 적합합니다.",
-                "현재 소비 심리와 판단 흐름을 중심으로 결과를 보여줍니다.",
-                "결과 화면은 공통 UI를 사용하고, 내부 문구만 모드에 맞게 달라집니다.",
-            ],
-        },
-        "spending": {
-            "intro_title": "소비 성향 퀴즈",
-            "intro_badge": "소비 패턴 분석",
-            "intro_heading_before": "나의 소비 습관을",
-            "intro_heading_highlight": "유형으로 확인",
-            "intro_desc": "평소 소비 패턴을 기준으로 계획형인지, 즉흥형인지 가볍게 확인합니다.",
-            "intro_bullets": [
-                "일상적인 소비 습관을 기준으로 성향을 분석합니다.",
-                "답변 흐름은 가볍지만 결과 문구는 신뢰감 있게 구성합니다.",
-                "퀴즈 UI는 공통으로 사용하되 제목과 결과 메시지만 다르게 적용합니다.",
-            ],
-        },
-        "money": {
-            "intro_title": "오늘의 재물운",
-            "intro_badge": "오늘의 금전운",
-            "intro_heading_before": "오늘 하루의",
-            "intro_heading_highlight": "재물 흐름 확인",
-            "intro_desc": "오늘 소비해도 괜찮을지, 금전운의 분위기를 가볍게 체크해보는 모드입니다.",
-            "intro_bullets": [
-                "오늘의 소비 흐름과 지출 판단 감각을 중심으로 결과를 보여줍니다.",
-                "현재 화면 톤은 유지하고 문구와 액션만 더 직관적으로 정리했습니다.",
-                "마지막에는 결과 확인 후 다른 진단 또는 공유 화면으로 이동할 수 있습니다.",
-            ],
-        },
+    context = {
+        "test_type": test_type,
+        "intro_title": TEST_TYPE_LABELS.get(test_type, test_type)
     }
 
-    context = intro_map[test_type].copy()
-    context["test_type"] = test_type
     return render_template("intro.html", **context)
 
 
 @app.route("/test/<test_type>")
 def test_page(test_type):
-    """
-    테스트 진행 페이지.
-    실제 질문 데이터는 JS가 /api/start 를 호출해서 받아옴.
-    서버는 test_type만 템플릿에 전달.
-    """
+    """퀴즈 진행 화면."""
     if test_type not in VALID_TEST_TYPES:
         return redirect(url_for("home_page"))
+
     label = TEST_TYPE_LABELS.get(test_type, test_type)
-    return render_template("test.html", test_type=test_type, test_label=label)
+
+    return render_template(
+        "test.html",
+        test_type=test_type,
+        test_label=label
+    )
 
 
+# ✅ 결과 화면 (중요)
 @app.route("/result/<int:session_id>")
 def result_page(session_id):
-    """
-    결과 페이지.
-    기본 결과 + 잠금 해제(광고/결제) 유도 UI
-    """
     ts = TestSession.query.get_or_404(session_id)
     result = TestResult.query.filter_by(session_id=session_id).first()
+
     result_heading = TEST_TYPE_LABELS.get(ts.test_type, "진단 결과")
     result_tags = _result_tags(ts.test_type, result.result_type if result else None)
-    return render_template("result.html", ts=ts, result=result, result_heading=result_heading, result_tags=result_tags)
+
+    return render_template(
+        "result.html",
+        ts=ts,
+        result=result,
+        result_heading=result_heading,
+        result_tags=result_tags,
+        test_type=ts.test_type
+    )
 
 
+# 상세 인사이트
 @app.route("/insight/<int:session_id>")
 def insight_page(session_id):
-    """상세 인사이트 페이지 (기존 기능 유지용)."""
     ts = TestSession.query.get_or_404(session_id)
+
     if not ts.unlocked:
         return redirect(url_for("result_page", session_id=session_id))
+
     result = TestResult.query.filter_by(session_id=session_id).first()
-    return render_template("insight.html", ts=ts, result=result)
+
+    return render_template(
+        "insight.html",
+        ts=ts,
+        result=result
+    )
 
 
+# ✅ 공유 화면 (핵심 수정 완료 버전)
 @app.route("/share/<int:session_id>")
 def share_page(session_id):
-    """결과 공유 전용 페이지."""
     ts = TestSession.query.get_or_404(session_id)
     result = TestResult.query.filter_by(session_id=session_id).first()
-    result_tags = _result_tags(ts.test_type, result.result_type if result else None)
-    return render_template("share.html", ts=ts, result=result, result_tags=result_tags)
 
+    result_tags = _result_tags(ts.test_type, result.result_type if result else None)
+    test_label = TEST_TYPE_LABELS.get(ts.test_type, ts.test_type)
+
+    return render_template(
+        "share.html",
+        ts=ts,
+        result=result,
+        result_tags=result_tags,
+        test_type=ts.test_type,
+        test_label=test_label
+    )
 
 # ══════════════════════════════════════════════════════════════
 #  SECTION 2 — API 라우트 (JSON 응답)

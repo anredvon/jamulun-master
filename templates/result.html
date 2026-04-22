@@ -35,7 +35,8 @@
 
 <script>
   window.JAEMULUN_TEST_TYPE = "{{ test_type }}";
-  window.JAEMULUN_TEST_LABEL = "{{ result.result_title if result else '' }}";
+  window.JAEMULUN_TEST_LABEL = "{{ test_label }}";
 </script>
+<script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
 
 {% endblock %}
