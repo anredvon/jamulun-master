@@ -839,3 +839,75 @@ img{max-width:100%;display:block}
   .card,.info-card,.question-card,.result-card,.share-card{padding-left:18px;padding-right:18px}
   .kv{grid-template-columns:1fr}
 }
+
+/* ===== 홈 카드 업그레이드 ===== */
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.head-copy {
+  flex: 1;
+}
+
+.head-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.card-foot {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta {
+  font-size: 12px;
+  font-weight: 800;
+  color: #8b95a1;
+}
+
+.arrow {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: #111827;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon.quick {
+  background: rgba(59,130,246,0.1);
+}
+.icon.spending {
+  background: rgba(168,85,247,0.1);
+}
+.icon.money {
+  background: rgba(34,197,94,0.1);
+}
+
+.badge-quick {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.badge-spending {
+  background: #faf5ff;
+  color: #7c3aed;
+}
+.badge-money {
+  background: #f0fdf4;
+  color: #16a34a;
+}
