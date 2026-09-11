@@ -1,28 +1,25 @@
 {% extends "base.html" %}
-{% block title %}공유하기{% endblock %}
+{% block title %}결과 공유하기{% endblock %}
 
 {% block body %}
-<div class="page-shell">
+<div class="page-shell share-page">
   <div class="shell">
 
-    <!-- 상단 카피 -->
-    <section class="hero" style="text-align:center; margin-top:10px;">
-      <h1 style="font-size:32px; font-weight:900; line-height:1.1;">
+    <div class="topbar-lite">
+      <div class="brand"><div class="logo" aria-hidden="true"></div><span>재물운 마스터</span></div>
+      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
+    </div>
+
+    <section class="hero share-hero">
+      <div class="hero-badge"><span class="dot"></span>결과 공유하기</div>
+      <h1>
         나의 <span class="grad">{{ test_label }}</span>을<br>
         친구에게 보여주세요
       </h1>
 
-      <p style="margin-top:14px; color:#6b7280; font-size:15px; line-height:1.7;">
-        가볍고 예쁘게 공유할 수 있어야 합니다.<br>
-        카드 한 장만으로도 결과가 전달되도록 구성했어요.
-      </p>
+      <p>나의 결과를 가볍게 공유하고<br>친구도 함께 확인해보세요.</p>
     </section>
 
-    <div style="text-align:center; margin-top:16px; font-weight:800; color:#6d28d9;">
-      친구는 오늘 소비해도 괜찮을까요?
-    </div>
-
-    <!-- 카드 -->
     <div class="share-card">
       <div class="share-label">MY MONEY FLOW SCORE</div>
 
@@ -40,19 +37,25 @@
       </div>
     </div>
 
-    <!-- 카카오 -->
-    <button class="share-btn primary" onclick="shareKakao()">
+    <button type="button" class="share-btn primary" onclick="shareKakao()">
       <span>💬 카카오톡으로 공유하기</span>
-      <span>→</span>
+      <span aria-hidden="true">→</span>
     </button>
 
-    <!-- 기타 -->
     <div class="share-grid">
-      <button class="subbtn instagram" onclick="shareInstagram()">📸 Instagram</button>
-      <button class="subbtn twitter" onclick="shareTwitter()">𝕏 Twitter / X</button>
-      <button class="subbtn copy" onclick="copyLink()">🔗 링크 복사</button>
+      <button type="button" class="subbtn instagram" onclick="shareInstagram()">📸 Instagram</button>
+      <button type="button" class="subbtn twitter" onclick="shareTwitter()">𝕏 Twitter / X</button>
+      <button type="button" class="subbtn copy" onclick="copyLink()">🔗 링크 복사</button>
     </div>
 
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
+  window.JAEMULUN_TEST_LABEL = {{ test_label | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
 {% endblock %}

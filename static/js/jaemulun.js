@@ -1,8 +1,54 @@
 (() => {
   'use strict';
 
+  function shareData() {
+    const testType = window.JAEMULUN_TEST_TYPE || 'money';
+    const testLabel = window.JAEMULUN_TEST_LABEL || '재물운';
+    return {
+      text: `${testLabel} 해봤어?\n너도 한번 해봐 👇`,
+      url: `${location.origin}/intro/${testType}`
+    };
+  }
+
+  window.copyLink = function copyLink() {
+    const { url } = shareData();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => alert('링크가 복사되었습니다'));
+    } else {
+      alert(url);
+    }
+  };
+
+  window.shareTwitter = function shareTwitter() {
+    const { text, url } = shareData();
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`);
+  };
+
+  window.shareInstagram = function shareInstagram() {
+    window.copyLink();
+  };
+
+  window.shareKakao = function shareKakao() {
+    const { text, url } = shareData();
+    if (navigator.share) {
+      navigator.share({
+        title: window.JAEMULUN_TEST_LABEL || '재물운',
+        text,
+        url
+      }).catch(() => {});
+      return;
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(`${text}\n${url}`)
+        .then(() => alert('공유 링크가 복사되었습니다.'))
+        .catch(() => alert(`${text}\n${url}`));
+    } else {
+      alert(`${text}\n${url}`);
+    }
+  };
+
   const testType = window.JAEMULUN_TEST_TYPE;
-  if (!testType) return;
+  if (!testType || !document.getElementById('question-box')) return;
 
   const el = {
     loadingBox: document.getElementById('loading-box'),

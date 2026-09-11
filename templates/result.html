@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block title %}{{ result.result_title if result else '결과' }}{% endblock %}
 {% block body %}
-<div class="page-shell">
+<div class="page-shell result-page">
   <div class="shell">
     <div class="topbar-lite">
-      <div class="brand"><div class="logo"></div><span>재물운 마스터</span></div>
+      <div class="brand"><div class="logo" aria-hidden="true"></div><span>재물운 마스터</span></div>
       <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
     </div>
 
-    <section class="hero">
+    <section class="hero result-hero">
       <div class="hero-badge"><span class="dot"></span>결과 확인 완료</div>
       <h2><span class="grad">{{ result_heading }}</span></h2>
-      <p>공통 결과 화면을 유지하면서 내부 값과 문구만 모드에 맞게 달라지도록 구성했습니다.</p>
+      <p>답변을 바탕으로 지금의 금전 흐름을 정리했어요.</p>
     </section>
 
-    <div class="result-card">
+    <div class="result-card result-report-card">
       <div class="score-ring">
         <div class="score-inner">
           <div class="score-num">{{ result.final_score if result else 0 }}</div>
@@ -28,8 +28,8 @@
       </div>
     </div>
 
-    <a href="{{ url_for('home_page') }}" class="cta cta-primary">다른 진단 해보기</a>
-    <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-secondary">공유하기</a>
+    <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">공유하기</a>
+    <a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 진단 해보기</a>
   </div>
 </div>
 
