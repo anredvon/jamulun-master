@@ -1,37 +1,38 @@
 {% extends "base.html" %}
 {% block title %}결과 공유하기{% endblock %}
+{% block body_class %}share-page-v2{% endblock %}
 {% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">{% endblock %}
 {% block body %}
-<div class="page-shell share-page">
+<div class="page-shell share-page share-page-compact">
   <div class="shell">
-    <div class="topbar-lite">
+    <div class="topbar-lite share-topbar">
       <div class="brand"><div class="logo" aria-hidden="true"></div><span>재물운 마스터</span></div>
-      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
+      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">완료</a>
     </div>
 
-    <section class="hero share-hero">
-      <div class="hero-badge"><span class="dot"></span>결과 공유하기</div>
-      <h1>나의 <span class="grad">{{ test_label }}</span>을<br>친구에게 보여주세요</h1>
-      <p>나의 결과를 가볍게 공유하고<br>친구도 함께 확인해보세요.</p>
+    <section class="share-heading-v2">
+      <div class="hero-badge"><span class="dot"></span>SHARE MY RESULT</div>
+      <h1>친구와 <span class="grad">재물 흐름</span>을<br>비교해보세요</h1>
+      <p>결과 카드를 공유하면 친구도 바로 체크할 수 있어요.</p>
     </section>
 
-    <div class="share-card">
-      <div class="share-label">MY MONEY FLOW SCORE</div>
-      <div class="score">{{ result.score }}</div>
-      <div class="meta"><span class="up">↑ {{ result.delta_text }}</span><span class="rank">• 상위 {{ result.rank }}%</span></div>
-      <div class="tags">{% for tag in result.tags %}<span>{{ tag }}</span>{% endfor %}</div>
+    <div class="share-card share-card-v2">
+      <div class="share-card-copy">
+        <div class="share-label">MY MONEY FLOW SCORE</div>
+        <div class="share-score-row"><strong>{{ result.score }}</strong><span>/100</span></div>
+        <div class="meta"><span class="up">↑ {{ result.delta_text }}</span><span class="rank">상위 {{ result.rank }}%</span></div>
+        <div class="tags">{% for tag in result.tags %}<span>{{ tag }}</span>{% endfor %}</div>
+      </div>
+      <img class="share-mascot" src="{{ url_for('static', filename='images/ui/wealth_check/cat_wave.png') }}" alt="">
     </div>
 
-    <button type="button" class="share-btn primary" onclick="shareKakao()">
-      <span><span class="share-brand-icon kakao" aria-hidden="true">K</span>카카오톡으로 공유하기</span>
-      <span aria-hidden="true">→</span>
-    </button>
-
-    <div class="share-grid">
-      <button type="button" class="subbtn threads" onclick="shareThreads()"><span class="share-brand-icon threads" aria-hidden="true">@</span>Threads</button>
-      <button type="button" class="subbtn twitter" onclick="shareTwitter()"><span class="share-brand-icon x" aria-hidden="true">X</span>X</button>
-      <button type="button" class="subbtn copy" onclick="copyLink()"><span class="share-brand-icon link" aria-hidden="true">↗</span>링크 복사</button>
+    <div class="share-actions-v2" aria-label="공유 방법">
+      <button type="button" class="share-social share-social-kakao" onclick="shareKakao()"><span class="social-mark kakao-mark" aria-hidden="true">💬</span><span><strong>카카오톡</strong><small>친구에게 보내기</small></span></button>
+      <button type="button" class="share-social share-social-threads" onclick="shareThreads()"><span class="social-mark threads-mark" aria-hidden="true">@</span><span><strong>Threads</strong><small>게시물로 공유</small></span></button>
+      <button type="button" class="share-social share-social-x" onclick="shareTwitter()"><span class="social-mark x-mark" aria-hidden="true">𝕏</span><span><strong>X</strong><small>포스트로 공유</small></span></button>
     </div>
+
+    <a href="{{ url_for('home_page') }}" class="share-done-link">홈으로 돌아가기</a>
   </div>
 </div>
 {% endblock %}
