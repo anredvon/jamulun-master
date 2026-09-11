@@ -1,0 +1,25 @@
+{
+  "name": "머니플로우",
+  "short_name": "머니플로우",
+  "description": "오늘의 돈 흐름과 소비 스타일을 가볍게 만나보세요.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8f6ff",
+  "theme_color": "#6f52c9",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/static/images/ui/wealth_check/cat_icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/images/ui/wealth_check/cat_icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
