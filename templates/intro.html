@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ intro_title }}{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">{% endblock %}
 {% block body %}
 <div class="page-shell intro-page">
   <div class="shell">
@@ -13,6 +14,12 @@
       <h2>{{ intro_heading_before|safe }}<br><span class="grad">{{ intro_heading_highlight }}</span></h2>
       <p>{{ intro_desc|safe }}</p>
     </section>
+
+    <div class="visual-stage intro-visual" aria-hidden="true">
+      <img class="character" src="{{ url_for('static', filename='images/ui/intro/intro_character.png') }}" alt="">
+      <img class="checklist" src="{{ url_for('static', filename='images/ui/intro/intro_checklist.png') }}" alt="">
+      <img class="sparkle" src="{{ url_for('static', filename='images/ui/common/sparkle_gold.png') }}" alt="">
+    </div>
 
     <div class="info-card intro-card">
       <div class="badge intro-card-label">{{ intro_title }} 안내</div>
