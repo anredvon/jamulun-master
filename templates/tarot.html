@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}오늘의 재물 카드{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tarot.css') }}">
 {% endblock %}
@@ -7,10 +8,8 @@
 {% block body %}
 <div class="page-shell tarot-page">
   <main class="shell tarot-shell">
-    <div class="topbar-lite">
-      <div class="brand"><div class="logo" aria-hidden="true"></div><span>재물운 마스터</span></div>
-      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
-    </div>
+    {% set active_tab = 'tarot' %}
+    {% include '_app_header.html' %}
 
     <section class="tarot-hero" aria-labelledby="tarot-title">
       <div class="hero-badge"><span class="dot"></span>오늘의 재물 카드</div>
@@ -30,6 +29,7 @@
 
     <p class="tarot-hint" id="tarot-hint">정답은 없어요. 가장 먼저 눈에 들어오는 카드를 선택해보세요.</p>
   </main>
+  {% include '_bottom_nav.html' %}
 </div>
 
 <div class="tarot-modal is-hidden" id="tarot-modal" role="dialog" aria-modal="true" aria-labelledby="tarot-modal-title">
@@ -51,9 +51,7 @@
 
     <section class="tarot-report is-hidden" id="tarot-report" aria-live="polite">
       <div class="tarot-report-summary">
-        <div class="tarot-report-thumb-wrap">
-          <img class="tarot-report-thumb" id="tarot-report-image" src="" alt="">
-        </div>
+        <div class="tarot-report-thumb-wrap"><img class="tarot-report-thumb" id="tarot-report-image" src="" alt=""></div>
         <div class="tarot-report-identity">
           <div class="tarot-report-kicker">TODAY'S MONEY FLOW</div>
           <h2 id="tarot-report-title">오늘의 재물운</h2>
@@ -62,18 +60,9 @@
         <div class="tarot-score-pill"><strong id="tarot-score">0</strong><span>/100</span></div>
       </div>
 
-      <div class="tarot-report-card">
-        <span class="tarot-report-label">💰 돈의 흐름</span>
-        <p id="tarot-flow"></p>
-      </div>
-      <div class="tarot-report-card tarot-report-warning">
-        <span class="tarot-report-label">⚠️ 주의 포인트</span>
-        <p id="tarot-caution"></p>
-      </div>
-      <div class="tarot-one-line">
-        <span>오늘의 한마디</span>
-        <strong id="tarot-line"></strong>
-      </div>
+      <div class="tarot-report-card"><span class="tarot-report-label">💰 돈의 흐름</span><p id="tarot-flow"></p></div>
+      <div class="tarot-report-card tarot-report-warning"><span class="tarot-report-label">⚠️ 주의 포인트</span><p id="tarot-caution"></p></div>
+      <div class="tarot-one-line"><span>오늘의 한마디</span><strong id="tarot-line"></strong></div>
 
       <button type="button" class="cta cta-primary" id="tarot-redraw-btn">다른 카드 뽑기</button>
       <a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
