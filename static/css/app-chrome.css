@@ -1,0 +1,23 @@
+.has-app-chrome .shell{padding-bottom:calc(104px + env(safe-area-inset-bottom));}
+
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 0 18px;}
+.app-brand{display:flex;align-items:center;gap:10px;min-width:0;}
+.app-brand-mark{position:relative;display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:linear-gradient(145deg,#7358dd,#4c31a4);box-shadow:0 8px 18px rgba(91,60,196,.20);flex:0 0 34px;}
+.app-brand-mark span{width:15px;height:15px;border:2px solid #fff;border-radius:50%;opacity:.95;}
+.app-brand-copy{display:flex;flex-direction:column;min-width:0;}
+.app-brand-copy strong{font-size:14px;line-height:1.2;font-weight:900;letter-spacing:-.03em;color:#302b42;}
+.app-brand-copy small{margin-top:2px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;line-height:1.2;font-weight:600;color:#9a93a8;}
+.app-header-sparkle{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#f3efff;color:#7052ce;font-size:14px;flex:0 0 30px;}
+
+.app-bottom-nav{position:fixed;left:50%;bottom:0;z-index:1200;display:grid;grid-template-columns:repeat(5,1fr);width:min(100%,430px);padding:8px 10px calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(255,255,255,.94);border-top:1px solid rgba(221,216,235,.92);box-shadow:0 -10px 28px rgba(42,29,79,.06);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
+.app-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:50px;border-radius:14px;color:#9a94a4;font-size:10px;font-weight:800;transition:background .18s ease,color .18s ease,transform .18s ease;}
+.app-nav-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.app-nav-item.is-active{background:#f2eeff;color:#5f43c1;}
+.app-nav-item:not(.is-disabled):active{transform:scale(.96);}
+.app-nav-item.is-disabled{opacity:.44;cursor:default;}
+
+@media (max-width:380px){
+  .app-brand-copy small{max-width:190px;}
+  .app-bottom-nav{padding-left:6px;padding-right:6px;}
+  .app-nav-item{font-size:9px;}
+}
