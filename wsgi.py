@@ -19,5 +19,5 @@ if project_home not in sys.path:
 from dotenv import load_dotenv
 load_dotenv(os.path.join(project_home, '.env'))
 
-# ── Flask 앱 임포트 (gunicorn이 application 변수를 찾음) ──
-from app import app as application  # noqa
+# ── Flask 앱 임포트 (tarot blueprint 포함) ──
+from tarot_app import app as application  # noqa
