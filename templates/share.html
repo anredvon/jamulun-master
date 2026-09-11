@@ -27,9 +27,16 @@
     </div>
 
     <div class="share-actions-v2" aria-label="공유 방법">
-      <button type="button" class="share-social share-social-kakao" onclick="shareKakao()"><span class="social-mark kakao-mark" aria-hidden="true">💬</span><span><strong>카카오톡</strong><small>친구에게 보내기</small></span></button>
-      <button type="button" class="share-social share-social-threads" onclick="shareThreads()"><span class="social-mark threads-mark" aria-hidden="true">@</span><span><strong>Threads</strong><small>게시물로 공유</small></span></button>
-      <button type="button" class="share-social share-social-x" onclick="shareTwitter()"><span class="social-mark x-mark" aria-hidden="true">𝕏</span><span><strong>X</strong><small>포스트로 공유</small></span></button>
+      <button type="button" class="share-social share-social-kakao" onclick="shareKakao()">
+        <span class="social-mark kakao-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 6C9.9 6 5 9.8 5 14.5c0 3.1 2.2 5.8 5.5 7.2l-1.2 4.4c-.1.4.3.7.7.5l5.1-3.2c.3 0 .6.1.9.1 6.1 0 11-3.8 11-9S22.1 6 16 6z" fill="#191919"/></svg></span>
+        <span><strong>카카오톡</strong><small>친구에게 보내기</small></span>
+      </button>
+      <button type="button" class="share-social share-social-threads" onclick="shareThreads()">
+        <span class="social-mark threads-mark" aria-hidden="true">@</span><span><strong>Threads</strong><small>게시물로 공유</small></span>
+      </button>
+      <button type="button" class="share-social share-social-x" onclick="shareTwitter()">
+        <span class="social-mark x-mark" aria-hidden="true">𝕏</span><span><strong>X</strong><small>포스트로 공유</small></span>
+      </button>
     </div>
 
     <a href="{{ url_for('home_page') }}" class="share-done-link">홈으로 돌아가기</a>
