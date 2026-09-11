@@ -1,4 +1,4 @@
-/* Tarot V1 — image-independent interaction shell */
+/* Tarot V2 — production artwork connected to the established interaction shell */
 .tarot-page{background:linear-gradient(180deg,#f8f6ff 0%,#fbf9ff 52%,#fff 100%);}
 .tarot-shell{display:flex;flex-direction:column;}
 
@@ -15,14 +15,9 @@
 .tarot-choice.is-muted{opacity:.28;pointer-events:none;}
 .tarot-choice.is-picked{transform:translateY(-10px) scale(1.04);}
 
-.tarot-card{display:block;position:relative;width:100%;aspect-ratio:4/5;border-radius:18px;box-shadow:0 18px 34px rgba(63,48,112,.18);overflow:hidden;transform-style:preserve-3d;}
-.tarot-card-back{border:1px solid #cfc5f7;background:
-  radial-gradient(circle at 25% 20%,rgba(255,255,255,.95) 0 2px,transparent 3px),
-  radial-gradient(circle at 76% 70%,rgba(255,255,255,.75) 0 2px,transparent 3px),
-  linear-gradient(145deg,#7359c9,#513aa7 55%,#392879);}
-.tarot-card-back::before{content:'';position:absolute;inset:9px;border:1px solid rgba(255,255,255,.55);border-radius:13px;}
-.tarot-card-back::after{content:'';position:absolute;inset:18%;border:1px solid rgba(255,255,255,.35);border-radius:50%;}
-.back-mark{position:absolute;inset:0;display:grid;place-items:center;color:#fff7ca;font-size:31px;text-shadow:0 2px 10px rgba(0,0,0,.22);}
+.tarot-card{display:block;position:relative;width:100%;aspect-ratio:4/5;border-radius:18px;box-shadow:0 18px 34px rgba(63,48,112,.18);overflow:hidden;transform-style:preserve-3d;background:#4f3aa5;}
+.tarot-card-back{border:1px solid #cfc5f7;}
+.tarot-card-back img{display:block;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none;}
 
 .tarot-hint{margin:26px auto 0;max-width:310px;text-align:center;color:#8a8397;font-size:12px;line-height:1.65;}
 
@@ -33,14 +28,11 @@
 
 .tarot-reveal{text-align:center;padding-top:6px;}
 .tarot-reveal-card{width:min(72%,240px);margin:4px auto 0;border-radius:24px;overflow:hidden;background:#fff;border:1px solid #e8e2f6;box-shadow:0 18px 40px rgba(75,53,137,.15);}
-.tarot-art-placeholder{aspect-ratio:4/4.35;display:grid;place-items:center;background:
-  radial-gradient(circle at 50% 32%,rgba(255,255,255,.85),transparent 24%),
-  linear-gradient(160deg,#eee8ff 0%,#ddd2ff 50%,#f6edcf 100%);}
-.tarot-art-symbol{font-size:72px;filter:drop-shadow(0 8px 14px rgba(69,45,121,.14));}
-.tarot-card-copy{padding:15px 12px 17px;border-top:1px solid #eee9f8;}
+.tarot-art-image{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:#eee8ff;}
+.tarot-card-copy{padding:13px 12px 15px;border-top:1px solid #eee9f8;}
 .tarot-card-en{color:#8a7cae;font-size:10px;letter-spacing:.16em;font-weight:800;}
 .tarot-card-copy h2{margin:5px 0 0;color:#2f2741;font-size:24px;letter-spacing:-.03em;}
-.tarot-reveal-caption{margin:18px auto 4px;max-width:300px;color:#7b7486;font-size:13px;line-height:1.65;}
+.tarot-reveal-caption{margin:16px auto 4px;max-width:300px;color:#7b7486;font-size:13px;line-height:1.65;}
 
 .tarot-report{padding-top:4px;}
 .tarot-report-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:4px 0 16px;}
@@ -61,17 +53,11 @@
 
 @keyframes tarot-sheet-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-@media (min-width:700px){
-  .tarot-modal{align-items:center;}
-}
-
+@media (min-width:700px){.tarot-modal{align-items:center;}}
 @media (max-width:380px){
   .tarot-picker{gap:8px;margin-top:24px;}
   .tarot-card{border-radius:15px;}
   .tarot-hero h1{font-size:27px;}
   .tarot-modal-panel{padding:20px 18px;}
 }
-
-@media (prefers-reduced-motion:reduce){
-  .tarot-choice,.tarot-modal-panel{transition:none;animation:none;}
-}
+@media (prefers-reduced-motion:reduce){.tarot-choice,.tarot-modal-panel{transition:none;animation:none;}}
