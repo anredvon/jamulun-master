@@ -6,6 +6,20 @@
 .intro-page .intro-shell{padding-bottom:calc(104px + env(safe-area-inset-bottom))!important}
 .intro-page .diagnosis-intro-card{margin-bottom:0!important}
 .intro-page .intro-card-compact .cta{margin-bottom:0!important}
+
+/* Keep the quiz compact, but visually center its main content a little better
+   between the header and the fixed bottom navigation on tall phones. */
+@media (min-height:780px) and (max-width:480px){
+  .test-page #question-box{margin-top:18px!important;}
+  .test-page #finish-box{margin-top:22px!important;}
+  .test-page .finish-state-card{margin-top:0!important;}
+}
+
+@media (min-height:900px) and (max-width:480px){
+  .test-page #question-box{margin-top:26px!important;}
+  .test-page #finish-box{margin-top:32px!important;}
+}
+
 @media (max-width:480px){
   .intro-page .shell{min-height:auto!important}
   .intro-page .intro-hero{padding-top:8px!important}
