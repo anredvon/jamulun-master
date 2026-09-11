@@ -18,11 +18,11 @@
     <section class="money-mission" aria-labelledby="money-mission-title">
       <div class="money-mission-cat" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_wink.png') }}" alt=""></div>
       <div class="money-mission-copy">
-        <span class="money-mission-kicker">TODAY'S MONEY MISSION</span>
-        <strong id="money-mission-title">오늘 하나만 해볼까요?</strong>
-        <p id="money-mission-text">작은 행동 하나가 내일의 흐름을 바꿔요.</p>
+        <span class="money-mission-kicker">고양이의 오늘 제안 ✨</span>
+        <strong id="money-mission-title">오늘은 이렇게 해봐요</strong>
+        <p id="money-mission-text">결과에 맞는 작은 제안을 준비하고 있어요.</p>
       </div>
-      <button type="button" id="money-mission-btn" class="money-mission-btn">오늘 해볼게 <span aria-hidden="true">✓</span></button>
+      <button type="button" id="money-mission-btn" class="money-mission-btn">기억해둘게 <span aria-hidden="true">💜</span></button>
     </section>
   </div>
   <div class="result-actions result-actions-compact"><a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">친구에게 공유하기 <span aria-hidden="true">→</span></a><a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 흐름 둘러보기</a></div>
