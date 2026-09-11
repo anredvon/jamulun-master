@@ -1,49 +1,38 @@
-/* STEP 4-B~E — production visual asset placement */
-
-.visual-stage{position:relative;overflow:hidden;border:1px solid #e8e2fb;background:linear-gradient(145deg,#faf8ff,#f0ebff);isolation:isolate}
+/* STEP 4 cleanup — restrained production visuals */
+.visual-stage{position:relative;overflow:hidden;border:1px solid #e9e5f7;background:linear-gradient(145deg,#fbfaff,#f4f1ff);isolation:isolate}
 .visual-stage img{position:absolute;pointer-events:none;user-select:none;-webkit-user-drag:none}
 
-/* Intro */
-.intro-visual{height:142px;margin:22px 0 18px;border-radius:26px}
-.intro-visual .character{width:166px;left:20px;bottom:-28px;z-index:3}
-.intro-visual .checklist{width:112px;right:18px;bottom:10px;z-index:2;transform:rotate(2deg)}
-.intro-visual .sparkle{width:25px;right:30px;top:18px;z-index:1}
+/* Intro: compact visual accent, not a separate poster */
+.intro-visual{height:92px;margin:10px 0 12px;border-radius:22px}
+.intro-visual .character{width:108px;left:18px;bottom:-24px;z-index:3}
+.intro-visual .checklist{width:72px;right:22px;bottom:8px;z-index:2}
+.intro-visual .sparkle{width:17px;right:20px;top:13px}
 .intro-page .intro-card{margin-top:0}
 
-/* Quiz */
+/* Quiz: keep the question itself as the focal point */
 .test-page .question-card{position:relative;overflow:hidden}
-.quiz-visual-mark{position:absolute;right:22px;top:22px;width:62px;height:62px;object-fit:contain;opacity:.9;pointer-events:none;user-select:none}
-.test-page .q-tag{padding-right:76px}
-.test-page .q-emoji-wrap{position:relative;z-index:1}
+.quiz-visual-mark{display:none}
+.test-page .q-tag{padding-right:0}
 
-/* Result */
-.result-visual{height:138px;margin:0 0 -14px;border-radius:26px 26px 0 0;border-bottom:0}
-.result-visual .character{width:158px;left:26px;bottom:-32px;z-index:3}
-.result-visual .trophy{width:104px;right:28px;bottom:8px;z-index:2}
-.result-visual .sparkle{width:24px;right:28px;top:17px;z-index:1}
+/* Result: no standalone illustration banner */
+.result-visual{display:none}
 .result-page .result-report-card{position:relative;z-index:2}
 .result-page .score-ring{background:conic-gradient(var(--purple) 0 var(--score),#e8e3f8 var(--score) 100%)}
 
-/* Share */
-.share-visual{height:148px;margin:4px 0 -18px;border-radius:28px 28px 0 0;border-bottom:0;background:linear-gradient(145deg,#f8f5ff,#ece5ff)}
-.share-visual .character{width:170px;left:18px;bottom:-31px;z-index:3}
-.share-visual .heart{width:58px;right:36px;top:25px;z-index:2}
-.share-visual .sparkle{width:24px;right:20px;bottom:22px;z-index:1}
+/* Share: premium report card first, decorative banner removed */
+.share-visual{display:none}
 .share-page .share-card{position:relative;z-index:2}
-.share-btn .share-icon{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:8px}
-.share-grid .subbtn{display:flex;align-items:center;justify-content:center;gap:7px}
-.share-grid .subbtn img{width:24px;height:24px;object-fit:contain}
+.share-grid{gap:10px}
+.share-grid .subbtn{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700}
+.share-brand-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex:0 0 22px;border-radius:7px;font-size:13px;font-weight:900;line-height:1}
+.share-brand-icon.kakao{background:#fee500;color:#191919;border-radius:6px}
+.share-brand-icon.threads{background:#111;color:#fff;border-radius:50%;font-size:14px}
+.share-brand-icon.x{background:#111;color:#fff;border-radius:50%;font-size:11px}
+.share-brand-icon.link{background:#5c43cf;color:#fff}
+.share-btn.primary{display:flex;align-items:center;justify-content:space-between}
+.share-btn.primary>span:first-child{display:flex;align-items:center;gap:9px}
 
 @media(max-width:360px){
-  .intro-visual{height:130px}.intro-visual .character{width:150px;left:8px}.intro-visual .checklist{width:96px;right:10px}
-  .quiz-visual-mark{width:52px;height:52px;right:16px;top:18px}
-  .result-visual{height:126px}.result-visual .character{width:145px;left:14px}.result-visual .trophy{width:90px;right:18px}
-  .share-visual{height:136px}.share-visual .character{width:154px;left:8px}.share-visual .heart{width:50px;right:24px}
+ .intro-visual{height:82px}.intro-visual .character{width:98px;left:10px}.intro-visual .checklist{width:64px;right:14px}
+ .share-grid{grid-template-columns:1fr 1fr}
 }
-
-@media(prefers-reduced-motion:no-preference){
-  .visual-stage .character{animation:visual-float 5s ease-in-out infinite}
-  .visual-stage .sparkle{animation:visual-sparkle 3.4s ease-in-out infinite}
-}
-@keyframes visual-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes visual-sparkle{0%,100%{opacity:.5;transform:scale(.92)}50%{opacity:1;transform:scale(1.08)}}
