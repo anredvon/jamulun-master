@@ -1,0 +1,146 @@
+/* STEP 4-A — Home visual asset pass */
+
+.home-page .hero{
+  padding-top:12px;
+}
+
+.home-visual{
+  position:relative;
+  height:176px;
+  margin:24px 0 2px;
+  overflow:hidden;
+  border:1px solid #e7e1fb;
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,.96) 0 8%, transparent 32%),
+    linear-gradient(145deg,#f7f4ff 0%,#eee8ff 52%,#f8f6ff 100%);
+  box-shadow:0 14px 30px rgba(91,60,196,.08);
+  isolation:isolate;
+}
+
+.home-visual::after{
+  content:'';
+  position:absolute;
+  left:22px;
+  right:22px;
+  bottom:13px;
+  height:18px;
+  border-radius:50%;
+  background:rgba(91,60,196,.08);
+  filter:blur(8px);
+  z-index:0;
+}
+
+.home-visual img{
+  position:absolute;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+.home-visual-character{
+  width:150px;
+  left:50%;
+  bottom:-8px;
+  transform:translateX(-50%);
+  z-index:3;
+  filter:drop-shadow(0 10px 12px rgba(67,45,120,.10));
+}
+
+.home-visual-coins{
+  width:90px;
+  right:16px;
+  bottom:2px;
+  z-index:4;
+  transform:rotate(2deg);
+}
+
+.home-visual-clouds{
+  width:102px;
+  left:8px;
+  top:8px;
+  z-index:1;
+  opacity:.92;
+}
+
+.home-visual-sparkle-a{
+  width:30px;
+  right:34px;
+  top:24px;
+  z-index:2;
+}
+
+.home-visual-sparkle-b{
+  width:23px;
+  left:42px;
+  bottom:38px;
+  z-index:2;
+}
+
+.home-page .stack{
+  margin-top:24px;
+}
+
+.home-page .card-featured{
+  position:relative;
+  overflow:hidden;
+}
+
+.home-page .card-featured::after{
+  content:'';
+  position:absolute;
+  width:92px;
+  height:92px;
+  top:-46px;
+  right:-38px;
+  border-radius:50%;
+  background:rgba(120,88,220,.055);
+  pointer-events:none;
+}
+
+@media (max-width:360px){
+  .home-visual{
+    height:160px;
+    margin-top:20px;
+    border-radius:24px;
+  }
+
+  .home-visual-character{
+    width:136px;
+  }
+
+  .home-visual-coins{
+    width:78px;
+    right:10px;
+  }
+
+  .home-visual-clouds{
+    width:88px;
+    left:4px;
+  }
+}
+
+@media (prefers-reduced-motion:no-preference){
+  .home-visual-character{
+    animation:home-float 5s ease-in-out infinite;
+  }
+
+  .home-visual-sparkle-a,
+  .home-visual-sparkle-b{
+    animation:home-sparkle 3.6s ease-in-out infinite;
+  }
+
+  .home-visual-sparkle-b{
+    animation-delay:.9s;
+  }
+}
+
+@keyframes home-float{
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  50%{transform:translateX(-50%) translateY(-4px)}
+}
+
+@keyframes home-sparkle{
+  0%,100%{opacity:.55;transform:scale(.94)}
+  50%{opacity:1;transform:scale(1.06)}
+}
