@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}진단 선택{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home-visual.css') }}">
 {% endblock %}
@@ -7,16 +8,9 @@
 
 <div class="page-shell home-page">
   <div class="shell">
+    {% set active_tab = 'home' %}
+    {% include '_app_header.html' %}
 
-    <!-- 상단 -->
-    <div class="topbar-lite">
-      <div class="brand">
-        <div class="logo"></div>
-        <span>재물운 마스터</span>
-      </div>
-    </div>
-
-    <!-- 타이틀 -->
     <section class="hero">
       <div class="hero-badge hero-badge-live">
         <span class="dot"></span> 5문항 · 30초 · 빠른 진단
@@ -41,52 +35,38 @@
       </div>
     </section>
 
-    <!-- 카드 -->
     <div class="stack">
-
-      <!-- 오늘의 재물 카드 -->
       <a href="{{ url_for('tarot.tarot_page') }}" class="card card-link card-featured">
         <div class="card-head">
           <div class="icon money" aria-hidden="true">🔮</div>
-          <div class="head-copy">
-            <div class="head-top">
-              <h3 class="card-title">오늘의 재물 카드</h3>
-              <div class="mini-badge badge-money">NEW</div>
-            </div>
-          </div>
+          <div class="head-copy"><div class="head-top"><h3 class="card-title">오늘의 재물 카드</h3><div class="mini-badge badge-money">NEW</div></div></div>
         </div>
         <p>끌리는 카드 한 장을 골라 오늘의 돈 흐름과 주의할 포인트를 확인해보세요.</p>
-        <div class="card-foot">
-          <span class="meta">한 장으로 보는 오늘의 흐름</span>
-          <span class="arrow" aria-hidden="true">→</span>
-        </div>
+        <div class="card-foot"><span class="meta">한 장으로 보는 오늘의 흐름</span><span class="arrow" aria-hidden="true">→</span></div>
       </a>
 
-      <!-- 빠른 진단 -->
       <a href="{{ url_for('intro_page', test_type='future') }}" class="card card-link card-secondary">
         <div class="card-head"><div class="icon quick" aria-hidden="true">⏱</div><div class="head-copy"><div class="head-top"><h3 class="card-title">빠른 진단</h3><div class="mini-badge badge-quick">가장 빠른 시작</div></div></div></div>
         <p>복잡한 분석 없이 현재 금전 상태를 빠르게 확인하는 가장 간단한 방법입니다.</p>
         <div class="card-foot"><span class="meta">30초 안에 확인</span><span class="arrow" aria-hidden="true">→</span></div>
       </a>
 
-      <!-- 소비 성향 -->
       <a href="{{ url_for('intro_page', test_type='spending') }}" class="card card-link card-secondary">
         <div class="card-head"><div class="icon spending" aria-hidden="true">📊</div><div class="head-copy"><div class="head-top"><h3 class="card-title">소비 성향 퀴즈</h3><div class="mini-badge badge-spending">패턴 분석</div></div></div></div>
         <p>평소 소비 습관을 기반으로 나의 소비 타입과 지출 패턴을 분석합니다.</p>
         <div class="card-foot"><span class="meta">유형 분석 중심</span><span class="arrow" aria-hidden="true">→</span></div>
       </a>
 
-      <!-- 재물운 -->
       <a href="{{ url_for('intro_page', test_type='money') }}" class="card card-link card-secondary">
         <div class="card-head"><div class="icon money" aria-hidden="true">💎</div><div class="head-copy"><div class="head-top"><h3 class="card-title">오늘의 재물운</h3><div class="mini-badge badge-money">오늘 기준</div></div></div></div>
         <p>오늘 하루의 금전 흐름과 소비 리스크를 직관적으로 확인할 수 있습니다.</p>
         <div class="card-foot"><span class="meta">오늘 흐름 확인</span><span class="arrow" aria-hidden="true">→</span></div>
       </a>
-
     </div>
 
     <div class="notice-card">모든 진단은 익명으로 진행되며, 결과는 저장되지 않습니다.</div>
   </div>
+  {% include '_bottom_nav.html' %}
 </div>
 
 {% endblock %}
