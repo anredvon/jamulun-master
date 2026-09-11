@@ -1,9 +1,16 @@
 /* Mobile viewport stabilization and compact spacing */
 html,body{min-height:100%;}
 body{min-height:100dvh;overflow-x:hidden;}
-.page-shell,.splash-page,.splash-wrap{min-height:100dvh;}
+.page-shell,.splash-page{min-height:100dvh;}
 .shell{min-height:100dvh;}
-@supports not (height:100dvh){body,.page-shell,.splash-page,.splash-wrap,.shell{min-height:100vh;}}
+@supports not (height:100dvh){body,.page-shell,.splash-page,.shell{min-height:100vh;}}
+
+/* Result score ring must follow the real score instead of a fixed 70%. */
+.result-page .score-ring{
+  background:
+    radial-gradient(circle at center,#fff 57%,transparent 58%),
+    conic-gradient(var(--purple) 0 var(--score,0%),#e8e3f8 var(--score,0%) 100%);
+}
 
 @media (max-width:480px){
   .shell{padding-top:calc(16px + env(safe-area-inset-top));padding-bottom:calc(18px + env(safe-area-inset-bottom));}
@@ -13,7 +20,14 @@ body{min-height:100dvh;overflow-x:hidden;}
   .hero p{line-height:1.6;}
   .cta{min-height:50px;padding:14px 16px;}
   .notice-card{margin-top:12px;}
+
+  /* Compact single-purpose screens before allowing natural overflow. */
+  .intro-page .info-card{margin-top:18px;}
+  .test-page .progress-wrap{margin-top:12px;}
+  .test-page .question-card{margin-top:14px;}
+  .result-page .result-report-card{margin-top:16px;}
+  .share-page .share-card{margin-top:16px;}
 }
 
-/* One-screen splash should never create a fake scroll bar */
+/* One-screen splash should never create a fake scroll bar. */
 .splash-wrap{box-sizing:border-box;overflow:hidden;}
