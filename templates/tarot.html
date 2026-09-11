@@ -1,83 +1,28 @@
 {% extends "base.html" %}
 {% block title %}오늘의 타로카드 뽑기{% endblock %}
 {% block body_class %}has-app-chrome{% endblock %}
-{% block styles %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarot.css') }}">
-{% endblock %}
-
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/tarot.css') }}">{% endblock %}
 {% block body %}
-<div class="page-shell tarot-page">
-  <main class="shell tarot-shell">
-    {% set active_tab = 'tarot' %}
-    {% include '_app_header.html' %}
+<div class="page-shell tarot-page"><main class="shell tarot-shell">
+  {% set active_tab = 'tarot' %}{% include '_app_header.html' %}
+  <section class="tarot-hero" aria-labelledby="tarot-title">
+    <div class="hero-badge"><span class="dot"></span>오늘의 타로카드 뽑기</div>
+    <h1 id="tarot-title">지금 끌리는 카드를<br><span class="grad">한 장 골라보세요</span></h1>
+    <p>오늘의 돈 흐름을 담은 카드가<br>당신을 기다리고 있어요.</p>
+    <button type="button" class="tarot-collection-chip" id="tarot-collection-chip"><span aria-hidden="true">✦</span><strong id="tarot-found-count">0</strong><span>/24 카드 발견</span><span class="chip-arrow">›</span></button>
+  </section>
+  <section class="tarot-picker" id="tarot-picker" aria-label="타로카드 선택">
+    {% for slot in range(3) %}<button type="button" class="tarot-choice" data-slot="{{ slot }}" aria-label="{{ slot + 1 }}번째 카드 선택"><span class="tarot-card tarot-card-back" aria-hidden="true"><img src="{{ url_for('static', filename='images/tarot/card_back/tarot_back.png') }}" alt="" draggable="false"></span></button>{% endfor %}
+  </section>
+  <p class="tarot-hint" id="tarot-hint">첫눈에 끌리는 카드가 오늘의 카드예요.</p>
+</main>{% include '_bottom_nav.html' %}</div>
 
-    <section class="tarot-hero" aria-labelledby="tarot-title">
-      <div class="hero-badge"><span class="dot"></span>오늘의 타로카드 뽑기</div>
-      <h1 id="tarot-title">지금 끌리는 카드를<br><span class="grad">한 장 골라보세요</span></h1>
-      <p>오늘의 돈 흐름을 담은 카드가<br>당신을 기다리고 있어요.</p>
-      <div class="tarot-collection-chip" id="tarot-collection-chip" aria-label="타로 컬렉션 진행도">
-        <span aria-hidden="true">✦</span><strong id="tarot-found-count">0</strong><span>/24 카드 발견</span>
-      </div>
-    </section>
+<div class="tarot-modal is-hidden" id="tarot-modal" role="dialog" aria-modal="true" aria-labelledby="tarot-modal-title"><div class="tarot-modal-backdrop" data-close-modal></div><div class="tarot-modal-panel"><button type="button" class="tarot-modal-close" data-close-modal aria-label="닫기">×</button>
+  <div class="tarot-reveal" id="tarot-reveal"><div class="tarot-discovery-burst is-hidden" id="tarot-discovery-burst"><span>✦</span><span>✦</span><span>✦</span></div><div class="tarot-new-badge is-hidden" id="tarot-new-badge">NEW CARD ✨</div><div class="tarot-reveal-card" id="tarot-reveal-card"><img class="tarot-art-image" id="tarot-art-image" src="" alt="" draggable="false"></div><div class="tarot-reveal-copy"><div class="tarot-card-en" id="tarot-card-en">CARD</div><h2 id="tarot-modal-title">오늘의 카드</h2><p class="tarot-reveal-caption" id="tarot-reveal-caption"></p></div><button type="button" class="cta cta-primary tarot-fortune-cta" id="tarot-fortune-btn">오늘의 메시지 보기</button></div>
+  <section class="tarot-report is-hidden" id="tarot-report" aria-live="polite"><div class="tarot-report-summary"><div class="tarot-report-thumb-wrap"><img class="tarot-report-thumb" id="tarot-report-image" src="" alt=""></div><div class="tarot-report-identity"><div class="tarot-report-kicker">TODAY'S MONEY FLOW</div><h2 id="tarot-report-title">오늘의 재물운</h2><div class="tarot-status-inline"><span>오늘의 흐름</span><strong id="tarot-status">-</strong></div></div><div class="tarot-score-pill"><strong id="tarot-score">0</strong><span>/100</span></div></div><div class="tarot-report-card"><span class="tarot-report-label">💰 돈의 흐름</span><p id="tarot-flow"></p></div><div class="tarot-report-card tarot-report-warning"><span class="tarot-report-label">⚠️ 오늘 조심할 것</span><p id="tarot-caution"></p></div><div class="tarot-one-line"><span>고양이가 건네는 한마디 ✨</span><strong id="tarot-line"></strong></div><div class="tarot-collection-note" id="tarot-collection-note"></div><button type="button" class="cta cta-primary" id="tarot-redraw-btn">다른 카드 만나보기</button><a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a></section>
+</div></div>
 
-    <section class="tarot-picker" id="tarot-picker" aria-label="타로카드 선택">
-      {% for slot in range(3) %}
-      <button type="button" class="tarot-choice" data-slot="{{ slot }}" aria-label="{{ slot + 1 }}번째 카드 선택">
-        <span class="tarot-card tarot-card-back" aria-hidden="true">
-          <img src="{{ url_for('static', filename='images/tarot/card_back/tarot_back.png') }}" alt="" draggable="false">
-        </span>
-      </button>
-      {% endfor %}
-    </section>
-
-    <p class="tarot-hint" id="tarot-hint">첫눈에 끌리는 카드가 오늘의 카드예요.</p>
-  </main>
-  {% include '_bottom_nav.html' %}
-</div>
-
-<div class="tarot-modal is-hidden" id="tarot-modal" role="dialog" aria-modal="true" aria-labelledby="tarot-modal-title">
-  <div class="tarot-modal-backdrop" data-close-modal></div>
-  <div class="tarot-modal-panel">
-    <button type="button" class="tarot-modal-close" data-close-modal aria-label="닫기">×</button>
-
-    <div class="tarot-reveal" id="tarot-reveal">
-      <div class="tarot-new-badge is-hidden" id="tarot-new-badge">NEW CARD ✨</div>
-      <div class="tarot-reveal-card" id="tarot-reveal-card">
-        <img class="tarot-art-image" id="tarot-art-image" src="" alt="" draggable="false">
-      </div>
-      <div class="tarot-reveal-copy">
-        <div class="tarot-card-en" id="tarot-card-en">CARD</div>
-        <h2 id="tarot-modal-title">오늘의 카드</h2>
-        <p class="tarot-reveal-caption" id="tarot-reveal-caption">오늘 당신에게 필요한 재물 메시지를 담은 카드예요.</p>
-      </div>
-      <button type="button" class="cta cta-primary tarot-fortune-cta" id="tarot-fortune-btn">오늘의 메시지 보기</button>
-    </div>
-
-    <section class="tarot-report is-hidden" id="tarot-report" aria-live="polite">
-      <div class="tarot-report-summary">
-        <div class="tarot-report-thumb-wrap"><img class="tarot-report-thumb" id="tarot-report-image" src="" alt=""></div>
-        <div class="tarot-report-identity">
-          <div class="tarot-report-kicker">TODAY'S MONEY FLOW</div>
-          <h2 id="tarot-report-title">오늘의 재물운</h2>
-          <div class="tarot-status-inline"><span>오늘의 흐름</span><strong id="tarot-status">-</strong></div>
-        </div>
-        <div class="tarot-score-pill"><strong id="tarot-score">0</strong><span>/100</span></div>
-      </div>
-
-      <div class="tarot-report-card"><span class="tarot-report-label">💰 돈의 흐름</span><p id="tarot-flow"></p></div>
-      <div class="tarot-report-card tarot-report-warning"><span class="tarot-report-label">⚠️ 오늘 조심할 것</span><p id="tarot-caution"></p></div>
-      <div class="tarot-one-line"><span>고양이가 건네는 한마디 ✨</span><strong id="tarot-line"></strong></div>
-      <div class="tarot-collection-note" id="tarot-collection-note"></div>
-
-      <button type="button" class="cta cta-primary" id="tarot-redraw-btn">다른 카드 만나보기</button>
-      <a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
-    </section>
-  </div>
-</div>
-
+<div class="tarot-collection-modal is-hidden" id="tarot-collection-modal" role="dialog" aria-modal="true" aria-labelledby="tarot-collection-title"><div class="tarot-modal-backdrop" data-close-collection></div><section class="tarot-collection-panel"><button type="button" class="tarot-modal-close" data-close-collection aria-label="닫기">×</button><div class="collection-head"><span class="collection-kicker">MY CARD COLLECTION</span><h2 id="tarot-collection-title">나의 머니 타로</h2><p><strong id="collection-count">0</strong> / 24장의 흐름을 발견했어요.</p><div class="collection-badge" id="collection-badge">첫 카드를 만나보세요 ✨</div></div><div class="collection-grid" id="collection-grid"></div><div class="collection-detail is-hidden" id="collection-detail"><img id="collection-detail-image" src="" alt=""><div><span id="collection-detail-en"></span><strong id="collection-detail-title"></strong><p id="collection-detail-meta"></p></div></div></section></div>
 <script type="application/json" id="tarot-data">{{ tarot_cards | tojson }}</script>
 {% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/tarot.js') }}"></script>
-{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/tarot.js') }}"></script>{% endblock %}
