@@ -1,98 +1,21 @@
 (() => {
-  'use strict';
-
-  const dataNode = document.getElementById('tarot-data');
-  const picker = document.getElementById('tarot-picker');
-  const modal = document.getElementById('tarot-modal');
-  const reveal = document.getElementById('tarot-reveal');
-  const report = document.getElementById('tarot-report');
-  if (!dataNode || !picker || !modal || !reveal || !report) return;
-
-  let cards = [];
-  try { cards = JSON.parse(dataNode.textContent || '[]'); } catch (err) { console.error('Tarot data parse failed', err); }
-  if (!cards.length) return;
-
-  const COLLECTION_KEY = 'moneyflow_tarot_collection_v1';
-  const el = {
-    choices: [...document.querySelectorAll('.tarot-choice')], hint: document.getElementById('tarot-hint'),
-    title: document.getElementById('tarot-modal-title'), en: document.getElementById('tarot-card-en'), image: document.getElementById('tarot-art-image'),
-    reportImage: document.getElementById('tarot-report-image'), fortuneBtn: document.getElementById('tarot-fortune-btn'), redrawBtn: document.getElementById('tarot-redraw-btn'),
-    reportTitle: document.getElementById('tarot-report-title'), score: document.getElementById('tarot-score'), status: document.getElementById('tarot-status'),
-    flow: document.getElementById('tarot-flow'), caution: document.getElementById('tarot-caution'), line: document.getElementById('tarot-line'),
-    foundCount: document.getElementById('tarot-found-count'), newBadge: document.getElementById('tarot-new-badge'),
-    revealCaption: document.getElementById('tarot-reveal-caption'), collectionNote: document.getElementById('tarot-collection-note')
-  };
-
-  let selectedCard = null;
-  let selectedWasNew = false;
-  const cardKey = card => String(card?.id || card?.image || card?.title || '');
-  const readCollection = () => {
-    try { const value = JSON.parse(localStorage.getItem(COLLECTION_KEY) || '[]'); return Array.isArray(value) ? value : []; } catch (_) { return []; }
-  };
-  const updateCollectionCount = () => { if (el.foundCount) el.foundCount.textContent = String(readCollection().length); };
-  updateCollectionCount();
-
-  function randomCard() { return cards[Math.floor(Math.random() * cards.length)]; }
-  function staticUrl(path) { return `/static/${String(path || '').replace(/^\/+/, '')}`; }
-  function cardImageUrl(card) { return staticUrl(card?.image); }
-
-  function discover(card) {
-    const found = readCollection();
-    const key = cardKey(card);
-    const isNew = !found.includes(key);
-    if (isNew) {
-      try { localStorage.setItem(COLLECTION_KEY, JSON.stringify([...found, key])); } catch (_) {}
-    }
-    updateCollectionCount();
-    return isNew;
-  }
-
-  function openModal(card) {
-    selectedCard = card;
-    selectedWasNew = discover(card);
-    el.title.textContent = card.title;
-    el.en.textContent = card.en || 'MONEY CARD';
-    if (el.image) { el.image.src = cardImageUrl(card); el.image.alt = `${card.title} ${card.en || ''} 타로카드`.trim(); }
-    el.newBadge?.classList.toggle('is-hidden', !selectedWasNew);
-    if (el.revealCaption) el.revealCaption.textContent = selectedWasNew ? '처음 만난 카드예요. 컬렉션에 새 카드가 추가됐어요 ✨' : '다시 만난 카드예요. 오늘은 어떤 메시지를 건넬까요?';
-    reveal.classList.remove('is-hidden'); report.classList.add('is-hidden'); modal.classList.remove('is-hidden');
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => el.fortuneBtn?.focus(), 50);
-  }
-
-  function closeModal() { modal.classList.add('is-hidden'); document.body.style.overflow = ''; }
-
-  function renderReport() {
-    if (!selectedCard) return;
-    el.reportTitle.textContent = `${selectedCard.title} · ${selectedCard.en}`;
-    el.score.textContent = selectedCard.score; el.status.textContent = selectedCard.status; el.flow.textContent = selectedCard.flow;
-    el.caution.textContent = selectedCard.caution; el.line.textContent = selectedCard.line;
-    if (el.reportImage) { el.reportImage.src = cardImageUrl(selectedCard); el.reportImage.alt = `${selectedCard.title} 카드 미리보기`; }
-    if (el.collectionNote) {
-      const count = readCollection().length;
-      el.collectionNote.textContent = selectedWasNew ? `새 카드 발견! 지금까지 24장 중 ${count}장을 만났어요 ✨` : `지금까지 24장 중 ${count}장을 만났어요.`;
-    }
-    reveal.classList.add('is-hidden'); report.classList.remove('is-hidden'); report.scrollIntoView({behavior:'smooth', block:'start'});
-  }
-
-  function resetPicker() {
-    selectedCard = null; selectedWasNew = false; closeModal();
-    if (el.image) { el.image.removeAttribute('src'); el.image.alt = ''; }
-    if (el.reportImage) { el.reportImage.removeAttribute('src'); el.reportImage.alt = ''; }
-    el.choices.forEach(btn => btn.classList.remove('is-muted','is-picked'));
-    if (el.hint) el.hint.textContent = '첫눈에 끌리는 카드가 오늘의 카드예요.';
-  }
-
-  el.choices.forEach(choice => choice.addEventListener('click', () => {
-    if (selectedCard) return;
-    const card = randomCard();
-    el.choices.forEach(btn => btn === choice ? btn.classList.add('is-picked') : btn.classList.add('is-muted'));
-    if (el.hint) el.hint.textContent = '오늘의 카드를 만나고 있어요…';
-    window.setTimeout(() => openModal(card), 360);
-  }));
-
-  document.querySelectorAll('[data-close-modal]').forEach(node => node.addEventListener('click', resetPicker));
-  el.fortuneBtn?.addEventListener('click', renderReport);
-  el.redrawBtn?.addEventListener('click', resetPicker);
-  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !modal.classList.contains('is-hidden')) resetPicker(); });
+'use strict';
+const dataNode=document.getElementById('tarot-data'),picker=document.getElementById('tarot-picker'),modal=document.getElementById('tarot-modal'),reveal=document.getElementById('tarot-reveal'),report=document.getElementById('tarot-report');if(!dataNode||!picker||!modal||!reveal||!report)return;
+let cards=[];try{cards=JSON.parse(dataNode.textContent||'[]')}catch(e){console.error(e)}if(!cards.length)return;
+const KEY='moneyflow_tarot_collection_v2';
+const $=id=>document.getElementById(id),el={choices:[...document.querySelectorAll('.tarot-choice')],hint:$('tarot-hint'),title:$('tarot-modal-title'),en:$('tarot-card-en'),image:$('tarot-art-image'),revealCard:$('tarot-reveal-card'),burst:$('tarot-discovery-burst'),reportImage:$('tarot-report-image'),fortuneBtn:$('tarot-fortune-btn'),redrawBtn:$('tarot-redraw-btn'),reportTitle:$('tarot-report-title'),score:$('tarot-score'),status:$('tarot-status'),flow:$('tarot-flow'),caution:$('tarot-caution'),line:$('tarot-line'),foundCount:$('tarot-found-count'),newBadge:$('tarot-new-badge'),caption:$('tarot-reveal-caption'),note:$('tarot-collection-note'),collectionChip:$('tarot-collection-chip'),collectionModal:$('tarot-collection-modal'),collectionGrid:$('collection-grid'),collectionCount:$('collection-count'),collectionBadge:$('collection-badge'),detail:$('collection-detail'),detailImage:$('collection-detail-image'),detailEn:$('collection-detail-en'),detailTitle:$('collection-detail-title'),detailMeta:$('collection-detail-meta')};
+let selected=null,wasNew=false;const keyOf=c=>String(c?.id||c?.image||c?.title||''),today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul'}).format(new Date());
+function read(){try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}catch(_){return{}}}function write(v){try{localStorage.setItem(KEY,JSON.stringify(v))}catch(_){}}
+function discover(card){const data=read(),k=keyOf(card),now=new Date().toISOString(),isNew=!data[k];if(isNew)data[k]={firstSeen:now,lastSeen:now,count:1};else{data[k].count=(data[k].count||0)+1;data[k].lastSeen=now}write(data);updateCount();return isNew}
+function updateCount(){if(el.foundCount)el.foundCount.textContent=Object.keys(read()).length}
+function badgeFor(n){if(n>=24)return'ALL CARDS DISCOVERED 👑';if(n>=18)return'머니 리더 · 18장 발견 ✨';if(n>=12)return'절반의 흐름 발견 · 12장 ✨';if(n>=6)return'머니 탐험가 · 6장 발견';if(n>=3)return'첫 번째 흐름 발견 · 3장';return n?`${n}장의 흐름을 만났어요`:'첫 카드를 만나보세요 ✨'}
+function staticUrl(p){return`/static/${String(p||'').replace(/^\/+/, '')}`}function imageUrl(c){return staticUrl(c?.image)}function randomCard(){return cards[Math.floor(Math.random()*cards.length)]}
+function openModal(card){selected=card;wasNew=discover(card);el.title.textContent=card.title;el.en.textContent=card.en||'MONEY CARD';el.image.src=imageUrl(card);el.image.alt=`${card.title} 타로카드`;el.newBadge.classList.toggle('is-hidden',!wasNew);el.caption.textContent=wasNew?'새로운 흐름을 발견했어요. 컬렉션에 카드가 추가됐어요 ✨':'다시 만난 카드예요. 오늘은 어떤 메시지를 건넬까요?';reveal.classList.remove('is-hidden');report.classList.add('is-hidden');modal.classList.remove('is-hidden');document.body.style.overflow='hidden';el.revealCard.classList.remove('is-revealing');void el.revealCard.offsetWidth;el.revealCard.classList.add('is-revealing');if(wasNew){el.burst.classList.remove('is-hidden');setTimeout(()=>el.burst.classList.add('is-hidden'),1000)}setTimeout(()=>el.fortuneBtn?.focus(),800)}
+function closeModal(){modal.classList.add('is-hidden');document.body.style.overflow=''}
+function renderReport(){if(!selected)return;el.reportTitle.textContent=`${selected.title} · ${selected.en}`;el.score.textContent=selected.score;el.status.textContent=selected.status;el.flow.textContent=selected.flow;el.caution.textContent=selected.caution;el.line.textContent=selected.line;el.reportImage.src=imageUrl(selected);const n=Object.keys(read()).length;el.note.textContent=wasNew?`새 카드 발견! 지금까지 24장 중 ${n}장을 만났어요 ✨`:`지금까지 24장 중 ${n}장을 만났어요.`;reveal.classList.add('is-hidden');report.classList.remove('is-hidden');report.scrollIntoView({behavior:'smooth',block:'start'})}
+function reset(){selected=null;wasNew=false;closeModal();el.choices.forEach(b=>b.classList.remove('is-muted','is-picked'));el.hint.textContent='첫눈에 끌리는 카드가 오늘의 카드예요.'}
+function renderCollection(){const data=read(),n=Object.keys(data).length;el.collectionCount.textContent=n;el.collectionBadge.textContent=badgeFor(n);el.collectionGrid.innerHTML='';cards.forEach((card,i)=>{const meta=data[keyOf(card)],btn=document.createElement('button');btn.type='button';btn.className=`collection-card ${meta?'is-found':'is-locked'}`;btn.innerHTML=meta?`<img src="${imageUrl(card)}" alt=""><span>${card.title}</span>`:`<span class="collection-lock">?</span><small>${String(i+1).padStart(2,'0')}</small>`;if(meta)btn.addEventListener('click',()=>showDetail(card,meta));el.collectionGrid.appendChild(btn)});el.detail.classList.add('is-hidden')}
+function showDetail(card,meta){el.detailImage.src=imageUrl(card);el.detailEn.textContent=card.en;el.detailTitle.textContent=card.title;const first=new Date(meta.firstSeen);const date=new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'short',day:'numeric'}).format(first);el.detailMeta.textContent=`처음 만난 날 ${date} · 지금까지 ${meta.count||1}번 만났어요`;el.detail.classList.remove('is-hidden');el.detail.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function openCollection(){renderCollection();el.collectionModal.classList.remove('is-hidden');document.body.style.overflow='hidden'}function closeCollection(){el.collectionModal.classList.add('is-hidden');document.body.style.overflow=''}
+updateCount();el.choices.forEach(choice=>choice.addEventListener('click',()=>{if(selected)return;const card=randomCard();el.choices.forEach(b=>b===choice?b.classList.add('is-picked'):b.classList.add('is-muted'));el.hint.textContent='오늘의 카드를 만나고 있어요…';setTimeout(()=>openModal(card),500)}));document.querySelectorAll('[data-close-modal]').forEach(n=>n.addEventListener('click',reset));document.querySelectorAll('[data-close-collection]').forEach(n=>n.addEventListener('click',closeCollection));el.collectionChip?.addEventListener('click',openCollection);el.fortuneBtn?.addEventListener('click',renderReport);el.redrawBtn?.addEventListener('click',reset);document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!el.collectionModal.classList.contains('is-hidden'))closeCollection();else if(!modal.classList.contains('is-hidden'))reset()}});
 })();
