@@ -1,54 +1,21 @@
 {% extends "base.html" %}
-{% block title %}{{ result.result_title if result else '결과' }}{% endblock %}
+{% block title %}나의 머니 리포트{% endblock %}
 {% block body_class %}has-app-chrome{% endblock %}
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis-flow.css') }}">
-{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}"><link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis-flow.css') }}">{% endblock %}
 {% block body %}
-<div class="page-shell result-page diagnosis-page">
-  <div class="shell">
-    {% set active_tab = 'diagnosis' %}
-    {% include '_app_header.html' %}
-
-    <section class="hero result-hero diagnosis-hero result-hero-compact">
-      <div class="hero-badge"><span class="dot"></span>결과 확인 완료</div>
-      <h2><span class="grad">{{ result_heading }}</span></h2>
-      <p>답변을 바탕으로 지금의 금전 흐름을 정리했어요.</p>
-    </section>
-
-    <div class="result-card result-report-card result-report-v2">
-      <section class="money-score-card money-score-v2" aria-label="금전 흐름 점수">
-        <div class="money-score-copy">
-          <div class="money-score-kicker">MY MONEY FLOW SCORE</div>
-          <div class="money-score-value"><strong>{{ result.final_score if result else 0 }}</strong><span>/100</span></div>
-          <div class="money-score-type">{{ result.result_title if result else '-' }}</div>
-          <div class="money-score-meta">{% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}</div>
-        </div>
-        <div class="result-mascot-wrap" aria-hidden="true">
-          <img src="{{ url_for('static', filename='images/ui/wealth_check/cat_coin.png') }}" alt="">
-        </div>
-      </section>
-
-      <section class="result-insight-v2">
-        <div class="result-insight-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_02.png') }}" alt=""></div>
-        <div><span class="result-insight-label">오늘의 한마디</span><p>{{ result.result_desc if result else '' }}</p></div>
-      </section>
-    </div>
-
-    <div class="result-actions result-actions-compact">
-      <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">결과 공유하기 <span aria-hidden="true">→</span></a>
-      <a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 체크 해보기</a>
-    </div>
+<div class="page-shell result-page diagnosis-page"><div class="shell">
+  {% set active_tab = 'diagnosis' %}{% include '_app_header.html' %}
+  <section class="hero result-hero diagnosis-hero result-hero-compact">
+    <div class="hero-badge"><span class="dot"></span>MY MONEY REPORT</div>
+    {% if test_type == 'spending' %}<h2><span class="grad">나의 소비 스타일</span></h2><p>선택을 바탕으로 평소의 소비 패턴을 정리했어요.</p>
+    {% elif test_type == 'future' %}<h2><span class="grad">나의 재물 흐름</span></h2><p>선택을 바탕으로 지금의 돈 관리 흐름을 정리했어요.</p>
+    {% else %}<h2><span class="grad">오늘의 재물운</span></h2><p>선택을 바탕으로 오늘 참고할 금전 흐름을 정리했어요.</p>{% endif %}
+  </section>
+  <div class="result-card result-report-card result-report-v2">
+    <section class="money-score-card money-score-v2" aria-label="머니 플로우 점수"><div class="money-score-copy"><div class="money-score-kicker">MY MONEY FLOW SCORE</div><div class="money-score-value"><strong>{{ result.final_score if result else 0 }}</strong><span>/100</span></div><div class="money-score-type">{{ result.result_title if result else '-' }}</div><div class="money-score-meta">{% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}</div></div><div class="result-mascot-wrap" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_coin.png') }}" alt=""></div></section>
+    <section class="result-insight-v2"><div class="result-insight-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_02.png') }}" alt=""></div><div><span class="result-insight-label">오늘의 한마디</span><p>{{ result.result_desc if result else '' }}</p></div></section>
   </div>
-  {% include '_bottom_nav.html' %}
-</div>
+  <div class="result-actions result-actions-compact"><a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">친구에게 공유하기 <span aria-hidden="true">→</span></a><a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 흐름 둘러보기</a></div>
+</div>{% include '_bottom_nav.html' %}</div>
 {% endblock %}
-
-{% block scripts %}
-<script>
-  window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
-  window.JAEMULUN_TEST_LABEL = {{ test_label | tojson }};
-</script>
-<script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
-{% endblock %}
+{% block scripts %}<script>window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }}; window.JAEMULUN_TEST_LABEL = {{ test_label | tojson }};</script><script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>{% endblock %}
