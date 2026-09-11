@@ -17,17 +17,17 @@
       <p>카드 한 장부터 30초 체크까지, 지금 필요한 것만 빠르게 골라보세요.</p>
 
       <div class="home-visual" aria-hidden="true">
-        <img class="home-visual-clouds" src="{{ url_for('static', filename='images/ui/home/home_clouds.png') }}" alt="">
-        <img class="home-visual-sparkle-a" src="{{ url_for('static', filename='images/ui/common/sparkle_gold.png') }}" alt="">
-        <img class="home-visual-sparkle-b" src="{{ url_for('static', filename='images/ui/common/sparkle_purple.png') }}" alt="">
-        <img class="home-visual-character" src="{{ url_for('static', filename='images/ui/home/home_character.png') }}" alt="">
-        <img class="home-visual-coins" src="{{ url_for('static', filename='images/ui/home/home_coins.png') }}" alt="">
+        <img class="home-visual-cloud-left" src="{{ url_for('static', filename='images/ui/wealth_check/cloud_small.png') }}" alt="">
+        <img class="home-visual-cloud-right" src="{{ url_for('static', filename='images/ui/wealth_check/cloud_small.png') }}" alt="">
+        <img class="home-visual-cat" src="{{ url_for('static', filename='images/ui/wealth_check/cat_coin.png') }}" alt="">
+        <img class="home-visual-coin-a" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_01.png') }}" alt="">
+        <img class="home-visual-coin-b" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_02.png') }}" alt="">
       </div>
     </section>
 
     <section class="home-actions" aria-label="재물운 기능">
       <a href="{{ url_for('tarot.tarot_page') }}" class="home-action home-action-featured">
-        <span class="home-action-icon home-action-icon-tarot" aria-hidden="true">🔮</span>
+        <span class="home-action-icon home-action-icon-tarot" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/crystal_ball_only.png') }}" alt=""></span>
         <span class="home-action-copy">
           <span class="home-action-title-row"><strong>오늘의 재물 카드</strong><em>NEW</em></span>
           <span>끌리는 카드 한 장으로 오늘의 돈 흐름 확인</span>
@@ -36,19 +36,19 @@
       </a>
 
       <a href="{{ url_for('intro_page', test_type='future') }}" class="home-action">
-        <span class="home-action-icon home-action-icon-quick" aria-hidden="true">⏱</span>
+        <span class="home-action-icon home-action-icon-quick" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_03.png') }}" alt=""></span>
         <span class="home-action-copy"><strong>재물 체크</strong><span>5문항 · 약 30초</span></span>
         <span class="home-action-arrow" aria-hidden="true">→</span>
       </a>
 
       <a href="{{ url_for('intro_page', test_type='spending') }}" class="home-action">
-        <span class="home-action-icon home-action-icon-spending" aria-hidden="true">📊</span>
+        <span class="home-action-icon home-action-icon-spending" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/chart_icon.png') }}" alt=""></span>
         <span class="home-action-copy"><strong>소비 성향 퀴즈</strong><span>내 소비 습관과 지출 패턴 분석</span></span>
         <span class="home-action-arrow" aria-hidden="true">→</span>
       </a>
 
       <a href="{{ url_for('intro_page', test_type='money') }}" class="home-action">
-        <span class="home-action-icon home-action-icon-money" aria-hidden="true">💎</span>
+        <span class="home-action-icon home-action-icon-money" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_03.png') }}" alt=""></span>
         <span class="home-action-copy"><strong>오늘의 재물운</strong><span>오늘의 금전 흐름과 소비 리스크 확인</span></span>
         <span class="home-action-arrow" aria-hidden="true">→</span>
       </a>
