@@ -1,63 +1,73 @@
-/* Tarot V2 — production artwork connected to the established interaction shell */
+/* Tarot V2.1 — compact fintech report + playful card reveal */
 .tarot-page{background:linear-gradient(180deg,#f8f6ff 0%,#fbf9ff 52%,#fff 100%);}
-.tarot-shell{display:flex;flex-direction:column;}
+.tarot-shell{display:flex;flex-direction:column;min-height:100dvh;}
 
-.tarot-hero{text-align:center;padding:14px 0 4px;}
-.tarot-hero h1{margin:16px 0 10px;font-size:30px;line-height:1.22;letter-spacing:-.05em;font-weight:900;}
-.tarot-hero p{margin:0;color:var(--text-2);font-size:14px;line-height:1.7;}
+.tarot-hero{text-align:center;padding:8px 0 2px;}
+.tarot-hero h1{margin:14px 0 8px;font-size:30px;line-height:1.2;letter-spacing:-.05em;font-weight:900;}
+.tarot-hero p{margin:0;color:var(--text-2);font-size:14px;line-height:1.65;}
 
-.tarot-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:30px;align-items:end;perspective:1000px;}
-.tarot-choice{appearance:none;background:none;padding:0;border:0;cursor:pointer;transition:transform .2s ease,opacity .2s ease;}
+.tarot-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px;align-items:end;perspective:1000px;}
+.tarot-choice{appearance:none;background:none;padding:0;border:0;cursor:pointer;transition:transform .22s ease,opacity .22s ease,filter .22s ease;}
 .tarot-choice:nth-child(2){transform:translateY(-12px);}
 .tarot-choice:hover{transform:translateY(-5px);}
 .tarot-choice:nth-child(2):hover{transform:translateY(-17px);}
-.tarot-choice:focus-visible{outline:3px solid rgba(124,58,237,.3);outline-offset:7px;border-radius:18px;}
-.tarot-choice.is-muted{opacity:.28;pointer-events:none;}
-.tarot-choice.is-picked{transform:translateY(-10px) scale(1.04);}
+.tarot-choice:focus-visible{outline:3px solid rgba(124,58,237,.28);outline-offset:7px;border-radius:18px;}
+.tarot-choice.is-muted{opacity:.24;filter:saturate(.7);pointer-events:none;}
+.tarot-choice.is-picked{transform:translateY(-13px) scale(1.055);filter:drop-shadow(0 14px 18px rgba(102,71,191,.22));}
 
-.tarot-card{display:block;position:relative;width:100%;aspect-ratio:4/5;border-radius:18px;box-shadow:0 18px 34px rgba(63,48,112,.18);overflow:hidden;transform-style:preserve-3d;background:#4f3aa5;}
+.tarot-card{display:block;position:relative;width:100%;aspect-ratio:4/5;border-radius:18px;box-shadow:0 14px 30px rgba(63,48,112,.15);overflow:hidden;transform-style:preserve-3d;background:#4f3aa5;}
 .tarot-card-back{border:1px solid #cfc5f7;}
 .tarot-card-back img{display:block;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none;}
+.tarot-hint{margin:22px auto 0;max-width:330px;text-align:center;color:#8a8397;font-size:12px;line-height:1.6;}
 
-.tarot-hint{margin:26px auto 0;max-width:310px;text-align:center;color:#8a8397;font-size:12px;line-height:1.65;}
+.tarot-modal{position:fixed;inset:0;z-index:1500;display:flex;align-items:flex-end;justify-content:center;padding:16px 10px calc(10px + env(safe-area-inset-bottom));}
+.tarot-modal-backdrop{position:absolute;inset:0;background:rgba(28,22,45,.40);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.tarot-modal-panel{position:relative;width:min(100%,430px);max-height:calc(100dvh - 24px);overflow:auto;background:#fff;border:1px solid rgba(255,255,255,.72);border-radius:30px;padding:22px;box-shadow:0 28px 80px rgba(31,22,58,.25);animation:tarot-sheet-in .28s ease both;}
+.tarot-modal-close{position:absolute;right:14px;top:13px;width:36px;height:36px;border:0;border-radius:50%;background:#f3f1f8;color:#756f7e;font-size:24px;line-height:1;cursor:pointer;z-index:3;}
 
-.tarot-modal{position:fixed;inset:0;z-index:1500;display:flex;align-items:flex-end;justify-content:center;padding:20px 12px calc(12px + env(safe-area-inset-bottom));}
-.tarot-modal-backdrop{position:absolute;inset:0;background:rgba(25,18,44,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
-.tarot-modal-panel{position:relative;width:min(100%,430px);max-height:calc(100dvh - 34px);overflow:auto;background:#fff;border-radius:28px;padding:24px;box-shadow:0 24px 70px rgba(31,22,58,.28);animation:tarot-sheet-in .28s ease both;}
-.tarot-modal-close{position:absolute;right:16px;top:14px;width:36px;height:36px;border-radius:50%;background:#f3f1f8;color:#756f7e;font-size:24px;line-height:1;cursor:pointer;z-index:2;}
+.tarot-reveal{text-align:center;padding-top:2px;}
+.tarot-reveal-card{width:min(66%,220px);margin:2px auto 0;border-radius:22px;overflow:hidden;background:#f7f3ff;border:1px solid #e7def8;box-shadow:0 16px 36px rgba(75,53,137,.14);}
+.tarot-art-image{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;background:#eee8ff;}
+.tarot-reveal-copy{padding-top:13px;}
+.tarot-card-en{color:#8a7cae;font-size:10px;letter-spacing:.18em;font-weight:900;}
+.tarot-reveal-copy h2{margin:4px 0 0;color:#2f2741;font-size:24px;line-height:1.2;letter-spacing:-.035em;}
+.tarot-reveal-caption{margin:8px auto 0;max-width:310px;color:#7b7486;font-size:12px;line-height:1.6;}
+.tarot-fortune-cta{margin-top:14px;}
 
-.tarot-reveal{text-align:center;padding-top:6px;}
-.tarot-reveal-card{width:min(72%,240px);margin:4px auto 0;border-radius:24px;overflow:hidden;background:#fff;border:1px solid #e8e2f6;box-shadow:0 18px 40px rgba(75,53,137,.15);}
-.tarot-art-image{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:#eee8ff;}
-.tarot-card-copy{padding:13px 12px 15px;border-top:1px solid #eee9f8;}
-.tarot-card-en{color:#8a7cae;font-size:10px;letter-spacing:.16em;font-weight:800;}
-.tarot-card-copy h2{margin:5px 0 0;color:#2f2741;font-size:24px;letter-spacing:-.03em;}
-.tarot-reveal-caption{margin:16px auto 4px;max-width:300px;color:#7b7486;font-size:13px;line-height:1.65;}
+.tarot-report{padding-top:2px;}
+.tarot-report-summary{display:grid;grid-template-columns:68px minmax(0,1fr) auto;gap:12px;align-items:center;margin:2px 0 15px;padding:12px;border:1px solid #ece7f7;border-radius:22px;background:linear-gradient(135deg,#fbfaff,#f7f3ff);}
+.tarot-report-thumb-wrap{width:68px;aspect-ratio:4/5;border-radius:14px;overflow:hidden;border:1px solid #ded4f4;background:#eee8ff;box-shadow:0 8px 18px rgba(75,53,137,.12);}
+.tarot-report-thumb{display:block;width:100%;height:100%;object-fit:cover;}
+.tarot-report-identity{min-width:0;}
+.tarot-report-kicker{color:#8a7cae;font-size:9px;font-weight:900;letter-spacing:.12em;white-space:nowrap;}
+.tarot-report-identity h2{margin:4px 0 6px;font-size:20px;line-height:1.15;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tarot-status-inline{display:flex;gap:7px;align-items:center;color:#847d8e;font-size:11px;}
+.tarot-status-inline strong{color:#5e43b4;font-size:12px;}
+.tarot-score-pill{display:flex;align-items:baseline;gap:2px;padding:9px 10px;border-radius:15px;background:#ebe5ff;color:#6647bf;white-space:nowrap;}
+.tarot-score-pill strong{font-size:23px;line-height:1;}
+.tarot-score-pill span{font-size:10px;font-weight:900;}
+.tarot-report-card{margin-top:9px;padding:15px 16px;border:1px solid #ece8f2;border-radius:18px;background:#fff;box-shadow:0 5px 15px rgba(32,25,55,.035);}
+.tarot-report-warning{background:#fffaf7;border-color:#f2e3d9;}
+.tarot-report-label{display:block;margin-bottom:6px;color:#4b4654;font-size:12px;font-weight:900;}
+.tarot-report-card p{margin:0;color:#6e6877;font-size:13px;line-height:1.68;}
+.tarot-one-line{margin-top:10px;padding:15px 16px;border-radius:18px;background:linear-gradient(135deg,#5e43b4,#795bd2);color:#fff;box-shadow:0 10px 24px rgba(94,67,180,.16);}
+.tarot-one-line span{display:block;margin-bottom:6px;font-size:11px;font-weight:800;opacity:.8;}
+.tarot-one-line strong{display:block;font-size:15px;line-height:1.55;}
+.tarot-report .cta{margin-top:10px;}
 
-.tarot-report{padding-top:4px;}
-.tarot-report-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:4px 0 16px;}
-.tarot-report-kicker{color:#8a7cae;font-size:10px;font-weight:800;letter-spacing:.14em;}
-.tarot-report-head h2{margin:5px 0 0;font-size:26px;line-height:1.2;letter-spacing:-.04em;}
-.tarot-score-pill{display:flex;align-items:baseline;gap:2px;padding:10px 12px;border-radius:16px;background:#f2efff;color:#6647bf;white-space:nowrap;}
-.tarot-score-pill strong{font-size:24px;line-height:1;}
-.tarot-score-pill span{font-size:11px;font-weight:800;}
-.tarot-status-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:13px 15px;border:1px solid #ece7f7;border-radius:17px;background:#fbfaff;color:#787184;font-size:13px;}
-.tarot-status-row strong{color:#5e43b4;font-size:14px;}
-.tarot-report-card{margin-top:10px;padding:17px;border:1px solid #ece8f2;border-radius:19px;background:#fff;box-shadow:0 6px 16px rgba(32,25,55,.04);}
-.tarot-report-warning{background:#fffaf7;border-color:#f4e7df;}
-.tarot-report-label{display:block;margin-bottom:7px;color:#4b4654;font-size:12px;font-weight:900;}
-.tarot-report-card p{margin:0;color:#6e6877;font-size:13px;line-height:1.72;}
-.tarot-one-line{margin-top:12px;padding:17px;border-radius:19px;background:linear-gradient(135deg,#5e43b4,#795bd2);color:#fff;}
-.tarot-one-line span{display:block;margin-bottom:7px;font-size:11px;font-weight:800;opacity:.78;}
-.tarot-one-line strong{display:block;font-size:15px;line-height:1.6;}
-
-@keyframes tarot-sheet-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tarot-sheet-in{from{opacity:0;transform:translateY(18px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 @media (min-width:700px){.tarot-modal{align-items:center;}}
 @media (max-width:380px){
-  .tarot-picker{gap:8px;margin-top:24px;}
+  .tarot-picker{gap:7px;margin-top:21px;}
   .tarot-card{border-radius:15px;}
   .tarot-hero h1{font-size:27px;}
-  .tarot-modal-panel{padding:20px 18px;}
+  .tarot-modal-panel{padding:19px 17px;}
+  .tarot-reveal-card{width:min(64%,205px);}
+  .tarot-report-summary{grid-template-columns:58px minmax(0,1fr) auto;gap:9px;padding:10px;}
+  .tarot-report-thumb-wrap{width:58px;}
+  .tarot-report-identity h2{font-size:18px;}
+  .tarot-score-pill{padding:8px;}
+  .tarot-score-pill strong{font-size:20px;}
 }
 @media (prefers-reduced-motion:reduce){.tarot-choice,.tarot-modal-panel{transition:none;animation:none;}}
