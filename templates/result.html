@@ -31,10 +31,12 @@
     <a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 진단 해보기</a>
   </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
-  window.JAEMULUN_TEST_TYPE = "{{ test_type }}";
-  window.JAEMULUN_TEST_LABEL = "{{ test_label }}";
+  window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
+  window.JAEMULUN_TEST_LABEL = {{ test_label | tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
 {% endblock %}
