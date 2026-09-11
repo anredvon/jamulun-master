@@ -11,12 +11,18 @@
     <section class="history-hero">
       <div class="hero-badge"><span class="dot"></span>MY MONEY LOG</div>
       <h1>나의 <span class="grad">머니 기록</span></h1>
-      <p>이 기기에서 확인한 결과를 한곳에 모아볼 수 있어요.</p>
+      <p>쌓인 결과에서 내 돈 흐름의 변화를 발견해보세요.</p>
     </section>
 
     <section id="history-summary" class="history-summary is-hidden" aria-label="기록 요약">
       <div><span>최근 기록</span><strong id="history-count">0개</strong></div>
       <div><span>최근 점수</span><strong id="history-latest-score">-</strong></div>
+    </section>
+
+    <section id="weekly-flow" class="weekly-flow is-hidden" aria-label="최근 머니 플로우">
+      <div class="weekly-flow-head"><div><span>RECENT MONEY FLOW</span><strong>최근 흐름</strong></div><em id="weekly-flow-delta">기록을 모으는 중</em></div>
+      <div id="weekly-flow-bars" class="weekly-flow-bars" aria-hidden="true"></div>
+      <p id="weekly-flow-note">결과가 쌓이면 흐름의 변화를 보여드릴게요.</p>
     </section>
 
     <section id="history-list" class="history-list" aria-live="polite"></section>
