@@ -1,12 +1,18 @@
-/* STEP 4 cleanup — restrained production visuals */
-.visual-stage{position:relative;overflow:hidden;border:1px solid #e9e5f7;background:linear-gradient(145deg,#fbfaff,#f4f1ff);isolation:isolate}
+/* Approved visual-reference artwork placement */
+.visual-stage{position:relative;overflow:hidden;border:1px solid #e7e1fb;background:linear-gradient(145deg,#fbfaff,#f4f1ff);isolation:isolate}
 .visual-stage img{position:absolute;pointer-events:none;user-select:none;-webkit-user-drag:none}
 
-/* Intro: compact visual accent, not a separate poster */
-.intro-visual{height:92px;margin:10px 0 12px;border-radius:22px}
-.intro-visual .character{width:108px;left:18px;bottom:-24px;z-index:3}
-.intro-visual .checklist{width:72px;right:22px;bottom:8px;z-index:2}
-.intro-visual .sparkle{width:17px;right:20px;top:13px}
+/* Intro: one cohesive illustration scene instead of scattered stickers */
+.intro-visual{height:132px;margin:12px 0 14px;border-radius:25px;background:linear-gradient(145deg,#f9f7ff,#f1edff)}
+.intro-visual .character{width:132px;left:34px;bottom:-22px;z-index:5;filter:drop-shadow(0 10px 16px rgba(76,52,145,.10))}
+.intro-visual .sparkle{width:17px;right:25px;top:18px;z-index:6}
+.intro-art-speech{width:94px;left:137px;top:14px;z-index:4;transform:rotate(-3deg)}
+.intro-art-cloud{opacity:.78;z-index:1}
+.intro-art-cloud-left{width:106px;left:-28px;bottom:-22px}
+.intro-art-cloud-right{width:116px;right:-26px;bottom:-26px;transform:scaleX(-1)}
+.intro-art-coin{z-index:3;filter:drop-shadow(0 6px 9px rgba(93,67,180,.12))}
+.intro-art-coin-one{width:43px;right:63px;bottom:23px;transform:rotate(10deg)}
+.intro-art-coin-two{width:31px;right:105px;bottom:13px;transform:rotate(-10deg)}
 .intro-page .intro-card{margin-top:0}
 
 /* Quiz: keep the question itself as the focal point */
@@ -33,6 +39,6 @@
 .share-btn.primary>span:first-child{display:flex;align-items:center;gap:9px}
 
 @media(max-width:360px){
- .intro-visual{height:82px}.intro-visual .character{width:98px;left:10px}.intro-visual .checklist{width:64px;right:14px}
+ .intro-visual{height:118px}.intro-visual .character{width:118px;left:22px}.intro-art-speech{width:82px;left:116px}.intro-art-coin-one{right:46px}.intro-art-coin-two{right:85px}
  .share-grid{grid-template-columns:1fr 1fr}
 }
