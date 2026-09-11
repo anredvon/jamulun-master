@@ -1,45 +1,24 @@
 {% extends "base.html" %}
-{% block title %}{{ intro_title }}{% endblock %}
+{% block title %}{{ intro_title }} · 머니플로우{% endblock %}
 {% block body_class %}has-app-chrome{% endblock %}
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis-flow.css') }}">
-{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}"><link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis-flow.css') }}">{% endblock %}
 {% block body %}
-<div class="page-shell intro-page diagnosis-page">
-  <div class="shell intro-shell">
-    {% set active_tab = 'diagnosis' %}
-    {% include '_app_header.html' %}
-
-    <section class="diagnosis-hero intro-hero intro-hero-compact">
-      <div class="hero-badge"><span class="dot"></span>{{ intro_badge }}</div>
-      <h1>{{ intro_heading_before|safe }}<br><span class="grad">{{ intro_heading_highlight }}</span></h1>
-      <p>{{ intro_desc|safe }}</p>
-    </section>
-
-    <div class="intro-mascot-stage" aria-hidden="true">
-      <img class="intro-mascot-cloud intro-mascot-cloud-left" src="{{ url_for('static', filename='images/ui/wealth_check/cloud_small.png') }}" alt="">
-      <img class="intro-mascot-cloud intro-mascot-cloud-right" src="{{ url_for('static', filename='images/ui/wealth_check/cloud_large.png') }}" alt="">
-      <img class="intro-mascot-heart" src="{{ url_for('static', filename='images/ui/wealth_check/cat_hug_heart.png') }}" alt="">
-      <img class="intro-mascot-coin intro-mascot-coin-a" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_01.png') }}" alt="">
-      <img class="intro-mascot-coin intro-mascot-coin-b" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_02.png') }}" alt="">
-      <img class="intro-mascot-spark" src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_01.png') }}" alt="">
-    </div>
-
-    <div class="info-card intro-card diagnosis-intro-card intro-card-compact">
-      <div class="intro-stats-row" aria-label="체크 안내">
-        <div><span>예상 시간</span><strong>약 30초</strong></div>
-        <div><span>문항 수</span><strong>5문항</strong></div>
-        <div><span>진행 방식</span><strong>선택형</strong></div>
-      </div>
-      <ul class="bullets intro-bullets-compact">
-        {% for bullet in intro_bullets %}
-        <li><span class="bullet-check" aria-hidden="true">✓</span><span>{{ bullet }}</span></li>
-        {% endfor %}
-      </ul>
-      <a href="{{ url_for('test_page', test_type=test_type) }}" class="cta cta-primary">체크 시작하기 <span aria-hidden="true">→</span></a>
-    </div>
+<div class="page-shell intro-page diagnosis-page"><div class="shell intro-shell">
+  {% set active_tab = 'diagnosis' %}{% include '_app_header.html' %}
+  <section class="diagnosis-hero intro-hero intro-hero-compact">
+    {% if test_type == 'future' %}<div class="hero-badge"><span class="dot"></span>5문항 머니 체크</div><h1>지금 나의 돈 흐름을<br><span class="grad">가볍게 살펴봐요</span></h1><p>몇 번의 선택으로 현재의 돈 관리 흐름과 준비 상태를 발견해보세요.</p>
+    {% elif test_type == 'spending' %}<div class="hero-badge"><span class="dot"></span>MY SPENDING STYLE</div><h1>나의 소비 습관에는<br><span class="grad">어떤 스타일이 있을까요?</span></h1><p>평소의 선택을 따라가며 나만의 소비 패턴을 가볍게 발견해보세요.</p>
+    {% else %}<div class="hero-badge"><span class="dot"></span>TODAY'S MONEY FLOW</div><h1>오늘의 돈 흐름을<br><span class="grad">가볍게 만나봐요</span></h1><p>오늘 소비와 선택에 참고할 재물 흐름을 짧은 질문으로 확인해보세요.</p>{% endif %}
+  </section>
+  <div class="intro-mascot-stage" aria-hidden="true"><img class="intro-mascot-cloud intro-mascot-cloud-left" src="{{ url_for('static', filename='images/ui/wealth_check/cloud_small.png') }}" alt=""><img class="intro-mascot-cloud intro-mascot-cloud-right" src="{{ url_for('static', filename='images/ui/wealth_check/cloud_large.png') }}" alt=""><img class="intro-mascot-heart" src="{{ url_for('static', filename='images/ui/wealth_check/cat_hug_heart.png') }}" alt=""><img class="intro-mascot-coin intro-mascot-coin-a" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_01.png') }}" alt=""><img class="intro-mascot-coin intro-mascot-coin-b" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_02.png') }}" alt=""><img class="intro-mascot-spark" src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_01.png') }}" alt=""></div>
+  <div class="info-card intro-card diagnosis-intro-card intro-card-compact">
+    <div class="intro-stats-row" aria-label="체크 안내"><div><span>걸리는 시간</span><strong>약 30초</strong></div><div><span>선택</span><strong>5번</strong></div><div><span>결과</span><strong>바로 확인</strong></div></div>
+    <ul class="bullets intro-bullets-compact">
+      {% if test_type == 'future' %}<li><span class="bullet-check">✓</span><span>지금의 돈 관리 흐름을 한눈에 살펴봐요.</span></li><li><span class="bullet-check">✓</span><span>나와 가까운 재물 유형을 발견할 수 있어요.</span></li><li><span class="bullet-check">✓</span><span>오늘부터 챙길 작은 포인트도 함께 알려드려요.</span></li>
+      {% elif test_type == 'spending' %}<li><span class="bullet-check">✓</span><span>평소 소비 선택을 편하게 골라주세요.</span></li><li><span class="bullet-check">✓</span><span>나의 소비 스타일과 특징을 바로 보여드려요.</span></li><li><span class="bullet-check">✓</span><span>더 나은 소비를 위한 한마디도 함께 드려요.</span></li>
+      {% else %}<li><span class="bullet-check">✓</span><span>오늘의 소비와 선택 흐름을 가볍게 살펴봐요.</span></li><li><span class="bullet-check">✓</span><span>오늘 돈을 움직일 때 참고할 포인트를 보여드려요.</span></li><li><span class="bullet-check">✓</span><span>결과는 재미있는 가이드로 편하게 즐겨주세요.</span></li>{% endif %}
+    </ul>
+    <a href="{{ url_for('test_page', test_type=test_type) }}" class="cta cta-primary">시작해볼까요? <span aria-hidden="true">→</span></a>
   </div>
-  {% include '_bottom_nav.html' %}
-</div>
+</div>{% include '_bottom_nav.html' %}</div>
 {% endblock %}
