@@ -15,7 +15,7 @@
 
     <!-- 타이틀 -->
     <section class="hero">
-      <div class="hero-badge">
+      <div class="hero-badge hero-badge-live">
         <span class="dot"></span> 5문항 · 30초 · 빠른 진단
       </div>
 
@@ -34,9 +34,9 @@
     <div class="stack">
 
       <!-- 빠른 진단 -->
-      <a href="{{ url_for('intro_page', test_type='future') }}" class="card card-link">
+      <a href="{{ url_for('intro_page', test_type='future') }}" class="card card-link card-featured">
         <div class="card-head">
-          <div class="icon quick">⏱</div>
+          <div class="icon quick" aria-hidden="true">⏱</div>
 
           <div class="head-copy">
             <div class="head-top">
@@ -52,14 +52,14 @@
 
         <div class="card-foot">
           <span class="meta">30초 안에 확인</span>
-          <span class="arrow">→</span>
+          <span class="arrow" aria-hidden="true">→</span>
         </div>
       </a>
 
       <!-- 소비 성향 -->
-      <a href="{{ url_for('intro_page', test_type='spending') }}" class="card card-link">
+      <a href="{{ url_for('intro_page', test_type='spending') }}" class="card card-link card-secondary">
         <div class="card-head">
-          <div class="icon spending">📊</div>
+          <div class="icon spending" aria-hidden="true">📊</div>
 
           <div class="head-copy">
             <div class="head-top">
@@ -75,14 +75,14 @@
 
         <div class="card-foot">
           <span class="meta">유형 분석 중심</span>
-          <span class="arrow">→</span>
+          <span class="arrow" aria-hidden="true">→</span>
         </div>
       </a>
 
       <!-- 재물운 -->
-      <a href="{{ url_for('intro_page', test_type='money') }}" class="card card-link">
+      <a href="{{ url_for('intro_page', test_type='money') }}" class="card card-link card-secondary">
         <div class="card-head">
-          <div class="icon money">💎</div>
+          <div class="icon money" aria-hidden="true">💎</div>
 
           <div class="head-copy">
             <div class="head-top">
@@ -98,7 +98,7 @@
 
         <div class="card-foot">
           <span class="meta">오늘 흐름 확인</span>
-          <span class="arrow">→</span>
+          <span class="arrow" aria-hidden="true">→</span>
         </div>
       </a>
 
