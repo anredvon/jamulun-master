@@ -1,8 +1,4 @@
-"""Tarot card content for the daily money-card experience.
-
-Artwork filenames are intentionally kept separate from the UI. Production PNGs can
-be dropped into static/images/tarot/app_cards later without changing the flow.
-"""
+"""Tarot card content for the daily money-card experience."""
 
 TAROT_CARDS = [
     {"id":"temperance","title":"절제","en":"TEMPERANCE","symbol":"⚖️","score":72,"status":"안정","flow":"오늘은 크게 움직이기보다 지출과 저축의 균형을 맞출수록 흐름이 좋아집니다.","caution":"기분에 따른 즉흥 결제는 한 번 더 생각해보세요.","line":"덜 쓰는 선택이 오늘의 여유를 만듭니다."},
@@ -30,3 +26,7 @@ TAROT_CARDS = [
     {"id":"saving","title":"저축","en":"SAVING","symbol":"🐷","score":77,"status":"안정","flow":"작은 금액이라도 남겨두는 행동이 만족감을 크게 만드는 날입니다.","caution":"목표 없이 무조건 아끼다가 필요한 지출까지 미루지 마세요.","line":"오늘 남긴 작은 돈이 미래의 선택지를 늘립니다."},
     {"id":"growth","title":"성장","en":"GROWTH","symbol":"🌱","score":86,"status":"상승","flow":"당장의 큰 변화보다 꾸준히 쌓아온 습관에서 재정적 성장이 보입니다.","caution":"빠른 결과를 위해 무리하게 속도를 높이지 마세요.","line":"천천히 커지는 돈의 힘을 믿어도 좋은 날입니다."},
 ]
+
+# Production artwork follows the canonical card order above.
+for index, card in enumerate(TAROT_CARDS, start=1):
+    card["image"] = f"images/tarot/app_cards/tarot_{index:02d}_{card['id']}.png"
