@@ -44,8 +44,31 @@
     <!-- 카드 -->
     <div class="stack">
 
+      <!-- 오늘의 재물 카드 -->
+      <a href="/tarot" class="card card-link card-featured">
+        <div class="card-head">
+          <div class="icon money" aria-hidden="true">🔮</div>
+
+          <div class="head-copy">
+            <div class="head-top">
+              <h3 class="card-title">오늘의 재물 카드</h3>
+              <div class="mini-badge badge-money">NEW</div>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          끌리는 카드 한 장을 골라 오늘의 돈 흐름과 주의할 포인트를 확인해보세요.
+        </p>
+
+        <div class="card-foot">
+          <span class="meta">한 장으로 보는 오늘의 흐름</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </div>
+      </a>
+
       <!-- 빠른 진단 -->
-      <a href="{{ url_for('intro_page', test_type='future') }}" class="card card-link card-featured">
+      <a href="{{ url_for('intro_page', test_type='future') }}" class="card card-link card-secondary">
         <div class="card-head">
           <div class="icon quick" aria-hidden="true">⏱</div>
 
