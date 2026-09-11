@@ -14,6 +14,16 @@
   <div class="result-card result-report-card result-report-v2">
     <section class="money-score-card money-score-v2" aria-label="머니 플로우 점수"><div class="money-score-copy"><div class="money-score-kicker">MY MONEY FLOW SCORE</div><div class="money-score-value"><strong>{{ result.final_score if result else 0 }}</strong><span>/100</span></div><div class="money-score-type">{{ result.result_title if result else '-' }}</div><div class="money-score-meta">{% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}</div></div><div class="result-mascot-wrap" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_coin.png') }}" alt=""></div></section>
     <section class="result-insight-v2"><div class="result-insight-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_02.png') }}" alt=""></div><div><span class="result-insight-label">오늘의 한마디</span><p>{{ result.result_desc if result else '' }}</p></div></section>
+
+    <section class="money-mission" aria-labelledby="money-mission-title">
+      <div class="money-mission-cat" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_wink.png') }}" alt=""></div>
+      <div class="money-mission-copy">
+        <span class="money-mission-kicker">TODAY'S MONEY MISSION</span>
+        <strong id="money-mission-title">오늘 하나만 해볼까요?</strong>
+        <p id="money-mission-text">작은 행동 하나가 내일의 흐름을 바꿔요.</p>
+      </div>
+      <button type="button" id="money-mission-btn" class="money-mission-btn">오늘 해볼게 <span aria-hidden="true">✓</span></button>
+    </section>
   </div>
   <div class="result-actions result-actions-compact"><a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">친구에게 공유하기 <span aria-hidden="true">→</span></a><a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 흐름 둘러보기</a></div>
 </div>{% include '_bottom_nav.html' %}</div>
@@ -22,15 +32,18 @@
 <script>
   window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
   window.JAEMULUN_TEST_LABEL = {{ test_label | tojson }};
+  window.MONEYFLOW_RESULT = {
+    id: {{ ts.id | tojson }},
+    type: {{ test_type | tojson }},
+    label: {{ test_label | tojson }},
+    score: {{ (result.final_score if result else 0) | tojson }},
+    title: {{ (result.result_title if result else '') | tojson }}
+  };
   (() => {
     const key = 'moneyflow_history_v1';
-    const entry = {
-      id: {{ ts.id | tojson }},
-      type: {{ test_type | tojson }},
-      label: {{ test_label | tojson }},
-      score: {{ (result.final_score if result else 0) | tojson }},
-      title: {{ (result.result_title if result else '') | tojson }},
-      date: new Intl.DateTimeFormat('ko-KR', {month:'short', day:'numeric'}).format(new Date())
+    const entry = {...window.MONEYFLOW_RESULT,
+      date: new Intl.DateTimeFormat('ko-KR', {month:'short', day:'numeric'}).format(new Date()),
+      createdAt: new Date().toISOString()
     };
     try {
       const current = JSON.parse(localStorage.getItem(key) || '[]');
@@ -39,5 +52,6 @@
     } catch (_) {}
   })();
 </script>
+<script src="{{ url_for('static', filename='js/moneyflow-fun.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
 {% endblock %}
