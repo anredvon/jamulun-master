@@ -7,7 +7,7 @@
 {% endblock %}
 {% block body %}
 <div class="page-shell intro-page diagnosis-page">
-  <div class="shell">
+  <div class="shell intro-shell">
     {% set active_tab = 'diagnosis' %}
     {% include '_app_header.html' %}
 
@@ -17,14 +17,8 @@
       <p>{{ intro_desc|safe }}</p>
     </section>
 
-    <div class="visual-stage intro-visual diagnosis-intro-visual" aria-hidden="true">
-      <img class="intro-art-cloud intro-art-cloud-left" src="{{ url_for('static', filename='images/ui/common/cloud.png') }}" alt="">
-      <img class="intro-art-cloud intro-art-cloud-right" src="{{ url_for('static', filename='images/ui/common/cloud.png') }}" alt="">
-      <img class="character" src="{{ url_for('static', filename='images/ui/intro/intro_character.png') }}" alt="">
-      <img class="intro-art-speech" src="{{ url_for('static', filename='images/ui/intro/intro_speech.png') }}" alt="">
-      <img class="intro-art-coin intro-art-coin-one" src="{{ url_for('static', filename='images/ui/common/coin_01.png') }}" alt="">
-      <img class="intro-art-coin intro-art-coin-two" src="{{ url_for('static', filename='images/ui/common/coin_02.png') }}" alt="">
-      <img class="sparkle" src="{{ url_for('static', filename='images/ui/common/sparkle_gold.png') }}" alt="">
+    <div class="intro-banner-card" aria-hidden="true">
+      <img src="{{ url_for('static', filename='images/ui/wealth_check/banner_main.png') }}" alt="">
     </div>
 
     <div class="info-card intro-card diagnosis-intro-card">
@@ -40,7 +34,6 @@
         {% endfor %}
       </ul>
       <a href="{{ url_for('test_page', test_type=test_type) }}" class="cta cta-primary">체크 시작하기 <span aria-hidden="true">→</span></a>
-      <a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
     </div>
   </div>
   {% include '_bottom_nav.html' %}
