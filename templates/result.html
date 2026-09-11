@@ -11,32 +11,33 @@
     {% set active_tab = 'diagnosis' %}
     {% include '_app_header.html' %}
 
-    <section class="hero result-hero diagnosis-hero">
+    <section class="hero result-hero diagnosis-hero result-hero-compact">
       <div class="hero-badge"><span class="dot"></span>결과 확인 완료</div>
       <h2><span class="grad">{{ result_heading }}</span></h2>
       <p>답변을 바탕으로 지금의 금전 흐름을 정리했어요.</p>
     </section>
 
-    <div class="result-card result-report-card">
-      <section class="money-score-card" aria-label="금전 흐름 점수">
-        <div class="money-score-kicker">MY MONEY FLOW SCORE</div>
-        <div class="money-score-main">
-          <div class="money-score-value">{{ result.final_score if result else 0 }}<span>/100</span></div>
+    <div class="result-card result-report-card result-report-v2">
+      <section class="money-score-card money-score-v2" aria-label="금전 흐름 점수">
+        <div class="money-score-copy">
+          <div class="money-score-kicker">MY MONEY FLOW SCORE</div>
+          <div class="money-score-value"><strong>{{ result.final_score if result else 0 }}</strong><span>/100</span></div>
           <div class="money-score-type">{{ result.result_title if result else '-' }}</div>
+          <div class="money-score-meta">{% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}</div>
         </div>
-        <div class="money-score-meta">
-          {% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}
+        <div class="result-mascot-wrap" aria-hidden="true">
+          <img src="{{ url_for('static', filename='images/ui/wealth_check/cat_coin.png') }}" alt="">
         </div>
       </section>
 
-      <section class="result-summary-card">
-        <h3>지금의 금전 흐름</h3>
-        <p>{{ result.result_desc if result else '' }}</p>
+      <section class="result-insight-v2">
+        <div class="result-insight-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_02.png') }}" alt=""></div>
+        <div><span class="result-insight-label">오늘의 한마디</span><p>{{ result.result_desc if result else '' }}</p></div>
       </section>
     </div>
 
-    <div class="result-actions">
-      <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">결과 공유하기</a>
+    <div class="result-actions result-actions-compact">
+      <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">결과 공유하기 <span aria-hidden="true">→</span></a>
       <a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 체크 해보기</a>
     </div>
   </div>
