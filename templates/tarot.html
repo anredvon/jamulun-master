@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}오늘의 재물 카드{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarot.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="page-shell tarot-page">
+  <main class="shell tarot-shell">
+    <div class="topbar-lite">
+      <div class="brand"><div class="logo" aria-hidden="true"></div><span>재물운 마스터</span></div>
+      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
+    </div>
+
+    <section class="tarot-hero" aria-labelledby="tarot-title">
+      <div class="hero-badge"><span class="dot"></span>오늘의 재물 카드</div>
+      <h1 id="tarot-title">지금 끌리는 카드를<br><span class="grad">한 장 골라보세요</span></h1>
+      <p>카드 한 장으로 오늘의 돈 흐름과<br>주의할 포인트를 가볍게 확인해요.</p>
+    </section>
+
+    <section class="tarot-picker" id="tarot-picker" aria-label="재물 카드 선택">
+      <button type="button" class="tarot-choice" data-slot="0" aria-label="첫 번째 카드 선택">
+        <span class="tarot-card tarot-card-back" aria-hidden="true"><span class="back-mark">✦</span></span>
+      </button>
+      <button type="button" class="tarot-choice" data-slot="1" aria-label="두 번째 카드 선택">
+        <span class="tarot-card tarot-card-back" aria-hidden="true"><span class="back-mark">✦</span></span>
+      </button>
+      <button type="button" class="tarot-choice" data-slot="2" aria-label="세 번째 카드 선택">
+        <span class="tarot-card tarot-card-back" aria-hidden="true"><span class="back-mark">✦</span></span>
+      </button>
+    </section>
+
+    <p class="tarot-hint" id="tarot-hint">정답은 없어요. 가장 먼저 눈에 들어오는 카드를 선택해보세요.</p>
+  </main>
+</div>
+
+<div class="tarot-modal is-hidden" id="tarot-modal" role="dialog" aria-modal="true" aria-labelledby="tarot-modal-title">
+  <div class="tarot-modal-backdrop" data-close-modal></div>
+  <div class="tarot-modal-panel">
+    <button type="button" class="tarot-modal-close" data-close-modal aria-label="닫기">×</button>
+
+    <div class="tarot-reveal" id="tarot-reveal">
+      <div class="tarot-reveal-card" id="tarot-reveal-card">
+        <div class="tarot-art-placeholder" id="tarot-art-placeholder" aria-hidden="true">
+          <span class="tarot-art-symbol" id="tarot-art-symbol">✦</span>
+        </div>
+        <div class="tarot-card-copy">
+          <div class="tarot-card-en" id="tarot-card-en">CARD</div>
+          <h2 id="tarot-modal-title">오늘의 카드</h2>
+        </div>
+      </div>
+      <p class="tarot-reveal-caption">오늘 당신에게 필요한 재물 메시지를 담은 카드예요.</p>
+      <button type="button" class="cta cta-primary" id="tarot-fortune-btn">운세 보기</button>
+    </div>
+
+    <section class="tarot-report is-hidden" id="tarot-report" aria-live="polite">
+      <div class="tarot-report-head">
+        <div>
+          <div class="tarot-report-kicker">TODAY'S MONEY FLOW</div>
+          <h2 id="tarot-report-title">오늘의 재물운</h2>
+        </div>
+        <div class="tarot-score-pill"><strong id="tarot-score">0</strong><span>/100</span></div>
+      </div>
+
+      <div class="tarot-status-row">
+        <span>오늘의 흐름</span>
+        <strong id="tarot-status">-</strong>
+      </div>
+
+      <div class="tarot-report-card">
+        <span class="tarot-report-label">💰 돈의 흐름</span>
+        <p id="tarot-flow"></p>
+      </div>
+      <div class="tarot-report-card tarot-report-warning">
+        <span class="tarot-report-label">⚠️ 주의 포인트</span>
+        <p id="tarot-caution"></p>
+      </div>
+      <div class="tarot-one-line">
+        <span>오늘의 한마디</span>
+        <strong id="tarot-line"></strong>
+      </div>
+
+      <button type="button" class="cta cta-primary" id="tarot-redraw-btn">다른 카드 뽑기</button>
+      <a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
+    </section>
+  </div>
+</div>
+
+<script type="application/json" id="tarot-data">{{ tarot_cards | tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/tarot.js') }}"></script>
+{% endblock %}
