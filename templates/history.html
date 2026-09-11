@@ -1,15 +1,36 @@
 {% extends "base.html" %}
-{% block title %}기록{% endblock %}
+{% block title %}나의 기록 · 머니플로우{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">{% endblock %}
 {% block body %}
-<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;text-align:center;min-height:80vh;">
-  <div style="font-size:56px;">📋</div>
-  <div style="font-size:20px;font-weight:800;color:var(--dark);">기록</div>
-  <div style="font-size:14px;color:var(--gray);line-height:1.6;">지난 테스트 결과와 재물운 기록이<br>여기에 쌓입니다.</div>
-  <a href="/test/money" class="btn-primary" style="width:auto;padding:14px 32px;text-decoration:none;">첫 테스트 시작하기</a>
+<div class="page-shell history-page">
+  <div class="shell history-shell">
+    {% set active_tab = 'history' %}
+    {% include '_app_header.html' %}
+
+    <section class="history-hero">
+      <div class="hero-badge"><span class="dot"></span>MY MONEY LOG</div>
+      <h1>나의 <span class="grad">머니 기록</span></h1>
+      <p>이 기기에서 확인한 결과를 한곳에 모아볼 수 있어요.</p>
+    </section>
+
+    <section id="history-summary" class="history-summary is-hidden" aria-label="기록 요약">
+      <div><span>최근 기록</span><strong id="history-count">0개</strong></div>
+      <div><span>최근 점수</span><strong id="history-latest-score">-</strong></div>
+    </section>
+
+    <section id="history-list" class="history-list" aria-live="polite"></section>
+
+    <section id="history-empty" class="history-empty">
+      <div class="history-empty-visual" aria-hidden="true">
+        <img src="{{ url_for('static', filename='images/ui/wealth_check/cat_crystal_ball.png') }}" alt="">
+      </div>
+      <h2>아직 쌓인 기록이 없어요</h2>
+      <p>머니플로우를 한 번 확인하면<br>결과가 이 기기에 차곡차곡 쌓여요.</p>
+      <a href="{{ url_for('home_page') }}" class="cta cta-primary">첫 기록 만들기 <span aria-hidden="true">→</span></a>
+    </section>
+  </div>
+  {% include '_bottom_nav.html' %}
 </div>
-<nav class="navbar">
-  <a class="nav-item" href="/"><span class="nav-icon">🏠</span><span class="nav-label">홈</span></a>
-  <a class="nav-item active"><span class="nav-icon">🕐</span><span class="nav-label">기록</span></a>
-  <a class="nav-item" href="/profile"><span class="nav-icon">👤</span><span class="nav-label">프로필</span></a>
-</nav>
 {% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/history.js') }}"></script>{% endblock %}
