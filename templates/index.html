@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}재물운 마스터{% endblock %}
+{% block title %}머니플로우{% endblock %}
 {% block body %}
 <div class="splash-page">
   <div class="splash-wrap">
@@ -10,11 +10,11 @@
       <img class="splash-deco splash-spark-a" src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_01.png') }}" alt="">
       <img class="splash-deco splash-spark-b" src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_02.png') }}" alt="">
     </div>
-    <div class="badge">MONEY INSIGHT APP</div>
-    <h1>재물운 <span class="grad">마스터</span></h1>
-    <p class="sub">오늘의 돈 흐름부터 소비 습관까지<br>가볍고 재미있게 확인해보세요.</p>
-    <a href="{{ url_for('home_page') }}" class="cta cta-primary">오늘의 재물운 보기 <span aria-hidden="true">→</span></a>
-    <div class="splash-trust">30초 · 익명 · 가벼운 체크</div>
+    <div class="badge">MONEY FLOW</div>
+    <h1>오늘의 돈 흐름, <span class="grad">머니플로우</span></h1>
+    <p class="sub">타로 한 장부터 소비 스타일과 재물 흐름까지<br>오늘 궁금한 돈 이야기를 가볍게 만나보세요.</p>
+    <a href="{{ url_for('home_page') }}" class="cta cta-primary">오늘의 흐름 만나보기 <span aria-hidden="true">→</span></a>
+    <div class="splash-trust">가볍게 시작하고 · 바로 확인하고 · 마음에 들면 공유해요</div>
   </div>
 </div>
 {% endblock %}
