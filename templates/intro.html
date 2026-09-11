@@ -18,15 +18,19 @@
     </section>
 
     <div class="visual-stage intro-visual diagnosis-intro-visual" aria-hidden="true">
+      <img class="intro-art-cloud intro-art-cloud-left" src="{{ url_for('static', filename='images/ui/common/cloud.png') }}" alt="">
+      <img class="intro-art-cloud intro-art-cloud-right" src="{{ url_for('static', filename='images/ui/common/cloud.png') }}" alt="">
       <img class="character" src="{{ url_for('static', filename='images/ui/intro/intro_character.png') }}" alt="">
-      <img class="checklist" src="{{ url_for('static', filename='images/ui/intro/intro_checklist.png') }}" alt="">
+      <img class="intro-art-speech" src="{{ url_for('static', filename='images/ui/intro/intro_speech.png') }}" alt="">
+      <img class="intro-art-coin intro-art-coin-one" src="{{ url_for('static', filename='images/ui/common/coin_01.png') }}" alt="">
+      <img class="intro-art-coin intro-art-coin-two" src="{{ url_for('static', filename='images/ui/common/coin_02.png') }}" alt="">
       <img class="sparkle" src="{{ url_for('static', filename='images/ui/common/sparkle_gold.png') }}" alt="">
     </div>
 
     <div class="info-card intro-card diagnosis-intro-card">
       <div class="badge intro-card-label">{{ intro_title }} 안내</div>
       <div class="kv">
-        <div class="item"><div class="k">예상 시간</div><div class="v">30초</div></div>
+        <div class="item"><div class="k">예상 시간</div><div class="v">약 30초</div></div>
         <div class="item"><div class="k">문항 수</div><div class="v">5문항</div></div>
         <div class="item"><div class="k">진행 방식</div><div class="v">선택형</div></div>
       </div>
@@ -35,7 +39,7 @@
         <li><span class="bullet-check" aria-hidden="true">✓</span><span>{{ bullet }}</span></li>
         {% endfor %}
       </ul>
-      <a href="{{ url_for('test_page', test_type=test_type) }}" class="cta cta-primary">체크 시작하기</a>
+      <a href="{{ url_for('test_page', test_type=test_type) }}" class="cta cta-primary">체크 시작하기 <span aria-hidden="true">→</span></a>
       <a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
     </div>
   </div>
