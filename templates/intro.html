@@ -1,27 +1,29 @@
 {% extends "base.html" %}
 {% block title %}{{ intro_title }}{% endblock %}
-{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis-flow.css') }}">
+{% endblock %}
 {% block body %}
-<div class="page-shell intro-page">
+<div class="page-shell intro-page diagnosis-page">
   <div class="shell">
-    <div class="topbar-lite">
-      <div class="brand"><div class="logo" aria-hidden="true"></div><span>재물운 마스터</span></div>
-      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
-    </div>
+    {% set active_tab = 'diagnosis' %}
+    {% include '_app_header.html' %}
 
-    <section class="hero intro-hero">
+    <section class="diagnosis-hero intro-hero">
       <div class="hero-badge"><span class="dot"></span>{{ intro_badge }}</div>
-      <h2>{{ intro_heading_before|safe }}<br><span class="grad">{{ intro_heading_highlight }}</span></h2>
+      <h1>{{ intro_heading_before|safe }}<br><span class="grad">{{ intro_heading_highlight }}</span></h1>
       <p>{{ intro_desc|safe }}</p>
     </section>
 
-    <div class="visual-stage intro-visual" aria-hidden="true">
+    <div class="visual-stage intro-visual diagnosis-intro-visual" aria-hidden="true">
       <img class="character" src="{{ url_for('static', filename='images/ui/intro/intro_character.png') }}" alt="">
       <img class="checklist" src="{{ url_for('static', filename='images/ui/intro/intro_checklist.png') }}" alt="">
       <img class="sparkle" src="{{ url_for('static', filename='images/ui/common/sparkle_gold.png') }}" alt="">
     </div>
 
-    <div class="info-card intro-card">
+    <div class="info-card intro-card diagnosis-intro-card">
       <div class="badge intro-card-label">{{ intro_title }} 안내</div>
       <div class="kv">
         <div class="item"><div class="k">예상 시간</div><div class="v">30초</div></div>
@@ -37,5 +39,6 @@
       <a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
     </div>
   </div>
+  {% include '_bottom_nav.html' %}
 </div>
 {% endblock %}
