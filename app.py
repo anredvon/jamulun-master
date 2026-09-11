@@ -4,10 +4,23 @@ The legacy quiz application stays in core_app.py. Feature modules such as Tarot 
 registered here so every entrypoint importing ``app`` receives the same routes.
 """
 
+from flask import render_template
+
 from core_app import app, db
 from tarot_integration import register_tarot
 
 register_tarot(app)
+
+
+@app.route("/history")
+def history_page():
+    """Render the local-device history view.
+
+    Completed results are stored in the browser's localStorage, so anonymous users
+    only see records created on their own device instead of server-wide sessions.
+    """
+    return render_template("history.html")
+
 
 __all__ = ["app", "db"]
 
