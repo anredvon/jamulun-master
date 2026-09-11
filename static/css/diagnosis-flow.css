@@ -32,6 +32,26 @@
 .auto-next-hint{margin-top:12px!important;font-size:10px!important;color:#aaa4b2!important;}
 .quiz-state-card{margin-top:28px;}
 
+/* Completed state: keep the screen compact, but make the empty state feel intentional. */
+.test-page .finish-state-card{max-width:390px;margin:34px auto 0!important;padding:28px 20px 22px!important;text-align:center;background:linear-gradient(180deg,#fff 0%,#fdfcff 100%)!important;border:1px solid #e7e1f3!important;box-shadow:0 16px 40px rgba(55,38,101,.08)!important;}
+.finish-celebration{display:flex;align-items:center;justify-content:center;gap:17px;height:58px;margin-bottom:2px;}
+.finish-emoji{display:grid;place-items:center;width:56px;height:56px;border-radius:19px;background:linear-gradient(145deg,#f1ebff,#faf8ff);font-size:30px;box-shadow:0 8px 20px rgba(94,64,194,.12);}
+.finish-spark{color:#7356da;font-size:14px;opacity:.72;}
+.finish-spark-left{transform:translateY(9px) rotate(-10deg);}
+.finish-spark-right{color:#f1b94c;transform:translateY(-8px) rotate(12deg);}
+.finish-kicker{margin-top:10px;color:#816ebc;font-size:9px;font-weight:900;letter-spacing:.17em;}
+.finish-state-card h3{margin:7px 0 0!important;font-size:25px!important;line-height:1.2!important;letter-spacing:-.045em!important;}
+.finish-lead{margin:9px 0 0!important;color:#7d7788!important;font-size:12px!important;line-height:1.6!important;}
+.finish-meta{display:flex;align-items:center;justify-content:center;gap:12px;margin:18px auto 0;padding:11px 14px;border-radius:15px;background:#f6f2ff;color:#7a7188;font-size:10px;}
+.finish-meta strong{color:#5e43c5;font-size:11px;}
+.finish-meta-divider{width:1px;height:20px;background:#ddd5ee;}
+.finish-preview{display:flex;align-items:center;gap:11px;margin-top:11px;padding:12px 14px;text-align:left;border:1px solid #eee9f6;border-radius:16px;background:#fff;}
+.finish-preview-icon{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:13px;background:#f3efff;font-size:17px;}
+.finish-preview div{min-width:0;}
+.finish-preview strong{display:block;color:#2b2535;font-size:11px;}
+.finish-preview small{display:block;margin-top:3px;color:#9992a2;font-size:9px;line-height:1.4;}
+.finish-state-card #finish-btn{margin-top:14px!important;min-height:52px!important;box-shadow:0 10px 22px rgba(100,70,207,.18);}
+
 .result-page .app-header{padding-bottom:10px;}
 .result-hero{padding-top:4px!important;}
 .result-hero .hero-badge{margin-bottom:10px;}
@@ -62,4 +82,6 @@
   .test-page .question-card{padding:17px!important;}
   .q-title{font-size:20px!important;}
   .money-score-value{font-size:52px;}
+  .test-page .finish-state-card{margin-top:24px!important;padding:23px 16px 18px!important;}
+  .finish-state-card h3{font-size:23px!important;}
 }
