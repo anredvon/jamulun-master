@@ -18,4 +18,26 @@
   <div class="result-actions result-actions-compact"><a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">친구에게 공유하기 <span aria-hidden="true">→</span></a><a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 흐름 둘러보기</a></div>
 </div>{% include '_bottom_nav.html' %}</div>
 {% endblock %}
-{% block scripts %}<script>window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }}; window.JAEMULUN_TEST_LABEL = {{ test_label | tojson }};</script><script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>{% endblock %}
+{% block scripts %}
+<script>
+  window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
+  window.JAEMULUN_TEST_LABEL = {{ test_label | tojson }};
+  (() => {
+    const key = 'moneyflow_history_v1';
+    const entry = {
+      id: {{ ts.id | tojson }},
+      type: {{ test_type | tojson }},
+      label: {{ test_label | tojson }},
+      score: {{ (result.final_score if result else 0) | tojson }},
+      title: {{ (result.result_title if result else '') | tojson }},
+      date: new Intl.DateTimeFormat('ko-KR', {month:'short', day:'numeric'}).format(new Date())
+    };
+    try {
+      const current = JSON.parse(localStorage.getItem(key) || '[]');
+      const next = [entry, ...(Array.isArray(current) ? current.filter(item => String(item.id) !== String(entry.id)) : [])].slice(0, 30);
+      localStorage.setItem(key, JSON.stringify(next));
+    } catch (_) {}
+  })();
+</script>
+<script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
+{% endblock %}
