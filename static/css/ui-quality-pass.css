@@ -1,0 +1,33 @@
+/* UI Quality Pass 1 — splash, home, quiz */
+
+/* Splash */
+.splash-page{background:linear-gradient(180deg,#f8f7ff 0%,#fbfaff 70%,#fff 100%)}
+.splash-page .splash-wrap{max-width:430px;margin:0 auto;min-height:100dvh;padding:34px 28px;justify-content:center}
+.splash-mascot-stage{position:relative;width:232px;height:196px;margin:0 auto 18px;border:1px solid #e7e1fb;border-radius:34px;background:linear-gradient(145deg,#fff 0%,#f3efff 100%);box-shadow:0 18px 44px rgba(91,60,196,.10);overflow:hidden}
+.splash-mascot{position:absolute;width:168px;left:50%;bottom:4px;transform:translateX(-50%);filter:drop-shadow(0 12px 15px rgba(65,42,126,.10))}
+.splash-deco{position:absolute;pointer-events:none}.splash-coin-a{width:38px;left:24px;bottom:25px;transform:rotate(-14deg)}.splash-coin-b{width:30px;right:25px;top:30px;transform:rotate(12deg)}.splash-spark-a{width:22px;left:28px;top:31px}.splash-spark-b{width:16px;right:31px;bottom:27px}
+.splash-page .badge{margin-bottom:14px!important;font-size:10px;padding:7px 12px}
+.splash-page h1{font-size:36px;letter-spacing:-.055em}.splash-page .sub{max-width:340px;margin:12px auto 0;font-size:13px;line-height:1.65;color:#777181}.splash-page .cta{margin-top:20px!important;max-width:340px;min-height:52px;padding:14px 18px;border-radius:18px}
+.splash-trust{margin-top:10px;color:#aaa4b2;font-size:9.5px}
+
+/* Home */
+.home-visual-cat{width:132px!important;left:50%!important;bottom:-14px!important;transform:translateX(-50%)!important;z-index:3;filter:drop-shadow(0 9px 12px rgba(67,45,120,.12))}
+.home-visual-coin-a{width:34px!important;left:21%!important;bottom:13px!important;z-index:4;transform:rotate(-15deg)}
+.home-visual-coin-b{width:29px!important;right:18%!important;top:18px!important;z-index:4;transform:rotate(13deg)}
+.home-visual-cloud-left{width:58px!important;left:10px!important;top:8px!important;z-index:1;opacity:.82}
+.home-visual-cloud-right{width:46px!important;right:8px!important;bottom:6px!important;z-index:1;opacity:.72}
+.home-page .home-action-icon{font-size:0}.home-action-icon img{width:23px;height:23px;object-fit:contain}.home-action-icon-tarot img{width:24px}.home-action-icon-money img{width:22px}
+
+/* Quiz */
+.test-page .shell{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+.test-page .app-header{padding-bottom:8px!important}.test-progress{margin:0 0 10px!important}.test-progress .progress-meta{margin-bottom:7px!important;font-size:10.5px!important}.test-progress .progress{height:6px!important}
+.test-page #question-box .question-card{margin-top:10px!important;padding:18px 16px 15px!important;border-radius:22px!important;box-shadow:0 8px 22px rgba(31,25,61,.045)!important}
+.question-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.test-page .q-tag{margin:0!important;padding:7px 10px!important;font-size:9px!important;letter-spacing:.14em!important}
+.q-emoji-wrap{margin:0!important;display:block!important}.q-emoji{width:34px!important;height:34px!important;border-radius:11px!important;background:#f3efff!important;font-size:17px!important}
+.test-page .q-title{margin:0 0 6px!important;text-align:left!important;font-size:21px!important;line-height:1.28!important;letter-spacing:-.04em!important}
+.test-page .q-sub{min-height:0!important;margin:0 0 12px!important;text-align:left!important;font-size:11px!important;line-height:1.5!important;color:#96909f!important}
+.test-page #choice-list{gap:7px!important;margin-top:0!important}.test-page .choice-btn{align-items:center!important;min-height:50px!important;padding:10px 12px!important;border-radius:15px!important;border:1px solid #e9e5f2!important;background:#fff!important;box-shadow:none!important;font-size:12.5px!important;line-height:1.35!important}.test-page .choice-btn .num{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:10px;background:#f2eff8;color:#756d82;font-size:11px;font-weight:900}.test-page .choice-btn .label{text-align:left;font-weight:800;color:#35303d}.test-page .choice-btn.is-selected{border-color:#8c72e7!important;background:#f7f4ff!important;box-shadow:0 0 0 2px rgba(116,83,218,.08)!important}.test-page .choice-btn.is-selected .num{background:#694bd3;color:#fff}.test-page .auto-next-hint{margin-top:9px!important;font-size:9px!important}
+
+@media(max-width:380px){.splash-mascot-stage{width:210px;height:176px}.splash-mascot{width:150px}.splash-page h1{font-size:32px}.test-page .q-title{font-size:19px!important}.test-page .choice-btn{min-height:47px!important}}
+@media(max-height:760px){.splash-page .splash-wrap{padding-top:22px;padding-bottom:22px}.splash-mascot-stage{height:160px;width:205px;margin-bottom:13px}.splash-mascot{width:142px}.splash-page h1{font-size:31px}.splash-page .sub{font-size:12px}.test-page #question-box .question-card{padding-top:15px!important}.test-page .choice-btn{min-height:45px!important;padding:8px 11px!important}}
