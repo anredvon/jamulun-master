@@ -6,6 +6,8 @@
 .history-summary>div{padding:14px 16px;border:1px solid #ece8f5;border-radius:18px;background:#fff;box-shadow:0 6px 18px rgba(45,32,78,.045);}
 .history-summary span{display:block;color:#9a94a4;font-size:10px;font-weight:800;}
 .history-summary strong{display:block;margin-top:3px;color:#3b3155;font-size:18px;font-weight:900;}
+.weekly-flow{margin:10px 0;padding:15px;border-radius:21px;background:linear-gradient(145deg,#3d2688,#7656df);color:#fff;box-shadow:0 12px 28px rgba(79,52,166,.15)}
+.weekly-flow-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.weekly-flow-head span{display:block;font-size:7.5px;font-weight:900;letter-spacing:.17em;opacity:.62}.weekly-flow-head strong{display:block;margin-top:3px;font-size:14px}.weekly-flow-head em{font-size:10px;font-style:normal;font-weight:900;color:#8ff2ca}.weekly-flow-bars{display:flex;align-items:flex-end;gap:7px;height:58px;margin:12px 0 9px;padding:0 3px;border-bottom:1px solid rgba(255,255,255,.14)}.weekly-flow-bars span{flex:1;min-height:8px;max-width:34px;border-radius:7px 7px 2px 2px;background:rgba(255,255,255,.32);transition:height .25s ease}.weekly-flow-bars span.is-latest{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.08)}.weekly-flow p{margin:0;font-size:9.5px;line-height:1.5;color:rgba(255,255,255,.76)}
 .history-list{display:flex;flex-direction:column;gap:9px;margin-top:10px;}
 .history-item{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid #ece8f5;border-radius:20px;background:#fff;box-shadow:0 7px 20px rgba(45,32,78,.05);}
 .history-item-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:#f2eeff;color:#6749c9;flex:0 0 42px;}
