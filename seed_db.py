@@ -26,9 +26,11 @@ from app import app, db
 from models import Question, Choice
 
 
+# _validate_seed_sql()에서 비교 문자열을 upper()로 정규화하므로
+# 허용 prefix도 동일하게 대문자로 유지한다.
 _ALLOWED_SQL_PREFIXES = (
-    "INSERT INTO questions",
-    "INSERT INTO choices",
+    "INSERT INTO QUESTIONS",
+    "INSERT INTO CHOICES",
 )
 
 
