@@ -21,7 +21,7 @@
     hint: document.getElementById('tarot-hint'),
     title: document.getElementById('tarot-modal-title'),
     en: document.getElementById('tarot-card-en'),
-    symbol: document.getElementById('tarot-art-symbol'),
+    image: document.getElementById('tarot-art-image'),
     fortuneBtn: document.getElementById('tarot-fortune-btn'),
     redrawBtn: document.getElementById('tarot-redraw-btn'),
     reportTitle: document.getElementById('tarot-report-title'),
@@ -38,11 +38,18 @@
     return cards[Math.floor(Math.random() * cards.length)];
   }
 
+  function staticUrl(path) {
+    return `/static/${String(path || '').replace(/^\/+/, '')}`;
+  }
+
   function openModal(card) {
     selectedCard = card;
     el.title.textContent = card.title;
     el.en.textContent = card.en || 'MONEY CARD';
-    el.symbol.textContent = card.symbol || '✦';
+    if (el.image) {
+      el.image.src = staticUrl(card.image);
+      el.image.alt = `${card.title} ${card.en || ''} 재물 카드`.trim();
+    }
     reveal.classList.remove('is-hidden');
     report.classList.add('is-hidden');
     modal.classList.remove('is-hidden');
@@ -71,6 +78,10 @@
   function resetPicker() {
     selectedCard = null;
     closeModal();
+    if (el.image) {
+      el.image.removeAttribute('src');
+      el.image.alt = '';
+    }
     el.choices.forEach(btn => btn.classList.remove('is-muted', 'is-picked'));
     if (el.hint) el.hint.textContent = '정답은 없어요. 가장 먼저 눈에 들어오는 카드를 선택해보세요.';
   }
