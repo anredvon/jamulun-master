@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block title %}진단 선택{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home-visual.css') }}">
+{% endblock %}
 {% block body %}
 
-<div class="page-shell">
+<div class="page-shell home-page">
   <div class="shell">
 
     <!-- 상단 -->
@@ -28,6 +31,14 @@
         간단한 선택만으로 현재 소비 패턴과<br>
         금전 상태를 빠르게 확인할 수 있어요.
       </p>
+
+      <div class="home-visual" aria-hidden="true">
+        <img class="home-visual-clouds" src="{{ url_for('static', filename='images/ui/home/home_clouds.png') }}" alt="">
+        <img class="home-visual-sparkle-a" src="{{ url_for('static', filename='images/ui/common/sparkle_gold.png') }}" alt="">
+        <img class="home-visual-sparkle-b" src="{{ url_for('static', filename='images/ui/common/sparkle_purple.png') }}" alt="">
+        <img class="home-visual-character" src="{{ url_for('static', filename='images/ui/home/home_character.png') }}" alt="">
+        <img class="home-visual-coins" src="{{ url_for('static', filename='images/ui/home/home_coins.png') }}" alt="">
+      </div>
     </section>
 
     <!-- 카드 -->
