@@ -3,11 +3,18 @@
 {% block body %}
 <div class="splash-page">
   <div class="splash-wrap">
-    <div class="logo-box"><div class="logo-circle"></div></div>
-    <div class="badge" style="margin-bottom:16px">MONEY INSIGHT APP</div>
+    <div class="splash-mascot-stage" aria-hidden="true">
+      <img class="splash-mascot" src="{{ url_for('static', filename='images/ui/wealth_check/cat_wave.png') }}" alt="">
+      <img class="splash-deco splash-coin-a" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_01.png') }}" alt="">
+      <img class="splash-deco splash-coin-b" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_02.png') }}" alt="">
+      <img class="splash-deco splash-spark-a" src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_01.png') }}" alt="">
+      <img class="splash-deco splash-spark-b" src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_02.png') }}" alt="">
+    </div>
+    <div class="badge">MONEY INSIGHT APP</div>
     <h1>재물운 <span class="grad">마스터</span></h1>
-    <p class="sub">오늘의 소비 흐름을 가볍게 확인하는 재물운 앱<br>30초 안에 확인하는 오늘의 금전운</p>
-    <a href="{{ url_for('home_page') }}" class="cta cta-primary" style="margin-top:28px">입장</a>
+    <p class="sub">오늘의 돈 흐름부터 소비 습관까지<br>가볍고 재미있게 확인해보세요.</p>
+    <a href="{{ url_for('home_page') }}" class="cta cta-primary">오늘의 재물운 보기 <span aria-hidden="true">→</span></a>
+    <div class="splash-trust">30초 · 익명 · 가벼운 체크</div>
   </div>
 </div>
 {% endblock %}
