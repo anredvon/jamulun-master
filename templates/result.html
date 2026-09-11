@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ result.result_title if result else '결과' }}{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">{% endblock %}
 {% block body %}
 <div class="page-shell result-page">
   <div class="shell">
@@ -14,8 +15,14 @@
       <p>답변을 바탕으로 지금의 금전 흐름을 정리했어요.</p>
     </section>
 
+    <div class="visual-stage result-visual" aria-hidden="true">
+      <img class="character" src="{{ url_for('static', filename='images/ui/result/result_character.png') }}" alt="">
+      <img class="trophy" src="{{ url_for('static', filename='images/ui/result/result_trophy.png') }}" alt="">
+      <img class="sparkle" src="{{ url_for('static', filename='images/ui/common/sparkle_gold.png') }}" alt="">
+    </div>
+
     <div class="result-card result-report-card">
-      <div class="score-ring">
+      <div class="score-ring" style="--score: {{ result.final_score if result else 0 }}%;">
         <div class="score-inner">
           <div class="score-num">{{ result.final_score if result else 0 }}</div>
           <div class="score-label">{{ result.result_title if result else '-' }}</div>
@@ -23,9 +30,7 @@
       </div>
       <div class="result-title">{{ result.result_title if result else '-' }}</div>
       <div class="result-desc">{{ result.result_desc if result else '' }}</div>
-      <div class="result-tags">
-        {% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}
-      </div>
+      <div class="result-tags">{% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}</div>
     </div>
 
     <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">공유하기</a>
@@ -38,5 +43,4 @@
   window.JAEMULUN_TEST_LABEL = "{{ test_label }}";
 </script>
 <script src="{{ url_for('static', filename='js/jaemulun.js') }}"></script>
-
 {% endblock %}
