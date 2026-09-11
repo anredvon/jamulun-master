@@ -1,35 +1,46 @@
 {% extends "base.html" %}
 {% block title %}{{ result.result_title if result else '결과' }}{% endblock %}
-{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis-flow.css') }}">
+{% endblock %}
 {% block body %}
-<div class="page-shell result-page">
+<div class="page-shell result-page diagnosis-page">
   <div class="shell">
-    <div class="topbar-lite">
-      <div class="brand"><div class="logo" aria-hidden="true"></div><span>재물운 마스터</span></div>
-      <a href="{{ url_for('home_page') }}" class="hero-badge hero-link">홈</a>
-    </div>
+    {% set active_tab = 'diagnosis' %}
+    {% include '_app_header.html' %}
 
-    <section class="hero result-hero">
+    <section class="hero result-hero diagnosis-hero">
       <div class="hero-badge"><span class="dot"></span>결과 확인 완료</div>
       <h2><span class="grad">{{ result_heading }}</span></h2>
       <p>답변을 바탕으로 지금의 금전 흐름을 정리했어요.</p>
     </section>
 
     <div class="result-card result-report-card">
-      <div class="score-ring" style="--score: {{ result.final_score if result else 0 }}%;">
-        <div class="score-inner">
-          <div class="score-num">{{ result.final_score if result else 0 }}</div>
-          <div class="score-label">{{ result.result_title if result else '-' }}</div>
+      <section class="money-score-card" aria-label="금전 흐름 점수">
+        <div class="money-score-kicker">MY MONEY FLOW SCORE</div>
+        <div class="money-score-main">
+          <div class="money-score-value">{{ result.final_score if result else 0 }}<span>/100</span></div>
+          <div class="money-score-type">{{ result.result_title if result else '-' }}</div>
         </div>
-      </div>
-      <div class="result-title">{{ result.result_title if result else '-' }}</div>
-      <div class="result-desc">{{ result.result_desc if result else '' }}</div>
-      <div class="result-tags">{% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}</div>
+        <div class="money-score-meta">
+          {% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}
+        </div>
+      </section>
+
+      <section class="result-summary-card">
+        <h3>지금의 금전 흐름</h3>
+        <p>{{ result.result_desc if result else '' }}</p>
+      </section>
     </div>
 
-    <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">공유하기</a>
-    <a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 진단 해보기</a>
+    <div class="result-actions">
+      <a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">결과 공유하기</a>
+      <a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 진단 해보기</a>
+    </div>
   </div>
+  {% include '_bottom_nav.html' %}
 </div>
 {% endblock %}
 
