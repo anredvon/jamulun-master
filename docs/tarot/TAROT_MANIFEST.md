@@ -1,0 +1,28 @@
+# Jaemulun Tarot Final Manifest
+
+24 production cards + 1 card back. Production PNG: 1024×1280 RGBA.
+
+- 01_temperance: **절제 / TEMPERANCE** — source `4148B2CA-C070-4E69-8AB1-FEC74794B626.jpeg` (selected original)
+- 02_expense: **지출 / EXPENSE** — source `B056E391-8E43-4353-B12A-68D8A891F9DE(1).jpeg` (selected original)
+- 03_income: **수익 / INCOME** — source `0F1051E0-0496-4ED5-A453-C7CA83025D19.jpeg` (selected original)
+- 04_investment: **투자 / INVESTMENT** — source `EE4B83DD-7DDD-4690-A737-BE0EF03E8F42.jpeg` (selected original)
+- 05_opportunity: **기회 / OPPORTUNITY** — source `049589B6-2C3D-41E7-A491-4301B87DF577.jpeg` (selected original)
+- 06_warning: **경고 / WARNING** — source `96BCFCBD-E98D-43B7-8971-A8FEA906B08B.jpeg` (selected original)
+- 07_crisis: **위기 / CRISIS** — source `76069828-B33D-4A6E-850F-E27AFDAF117C.jpeg` (selected original)
+- 08_response: **대응 / RESPONSE** — source `BD4AF3DC-1402-47F1-AC2C-F30582E631FA.jpeg` (selected original)
+- 09_loss: **손실 / LOSS** — source `5AAB3EBE-8327-436E-9369-E56CCBA9BAA1.jpeg` (selected original)
+- 10_temptation: **유혹 / TEMPTATION** — source `2148ED3B-8626-4C1C-B3EF-083CDD5CF0D8.jpeg` (selected original)
+- 11_flow: **흐름 / FLOW** — source `541CAA35-76BC-4F81-A5A8-0F5F2CBD12A2.jpeg` (selected original)
+- 12_choice: **선택 / CHOICE** — source `57DEAC39-3B2B-40C9-8D1F-89BC3C556349.jpeg` (selected original)
+- 13_change: **변화 / CHANGE** — source `0C875C9D-50D7-4F15-89A2-F34F84FDAC1B.jpeg` (selected original)
+- 14_plan: **계획 / PLAN** — source `7977D994-4CD5-4C79-8FAD-0ABDDB1C84A9.jpeg` (selected original)
+- 15_balance: **균형 / BALANCE** — source `BC08623D-578F-4E44-90D5-D02F05CE7925.jpeg` (selected original)
+- 16_hope: **희망 / HOPE** — source `6D7146EB-C076-4E89-9B4A-9F0CBA6F5786.jpeg` (selected original)
+- 17_success: **성공 / SUCCESS** — source `D69708E9-9AF4-4AFB-A2B8-DD3385CBFCFE.jpeg` (selected original)
+- 18_greed: **욕심 / GREED** — source `0A211CA6-77AF-4E0E-87A1-D460A6370E1D.jpeg` (selected original)
+- 19_judgment: **판단 / JUDGMENT** — source `98CEF6DB-E6A7-4B58-9603-2E808561BEE5.jpeg` (selected original)
+- 20_focus: **집중 / FOCUS** — source `47C6E9B6-6CB5-4E52-BD50-E9A5D784477E.jpeg` (selected original)
+- 21_luck: **행운 / LUCK** — source `23D633D1-3B71-4936-9F5A-163FE5FF58E0.jpeg` (selected original)
+- 22_timing: **타이밍 / TIMING** — source `별빛_시계방의_타이밍_카드.png` (selected original)
+- 23_saving: **저축 / SAVING** — source `generated deck sheet` (new)
+- 24_growth: **성장 / GROWTH** — source `generated deck sheet` (new)
