@@ -1,0 +1,26 @@
+.history-shell{min-height:100dvh;}
+.history-hero{text-align:center;padding:20px 4px 16px;}
+.history-hero h1{margin:14px 0 7px;font-size:29px;line-height:1.18;font-weight:900;letter-spacing:-.055em;}
+.history-hero p{margin:0;color:#817b8d;font-size:13px;line-height:1.6;}
+.history-summary{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0;}
+.history-summary>div{padding:14px 16px;border:1px solid #ece8f5;border-radius:18px;background:#fff;box-shadow:0 6px 18px rgba(45,32,78,.045);}
+.history-summary span{display:block;color:#9a94a4;font-size:10px;font-weight:800;}
+.history-summary strong{display:block;margin-top:3px;color:#3b3155;font-size:18px;font-weight:900;}
+.history-list{display:flex;flex-direction:column;gap:9px;margin-top:10px;}
+.history-item{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid #ece8f5;border-radius:20px;background:#fff;box-shadow:0 7px 20px rgba(45,32,78,.05);}
+.history-item-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:#f2eeff;color:#6749c9;flex:0 0 42px;}
+.history-item-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.history-item-copy{min-width:0;flex:1;}
+.history-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.history-item-top strong{font-size:13px;font-weight:900;color:#342b4a;}
+.history-item-top time{font-size:9px;font-weight:700;color:#aaa4b2;white-space:nowrap;}
+.history-item-copy p{margin:3px 0 0;color:#777181;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.history-item-score{font-size:18px;font-weight:900;color:#684ac8;white-space:nowrap;}
+.history-item-score small{font-size:9px;color:#aaa4b2;}
+.history-empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 16px 10px;}
+.history-empty-visual{display:grid;place-items:center;width:146px;height:116px;margin:2px auto 8px;border-radius:30px;background:linear-gradient(145deg,#f7f3ff,#fff);overflow:hidden;}
+.history-empty-visual img{width:112px;height:112px;object-fit:contain;}
+.history-empty h2{margin:4px 0 7px;font-size:20px;font-weight:900;letter-spacing:-.04em;color:#302742;}
+.history-empty p{margin:0 0 16px;color:#8a8493;font-size:12px;line-height:1.65;}
+.history-empty .cta{width:100%;max-width:330px;}
+.history-page .is-hidden{display:none!important;}
