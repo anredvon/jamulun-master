@@ -21,11 +21,13 @@
 
   window.shareTwitter = function shareTwitter() {
     const { text, url } = shareData();
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`);
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
   };
 
-  window.shareInstagram = function shareInstagram() {
-    window.copyLink();
+  window.shareThreads = function shareThreads() {
+    const { text, url } = shareData();
+    const payload = `${text}\n${url}`;
+    window.open(`https://www.threads.net/intent/post?text=${encodeURIComponent(payload)}`, '_blank', 'noopener,noreferrer');
   };
 
   window.shareKakao = function shareKakao() {
@@ -38,12 +40,13 @@
       }).catch(() => {});
       return;
     }
+    const payload = `${text}\n${url}`;
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(`${text}\n${url}`)
+      navigator.clipboard.writeText(payload)
         .then(() => alert('공유 링크가 복사되었습니다.'))
-        .catch(() => alert(`${text}\n${url}`));
+        .catch(() => alert(payload));
     } else {
-      alert(`${text}\n${url}`);
+      alert(payload);
     }
   };
 
@@ -76,14 +79,12 @@
   };
 
   const AUTO_DELAY = 80;
-
   const show = (n) => n && n.classList.remove('is-hidden');
   const hide = (n) => n && n.classList.add('is-hidden');
 
   async function fetchJson(url, opt = {}) {
     const res = await fetch(url, opt);
-    const data = await res.json();
-    return data;
+    return res.json();
   }
 
   function renderQuestion() {
@@ -95,131 +96,68 @@
     }
 
     show(el.questionBox);
-
     el.progressText.textContent = `${state.currentIdx + 1} / ${state.questions.length}`;
     el.progressFill.style.width = `${(state.currentIdx + 1) / state.questions.length * 100}%`;
-
+    el.questionTag.textContent = `QUESTION ${state.currentIdx + 1}`;
     el.questionEmoji.textContent = q.emoji || '💰';
     el.questionText.textContent = q.text;
     el.questionSub.textContent = q.sub || '';
-
     el.choiceList.innerHTML = '';
 
     q.choices.forEach((c, i) => {
       const btn = document.createElement('button');
       btn.className = 'choice-btn';
-      btn.innerHTML = `
-        <span class="num">${String.fromCharCode(65 + i)}</span>
-        <span class="label">${c.text}</span>
-      `;
-
+      btn.innerHTML = `<span class="num">${String.fromCharCode(65 + i)}</span><span class="label">${c.text}</span>`;
       btn.onclick = () => {
         if (state.isSubmitting) return;
-
         document.querySelectorAll('.choice-btn').forEach(n => n.classList.remove('is-selected'));
         btn.classList.add('is-selected');
-
         clearTimeout(state.autoTimer);
-
         state.autoTimer = setTimeout(async () => {
           state.isSubmitting = true;
-
           await fetchJson('/api/answer', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-              session_id: state.sessionId,
-              question_id: q.id,
-              choice_id: c.id
-            })
+            body: JSON.stringify({session_id: state.sessionId, question_id: q.id, choice_id: c.id})
           });
-
           state.currentIdx++;
           state.isSubmitting = false;
           renderQuestion();
         }, AUTO_DELAY);
       };
-
       el.choiceList.appendChild(btn);
     });
   }
 
   async function start() {
     clearTimeout(state.autoTimer);
-    state.autoTimer = null;
     show(el.loadingBox);
-
-    const data = await fetchJson('/api/start', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ test_type: testType })
-    });
-
-    state.sessionId = data.session_id;
-    state.questions = data.questions;
-
-    hide(el.loadingBox);
-    renderQuestion();
+    try {
+      const data = await fetchJson('/api/start', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({test_type: testType})
+      });
+      state.sessionId = data.session_id;
+      state.questions = data.questions || [];
+      hide(el.loadingBox);
+      renderQuestion();
+    } catch (err) {
+      hide(el.loadingBox);
+      if (el.errorMessage) el.errorMessage.textContent = '잠시 후 다시 시도해 주세요.';
+      show(el.errorBox);
+    }
   }
 
   el.finishBtn.onclick = async () => {
     show(el.analyzingOverlay);
-
     const res = await fetchJson('/api/finish', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ session_id: state.sessionId })
+      body: JSON.stringify({session_id: state.sessionId})
     });
-
     location.href = `/result/${res.session_id}`;
   };
 
-  function getShareData() {
-  const testType = window.JAEMULUN_TEST_TYPE;
-  const testLabel = window.JAEMULUN_TEST_LABEL;
-
-  return {
-    text: `${testLabel} 해봤어?\n너도 한번 해봐 👇`,
-    url: `${location.origin}/intro/${testType}`
-  };
-}
-
-function copyLink() {
-  const { url } = getShareData();
-  navigator.clipboard.writeText(url);
-  alert('링크가 복사되었습니다');
-}
-
-function shareTwitter() {
-  const { text, url } = getShareData();
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`);
-}
-
-function shareInstagram() {
-  alert('인스타는 링크 복사 방식으로 공유해주세요');
-}
- 
-function shareKakao() {
-  const testType = window.JAEMULUN_TEST_TYPE || "money";
-  const testLabel = window.JAEMULUN_TEST_LABEL || "재물운";
-  const shareUrl = `${location.origin}/intro/${testType}`;
-  const text = `${testLabel} 퀴즈를 친구에게 보여주세요\n${shareUrl}`;
-
-  if (navigator.share) {
-    navigator.share({
-      title: testLabel,
-      text: `${testLabel} 퀴즈를 친구에게 보여주세요`,
-      url: shareUrl
-    }).catch(() => {});
-    return;
-  }
-
-  navigator.clipboard.writeText(text)
-    .then(() => alert("공유 링크가 복사되었습니다."))
-    .catch(() => alert(text));
-}
-
   start();
-
-
 })();
