@@ -1,0 +1,42 @@
+JAEMULUN UI ASSET QA
+================================================
+PASS | common/cloud.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.225 edge=True
+PASS | common/coin_01.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.102 edge=True
+PASS | common/coin_02.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.081 edge=True
+PASS | common/coin_stack.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.087 edge=True
+PASS | common/heart.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.257 edge=True
+PASS | common/money_bag.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.133 edge=True
+PASS | common/sparkle_gold.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.072 edge=True
+PASS | common/sparkle_purple.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.072 edge=True
+PASS | common/speech_bubble.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.425 edge=True
+PASS | decor/confetti.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.031 edge=True
+PASS | decor/laurel.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.112 edge=True
+PASS | decor/ribbon.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.150 edge=True
+PASS | home/home_character.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.179 edge=True
+PASS | home/home_clouds.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.279 edge=True
+PASS | home/home_coins.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.107 edge=True
+PASS | home/home_message.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.425 edge=True
+PASS | intro/intro_character.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.258 edge=True
+PASS | intro/intro_checklist.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.122 edge=True
+PASS | intro/intro_speech.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.425 edge=True
+PASS | result/result_character.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.225 edge=True
+PASS | result/result_speech.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.425 edge=True
+PASS | result/result_trophy.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.105 edge=True
+PASS | share/share_character.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.172 edge=True
+PASS | share/share_instagram.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.097 edge=True
+PASS | share/share_kakao.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.475 edge=True
+PASS | share/share_link.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.633 edge=True
+PASS | share/share_speech.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.425 edge=True
+PASS | share/share_x.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.097 edge=True
+PASS | test/test_books.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.252 edge=True
+PASS | test/test_idea.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.059 edge=True
+PASS | test/test_speech.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.425 edge=True
+PASS | test/test_target.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.337 edge=True
+PASS | test/test_think.png | mode=RGBA size=(512, 512) alpha=0..255 coverage=0.228 edge=True
+
+Production files: 33
+QA failures: 0
+Exact duplicate groups: 0
+Overall automated QA: PASS
+
+Visual QA note: production assets are individually isolated on 512×512 transparent canvases; source-sheet section labels/card borders are not included.

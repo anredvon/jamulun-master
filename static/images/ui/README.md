@@ -1,14 +1,16 @@
 # Jaemulun UI Assets
 
-Production visual assets for the Jaemulun UI.
+Recommended repository destination:
 
-Folders:
-- `common/` shared decorative assets
-- `home/` home screen assets
-- `intro/` diagnosis intro assets
-- `test/` quiz assets
-- `result/` result screen assets
-- `share/` sharing screen assets
-- `decor/` generic celebration/decorative assets
+`static/images/ui/`
 
-Keep dynamic labels, scores, buttons, and messages as HTML/Jinja text. Images in this tree are decorative production assets.
+Subfolders:
+- common
+- home
+- intro
+- test
+- result
+- share
+- decor
+
+Use the files as decorative assets only. Keep core labels, scores, buttons, and dynamic messages as HTML/Jinja text.
