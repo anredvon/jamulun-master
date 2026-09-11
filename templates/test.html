@@ -35,23 +35,12 @@
     </div>
 
     <div id="finish-box" class="question-card quiz-state-card finish-state-card is-hidden">
-      <div class="finish-icon" aria-hidden="true">
-        <span class="finish-checkmark">✓</span>
-        <span class="finish-spark finish-spark-left">✦</span>
-        <span class="finish-spark finish-spark-right">✦</span>
-      </div>
+      <div class="finish-icon" aria-hidden="true"><span class="finish-checkmark">✓</span><span class="finish-spark finish-spark-left">✦</span><span class="finish-spark finish-spark-right">✦</span></div>
       <div class="finish-kicker">CHECK COMPLETE</div>
       <h3>모든 질문에 답했어요</h3>
       <p class="finish-lead">나의 재물 흐름을 정리했어요.<br>이제 오늘의 결과를 확인해보세요.</p>
-      <div class="finish-meta" aria-label="체크 완료 정보">
-        <span><strong>5 / 5</strong> 답변 완료</span>
-        <span class="finish-meta-divider" aria-hidden="true"></span>
-        <span><strong>30초</strong> 간단 체크</span>
-      </div>
-      <div class="finish-preview">
-        <span class="finish-preview-icon" aria-hidden="true">↗</span>
-        <div><strong>오늘의 재물 흐름</strong><small>점수 · 유형 · 한마디를 확인할 수 있어요</small></div>
-      </div>
+      <div class="finish-meta"><span><strong>5 / 5</strong> 답변 완료</span><span class="finish-meta-divider"></span><span><strong>30초</strong> 간단 체크</span></div>
+      <div class="finish-preview"><span class="finish-preview-icon">↗</span><div><strong>오늘의 재물 흐름</strong><small>점수 · 유형 · 한마디를 확인할 수 있어요</small></div></div>
       <button id="finish-btn" class="cta cta-primary">결과 확인 <span aria-hidden="true">→</span></button>
     </div>
   </div>
@@ -59,16 +48,9 @@
 </div>
 <div id="analyzing-overlay" class="analyzing-overlay is-hidden">
   <div class="analyzing-content">
-    <div class="analyzing-art" aria-hidden="true">
-      <img class="analyzing-character" src="{{ url_for('static', filename='images/ui/result/result_character.png') }}" alt="">
-      <img class="analyzing-coin analyzing-coin-one" src="{{ url_for('static', filename='images/ui/common/coin_01.png') }}" alt="">
-      <img class="analyzing-coin analyzing-coin-two" src="{{ url_for('static', filename='images/ui/common/coin_02.png') }}" alt="">
-      <span class="analyzing-spark analyzing-spark-one">✦</span><span class="analyzing-spark analyzing-spark-two">✦</span>
-    </div>
-    <div class="analyzing-badge"><span class="dot"></span>결과 만드는 중</div>
-    <h2 class="analyzing-title">오늘의 재물 흐름을<br><span>정리하고 있어요</span></h2>
-    <p class="analyzing-desc">답변을 바탕으로 점수와 유형,<br>오늘의 한마디를 준비하고 있어요.</p>
-    <div class="analyzing-progress" aria-hidden="true"><span></span></div>
+    <img class="analyzing-cat" src="{{ url_for('static', filename='images/ui/wealth_check/cat_crystal_ball.png') }}" alt="">
+    <h2 class="analyzing-simple-title">재물운 분석 중…</h2>
+    <p class="analyzing-simple-desc">답변 흐름을 바탕으로<br>결과 리포트를 생성하고 있습니다.</p>
     <div class="analyzing-dots"><span></span><span></span><span></span></div>
   </div>
 </div>
