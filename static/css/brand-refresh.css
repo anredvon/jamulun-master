@@ -1,0 +1,16 @@
+/* Money Flow copy/spacing polish */
+.question-topline{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.q-step-mark{display:flex;align-items:center;gap:5px;padding:10px 12px;border-radius:999px;background:#f5f2ff}
+.q-step-mark span{width:6px;height:6px;border-radius:50%;background:#7256d5;opacity:.35}
+.q-step-mark span:nth-child(2){opacity:.65}.q-step-mark span:nth-child(3){opacity:1}
+.intro-page .intro-shell{padding-bottom:calc(104px + env(safe-area-inset-bottom))!important}
+.intro-page .diagnosis-intro-card{margin-bottom:0!important}
+.intro-page .intro-card-compact .cta{margin-bottom:0!important}
+@media (max-width:480px){
+  .intro-page .shell{min-height:auto!important}
+  .intro-page .intro-hero{padding-top:8px!important}
+  .intro-page .intro-mascot-stage{margin-top:12px!important}
+  .intro-page .diagnosis-intro-card{margin-top:10px!important}
+  .intro-page .intro-bullets-compact{margin-top:10px!important;margin-bottom:12px!important}
+  .test-page .question-card{margin-bottom:0}
+}
