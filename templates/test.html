@@ -11,53 +11,34 @@
     {% set active_tab = 'diagnosis' %}
     {% include '_app_header.html' %}
 
-    <div id="loading-box" class="question-card quiz-state-card">
-      <div class="loading-emoji" aria-hidden="true">⏳</div><h3>질문을 불러오는 중이에요</h3><p>잠시만 기다려 주세요.</p>
-    </div>
-    <div id="error-box" class="question-card quiz-state-card is-hidden">
-      <div class="loading-emoji" aria-hidden="true">⚠️</div><h3>문항을 불러오지 못했어요</h3><p id="error-message">잠시 후 다시 시도해 주세요.</p><a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a>
-    </div>
+    <div id="loading-box" class="question-card quiz-state-card"><div class="loading-emoji" aria-hidden="true">⏳</div><h3>질문을 준비하고 있어요</h3><p>잠시만 기다려 주세요.</p></div>
+    <div id="error-box" class="question-card quiz-state-card is-hidden"><div class="loading-emoji" aria-hidden="true">⚠️</div><h3>문항을 불러오지 못했어요</h3><p id="error-message">잠시 후 다시 시도해 주세요.</p><a href="{{ url_for('home_page') }}" class="cta cta-secondary">홈으로</a></div>
 
     <div id="question-box" class="is-hidden">
-      <div class="progress-wrap test-progress">
-        <div class="progress-meta"><span>{{ test_label }}</span><span id="progress-text">1 / 5</span></div>
-        <div class="progress"><div class="bar" id="progress-fill" style="width:20%"></div></div>
-      </div>
+      <div class="progress-wrap test-progress"><div class="progress-meta"><span>{{ test_label }}</span><span id="progress-text">1 / 5</span></div><div class="progress"><div class="bar" id="progress-fill" style="width:20%"></div></div></div>
       <div class="question-card">
-        <div class="question-topline">
-          <div class="q-tag" id="question-tag">QUESTION 1</div>
-          <div class="q-emoji-wrap"><div class="q-emoji" id="question-emoji" aria-hidden="true">💰</div></div>
-        </div>
+        <div class="question-topline"><div class="q-tag" id="question-tag">1번째 질문</div><div class="q-step-mark" aria-hidden="true"><span></span><span></span><span></span></div></div>
         <div class="q-title" id="question-text">질문 로딩 중...</div>
         <div class="q-sub" id="question-sub"></div>
         <div id="choice-list"></div>
-        <div class="auto-next-hint">선택하면 자동으로 다음 질문으로 이동해요.</div>
+        <div class="auto-next-hint">답을 고르면 다음 질문으로 자연스럽게 이어져요.</div>
         <button id="next-btn" class="cta cta-primary cta-inline is-hidden" disabled>다음</button>
       </div>
     </div>
 
     <div id="finish-box" class="question-card quiz-state-card finish-state-card is-hidden">
-      <div class="finish-mascot" aria-hidden="true">
-        <img src="{{ url_for('static', filename='images/ui/wealth_check/cat_wink.png') }}" alt="">
-      </div>
-      <div class="finish-kicker">CHECK COMPLETE</div>
-      <h3>모든 질문에 답했어요</h3>
-      <p class="finish-lead">나의 재물 흐름을 정리했어요.<br>이제 오늘의 결과를 확인해보세요.</p>
-      <div class="finish-meta"><span><strong>5 / 5</strong> 답변 완료</span><span class="finish-meta-divider"></span><span><strong>30초</strong> 간단 체크</span></div>
-      <div class="finish-preview"><span class="finish-preview-icon">↗</span><div><strong>오늘의 재물 흐름</strong><small>점수 · 유형 · 한마디를 확인할 수 있어요</small></div></div>
-      <button id="finish-btn" class="cta cta-primary">결과 확인 <span aria-hidden="true">→</span></button>
+      <div class="finish-mascot" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_wink.png') }}" alt=""></div>
+      <div class="finish-kicker">ALL DONE</div>
+      <h3>나의 흐름을 모두 담았어요</h3>
+      <p class="finish-lead">5개의 선택을 바탕으로<br>지금의 돈 흐름을 정리했어요.</p>
+      <div class="finish-meta"><span><strong>5 / 5</strong> 선택 완료</span><span class="finish-meta-divider"></span><span><strong>바로</strong> 결과 확인</span></div>
+      <div class="finish-preview"><span class="finish-preview-icon">↗</span><div><strong>나의 머니 리포트</strong><small>점수 · 유형 · 오늘의 한마디를 만나보세요</small></div></div>
+      <button id="finish-btn" class="cta cta-primary">내 결과 보기 <span aria-hidden="true">→</span></button>
     </div>
   </div>
   {% include '_bottom_nav.html' %}
 </div>
-<div id="analyzing-overlay" class="analyzing-overlay is-hidden">
-  <div class="analyzing-content">
-    <img class="analyzing-cat" src="{{ url_for('static', filename='images/ui/wealth_check/cat_crystal_ball.png') }}" alt="">
-    <h2 class="analyzing-simple-title">재물운 분석 중…</h2>
-    <p class="analyzing-simple-desc">답변 흐름을 바탕으로<br>결과 리포트를 생성하고 있습니다.</p>
-    <div class="analyzing-dots"><span></span><span></span><span></span></div>
-  </div>
-</div>
+<div id="analyzing-overlay" class="analyzing-overlay is-hidden"><div class="analyzing-content"><img class="analyzing-cat" src="{{ url_for('static', filename='images/ui/wealth_check/cat_crystal_ball.png') }}" alt=""><h2 class="analyzing-simple-title">나의 흐름을 정리하는 중…</h2><p class="analyzing-simple-desc">선택한 답을 모아<br>머니 리포트를 만들고 있어요.</p><div class="analyzing-dots"><span></span><span></span><span></span></div></div></div>
 {% endblock %}
 {% block scripts %}
 <script>window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};</script>
