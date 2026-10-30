@@ -95,6 +95,45 @@ class SmokeTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_poller_refuses_to_fetch_without_confirmed_branch_protection(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "repo" / ".git").mkdir(parents=True)
+            (root / "ENABLE_AUTODEPLOY").touch()
+            (root / "shims").mkdir()
+            git_log = root / "git-called"
+            git_shim = root / "shims" / "git"
+            git_shim.write_text(f"#!/bin/sh\nprintf called > {shlex.quote(str(git_log))}\nexit 0\n")
+            git_shim.chmod(0o755)
+            result = subprocess.run(
+                ["bash", str(repo_root / "scripts" / "poll_main.sh")],
+                cwd=repo_root,
+                env={
+                    **os.environ,
+                    "JAEMULUN_ROOT": str(root),
+                    "PATH": f"{root / 'shims'}:{os.environ.get('PATH', '')}",
+                },
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("branch protection confirmation", result.stderr)
+        self.assertFalse(git_log.exists(), "poller must not fetch main before confirmation")
+
+    def test_deployment_has_termination_rollback_before_switch_and_longer_start_timeout(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        deploy = (repo_root / "scripts" / "deploy_lightsail.sh").read_text()
+        systemd = (repo_root / "deploy" / "systemd" / "jaemulun-poll.service").read_text()
+
+        self.assertIn("trap on_exit EXIT", deploy)
+        self.assertIn("trap 'exit 143' TERM", deploy)
+        self.assertLess(deploy.index("trap on_exit EXIT"), deploy.index('mv -Tf "$ROOT/current.next" "$ROOT/current"'))
+        self.assertIn("TimeoutStartSec=900", systemd)
+        self.assertIn("TimeoutStopSec=60", systemd)
+
     @classmethod
     def setUpClass(cls):
         app.config["TESTING"] = True

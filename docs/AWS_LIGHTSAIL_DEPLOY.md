@@ -4,6 +4,7 @@
 
 This is a proposed deployment setup. It has NOT been activated on AWS.
 The existing ScienceLoop service, code, database, and processes must remain untouched.
+Keep public TCP 8443 closed until the security review and approved release gates pass.
 
 - GitHub repository: `anredvon/jamulun-master`; deploy source: `main`.
 - App: Flask `app:app`, Gunicorn, Nginx.
@@ -169,10 +170,18 @@ Unit=jaemulun-poll.service
 WantedBy=timers.target
 ```
 
-Then activate the poller *only after* the initial deployment and DB check passed:
+Before activating the poller, verify in GitHub repository settings that `main`
+requires the Jaemulun CI check to pass before merging. The API check during the
+earlier audit could not read classic branch protection, so this setting is not
+currently confirmed. After verifying it, record the operator confirmation on
+the host. The poller refuses to fetch or deploy `main` without this file.
+
+Then activate the poller *only after* the initial deployment and DB check passed
+and main branch protection has been confirmed:
 
 ```bash
 sudo -u jaemulun touch /srv/jaemulun/ENABLE_AUTODEPLOY
+sudo -u jaemulun touch /srv/jaemulun/MAIN_BRANCH_PROTECTION_CONFIRMED
 sudo systemctl daemon-reload
 sudo systemctl enable --now jaemulun-poll.timer
 sudo systemctl start jaemulun-poll.service
@@ -189,8 +198,10 @@ A new main commit will then be picked up at the next poll. If an update fails,
 its SHA is written under `/srv/jaemulun/failed/` to avoid repeatedly restarting
 an unhealthy release. Investigate logs and correct the cause before removing that
 marker and rerunning the poller. This is *polling*,
-not an instantaneous push webhook. Configure a GitHub main branch protection
-rule that requires the CI checks to pass before merging.
+not an instantaneous push webhook. Reconfirm the host marker whenever the
+GitHub main branch protection rule changes. The systemd timeout allows package
+preparation to finish; interruption after switching the active release triggers
+rollback and a service restart.
 
 ## 7. Public DNS, Nginx, and HTTPS
 

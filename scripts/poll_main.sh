@@ -2,13 +2,18 @@
 # Runs on AWS as the dedicated jaemulun account.
 # Pull-only deployment: no GitHub or AWS credentials are stored in the repository.
 set -Eeuo pipefail
-ROOT=/srv/jaemulun
+ROOT="${JAEMULUN_ROOT:-/srv/jaemulun}"
 REPO="$ROOT/repo"
 REMOTE=https://github.com/anredvon/jamulun-master.git
 
 if [[ ! -f "$ROOT/ENABLE_AUTODEPLOY" ]]; then
   echo "Jaemulun automatic deployment is not enabled yet."
   exit 0
+fi
+
+if [[ ! -f "$ROOT/MAIN_BRANCH_PROTECTION_CONFIRMED" ]]; then
+  echo "GitHub main branch protection confirmation is required before deployment." >&2
+  exit 1
 fi
 
 if [[ ! -d "$REPO/.git" ]]; then

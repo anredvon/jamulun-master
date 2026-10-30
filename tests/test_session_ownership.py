@@ -254,6 +254,25 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         self.assertEqual(insight.status_code, 200)
         self.assertIn("무료 상세 리포트", insight.get_data(as_text=True))
 
+    def test_owner_can_submit_an_answer_and_update_only_their_session(self):
+        response = self.https_post(
+            self.owner_client,
+            "/api/answer",
+            json={
+                "session_id": self.session_id,
+                "question_id": self.question_id,
+                "choice_id": self.choice_id,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200, response.get_data(as_text=True))
+        self.assertEqual(response.get_json(), {"ok": True, "current_score": 3, "answer_count": 1})
+        with app.app_context():
+            test_session = db.session.get(TestSession, self.session_id)
+            self.assertEqual(test_session.score, 3)
+            self.assertEqual(test_session.answer_count, 1)
+            self.assertEqual(test_session.answered_question_ids, str(self.question_id))
+
     def test_other_browser_cannot_read_or_change_owned_session(self):
         other_start = self.https_post(
             self.other_client,

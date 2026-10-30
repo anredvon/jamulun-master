@@ -9,4 +9,5 @@ User=jaemulun
 Group=jaemulun
 WorkingDirectory=/srv/jaemulun
 ExecStart=/usr/bin/flock -n /srv/jaemulun/.deploy.lock /bin/bash /srv/jaemulun/control/poll_main.sh
-TimeoutStartSec=180
+TimeoutStartSec=900
+TimeoutStopSec=60
