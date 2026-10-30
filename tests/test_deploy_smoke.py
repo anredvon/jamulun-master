@@ -2,7 +2,7 @@
 import os
 import unittest
 
-os.environ["SECRET_KEY"] = "ci-test-key"
+os.environ["SECRET_KEY"] = "ci-test-secret-key-0123456789abcdef0123456789abcdef"
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
 from app import app

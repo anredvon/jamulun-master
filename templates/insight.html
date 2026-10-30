@@ -8,7 +8,7 @@
 
   <!-- 점수 헤더 -->
   <div class="result-score-card result-card-{{ rtype }}">
-    <p class="result-score-label">상세 AI 인사이트 · ✅ 잠금 해제</p>
+    <p class="result-score-label">무료 상세 리포트 · ✅ 확인 가능</p>
     <div class="result-score-big">
       <span class="result-score-num">{{ result.final_score if result else 0 }}</span>
       <span class="result-score-denom">/100</span>
@@ -84,15 +84,19 @@
 <script>
   document.getElementById('insight-share-btn')?.addEventListener('click', async () => {
     const sid = Number(document.getElementById('insight-share-btn').dataset.sessionId);
-    await fetch('/api/share', {
+    const response = await fetch('/api/share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ session_id: sid })
     });
+    if (!response.ok) return;
+    const payload = await response.json();
+    if (!payload.share_url) return;
+    const shareUrl = new URL(payload.share_url, window.location.origin).href;
     if (navigator.share) {
-      navigator.share({ title: 'AI 재물운 인사이트', url: window.location.href }).catch(() => {});
+      navigator.share({ title: 'AI 재물운 요약', url: shareUrl }).catch(() => {});
     } else {
-      navigator.clipboard?.writeText(window.location.href).then(() => alert('링크 복사됨!'));
+      navigator.clipboard?.writeText(shareUrl).then(() => alert('요약 공유 링크 복사됨!'));
     }
   });
 </script>

@@ -56,7 +56,7 @@ if ! sudo -n /usr/bin/systemctl restart "$SERVICE"; then
 fi
 
 for attempt in $(seq 1 10); do
-  if curl --fail --silent --show-error --max-time 3 http://127.0.0.1:8002/api/stats >/dev/null 2>&1; then
+  if curl --fail --silent --show-error --max-time 3 http://127.0.0.1:8002/healthz >/dev/null 2>&1; then
     echo "Jaemulun deployed and health checked: $SHA"
     exit 0
   fi

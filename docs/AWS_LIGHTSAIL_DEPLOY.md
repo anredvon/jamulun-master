@@ -79,6 +79,20 @@ For a new empty database, stage a release, set the two environment variables fro
 `/etc/jaemulun.env` in a private shell, run `db.create_all()`, then
 `python seed_db.py` once. For an existing database, restore its actual data instead.
 
+For an existing restored **SQLite** database, take and verify a separate backup,
+then add the nullable browser-ownership column before starting this release:
+
+```bash
+sudo -u jaemulun /srv/jaemulun/releases/<SHA>/.venv/bin/python \
+  /srv/jaemulun/releases/<SHA>/scripts/migrate_session_ownership.py \
+  --database /srv/jaemulun/shared/jaemulun.sqlite3
+```
+
+This command only supports an existing SQLite file with the `test_sessions`
+table; it preserves rows and is safe to repeat. Do not run it against
+PythonAnywhere or a MySQL database. For any non-SQLite database, stop and prepare
+a separately reviewed schema migration before deploying this release.
+
 ## 4. Register the service, and limit restart permissions
 
 ```bash
@@ -132,10 +146,10 @@ After confirming the DB migration is complete and the environment file is correc
 sudo -u jaemulun bash \
   "/srv/jaemulun/releases/$SHA/scripts/deploy_lightsail.sh" "$SHA"
 sudo systemctl status jaemulun.service --no-pager
-curl -fsS http://127.0.0.1:8002/api/stats
+curl -fsS http://127.0.0.1:8002/healthz
 ```
 
-If `/api/stats` fails, check `sudo journalctl -u jaemulun.service -n 100 --no-pager`.
+If `/healthz` fails, check `sudo journalctl -u jaemulun.service -n 100 --no-pager`.
 Do not enable automatic deployment until the initial deployment succeeds.
 
 ## 6. Enable automatic polling
@@ -205,7 +219,7 @@ cannot be repointed to Lightsail. Keep the old deployment online during cutover.
 
 ## Known app security work before commercial release
 
-Current application code includes an unauthenticated `/api/stats` endpoint,
-a direct `/api/unlock` operation, and a payment success route that must be
-validated against the payment provider on the server before granting access.
-These are application security tasks separate from infrastructure setup.
+Detailed reports are free to the browser that created the test. Private session
+routes require the signed `jaemulun_session` cookie; public share links show only
+the score summary and expire. `/api/stats` is disabled. The deployment probe uses
+`/healthz`, which checks database reachability without returning usage metrics.

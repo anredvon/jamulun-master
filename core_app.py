@@ -1,19 +1,78 @@
 # ============================================================
 #  app.py — Flask 메인 애플리케이션
 # ============================================================
-from flask import Flask, render_template, request, jsonify, redirect, flash, url_for
+from flask import Flask, abort, render_template, request, jsonify, redirect, url_for, session
 from models import db, Question, Choice, TestSession, TestResult
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import defaultdict
+from hashlib import sha256
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
+import hmac
 import random
 import json
 import os
+import secrets
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
+secret_key = os.environ.get("SECRET_KEY")
+if not secret_key or len(secret_key) < 32 or secret_key == "dev-secret-change-in-prod":
+    raise RuntimeError("SECRET_KEY must be a random value of at least 32 characters")
+app.secret_key = secret_key
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///jaemulun.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config.update(
+    SESSION_COOKIE_NAME="jaemulun_session",
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_DOMAIN=None,
+    PERMANENT_SESSION_LIFETIME=timedelta(days=30),
+    SHARE_LINK_MAX_AGE_SECONDS=90 * 24 * 60 * 60,
+)
 db.init_app(app)
+
+
+def _owner_token_digest(owner_token: str) -> str:
+    return sha256(owner_token.encode("utf-8")).hexdigest()
+
+
+def _get_or_create_owner_token() -> str:
+    owner_token = session.get("owner_token")
+    if not isinstance(owner_token, str) or not owner_token:
+        owner_token = secrets.token_urlsafe(32)
+        session["owner_token"] = owner_token
+    session.permanent = True
+    return owner_token
+
+
+def _share_token_serializer() -> URLSafeTimedSerializer:
+    return URLSafeTimedSerializer(app.secret_key, salt="jaemulun-public-share-v1")
+
+
+def _share_url(test_session: TestSession) -> str:
+    token = _share_token_serializer().dumps({"session_id": test_session.id})
+    return url_for("public_share_page", token=token)
+
+
+def get_owned_test_session(session_id: int) -> TestSession | None:
+    """Return a session only when this signed visitor cookie owns it."""
+    if isinstance(session_id, bool):
+        return None
+    try:
+        normalized_id = int(session_id)
+    except (TypeError, ValueError):
+        return None
+
+    owner_token = session.get("owner_token")
+    if not isinstance(owner_token, str) or not owner_token:
+        return None
+
+    test_session = db.session.get(TestSession, normalized_id)
+    if test_session is None or not isinstance(test_session.owner_token_hash, str):
+        return None
+    if not hmac.compare_digest(test_session.owner_token_hash, _owner_token_digest(owner_token)):
+        return None
+    return test_session
 
 VALID_TEST_TYPES = {"money", "spending", "future"}
 QUESTION_COUNT = {"money": 5, "spending": 5, "future": 5}
@@ -63,7 +122,9 @@ def test_page(test_type):
 
 @app.route("/result/<int:session_id>")
 def result_page(session_id):
-    ts = TestSession.query.get_or_404(session_id)
+    ts = get_owned_test_session(session_id)
+    if ts is None:
+        abort(404)
     result = TestResult.query.filter_by(session_id=session_id).first()
     result_heading = TEST_TYPE_LABELS.get(ts.test_type, "체크 결과")
     result_tags = _result_tags(ts.test_type, result.result_type if result else None)
@@ -73,20 +134,53 @@ def result_page(session_id):
 
 @app.route("/insight/<int:session_id>")
 def insight_page(session_id):
-    ts = TestSession.query.get_or_404(session_id)
-    if not ts.unlocked:
+    ts = get_owned_test_session(session_id)
+    if ts is None:
+        abort(404)
+    if ts.result is None:
         return redirect(url_for("result_page", session_id=session_id))
     result = TestResult.query.filter_by(session_id=session_id).first()
     return render_template("insight.html", ts=ts, result=result)
 
 @app.route("/share/<int:session_id>")
 def share_page(session_id):
-    ts = TestSession.query.get_or_404(session_id)
+    ts = get_owned_test_session(session_id)
+    if ts is None:
+        abort(404)
     result = TestResult.query.filter_by(session_id=session_id).first()
     test_label = TEST_TYPE_LABELS.get(ts.test_type, ts.test_type)
     result_tags = _result_tags(ts.test_type, result.result_type if result else None)
     share_data = {"score": result.final_score if result else 0, "delta_text": "이번 주 +4점", "rank": 28, "tags": result_tags}
-    return render_template("share.html", ts=ts, result=share_data, test_type=ts.test_type, test_label=test_label)
+    return render_template("share.html", ts=ts, result=share_data, test_type=ts.test_type,
+                           test_label=test_label, share_url=_share_url(ts))
+
+
+@app.route("/shared/<token>")
+def public_share_page(token):
+    try:
+        payload = _share_token_serializer().loads(
+            token,
+            max_age=app.config["SHARE_LINK_MAX_AGE_SECONDS"],
+        )
+        session_id = payload.get("session_id")
+        if not isinstance(session_id, int) or isinstance(session_id, bool):
+            abort(404)
+    except (BadSignature, SignatureExpired, AttributeError, TypeError, ValueError):
+        abort(404)
+
+    ts = db.session.get(TestSession, session_id)
+    if ts is None:
+        abort(404)
+    result = TestResult.query.filter_by(session_id=session_id).first()
+    if result is None:
+        abort(404)
+    test_label = TEST_TYPE_LABELS.get(ts.test_type, ts.test_type)
+    public_result = {
+        "score": result.final_score,
+        "title": result.result_title,
+        "tags": _result_tags(ts.test_type, result.result_type),
+    }
+    return render_template("public_share.html", result=public_result, test_label=test_label)
 
 @app.route("/api/start", methods=["POST"])
 def api_start():
@@ -99,16 +193,20 @@ def api_start():
     if not selected_questions:
         return jsonify({"ok": False, "message": "질문 데이터가 없습니다. seed_db.py를 먼저 실행해주세요."}), 404
     selected_ids = [q.id for q in selected_questions]
+    owner_token = _get_or_create_owner_token()
     ts = TestSession(test_type=test_type, selected_question_ids=",".join(map(str, selected_ids)), answered_question_ids="",
                      meta_json=json.dumps({"question_count": len(selected_ids), "version": "pool-v1"}, ensure_ascii=False),
-                     started_at=datetime.utcnow())
+                     started_at=datetime.utcnow(), owner_token_hash=_owner_token_digest(owner_token))
     db.session.add(ts); db.session.commit()
     return jsonify({"ok": True, "session_id": ts.id, "test_type": test_type, "questions": [q.to_dict() for q in selected_questions]})
 
 @app.route("/api/answer", methods=["POST"])
 def api_answer():
     data = request.json or {}; session_id = data.get("session_id"); question_id = data.get("question_id"); choice_id = data.get("choice_id")
-    ts = TestSession.query.get_or_404(session_id); choice = Choice.query.get_or_404(choice_id)
+    ts = get_owned_test_session(session_id)
+    if ts is None:
+        abort(404)
+    choice = Choice.query.get_or_404(choice_id)
     selected_ids = _parse_ids(ts.selected_question_ids); answered_ids = set(_parse_ids(ts.answered_question_ids))
     if question_id not in selected_ids: return jsonify({"ok": False, "message": "이 세션에 포함되지 않은 질문입니다."}), 400
     if choice.question_id != question_id: return jsonify({"ok": False, "message": "선택지와 질문이 일치하지 않습니다."}), 400
@@ -119,7 +217,9 @@ def api_answer():
 
 @app.route("/api/finish", methods=["POST"])
 def api_finish():
-    data = request.json or {}; session_id = data.get("session_id"); ts = TestSession.query.get_or_404(session_id)
+    data = request.json or {}; session_id = data.get("session_id"); ts = get_owned_test_session(session_id)
+    if ts is None:
+        abort(404)
     if ts.result:
         return jsonify({"ok": True, "session_id": session_id, "final_score": ts.result.final_score,
                         "result_type": ts.result.result_type, "result_title": ts.result.result_title})
@@ -131,37 +231,23 @@ def api_finish():
     db.session.add(result); ts.finished_at = datetime.utcnow(); db.session.commit()
     return jsonify({"ok": True, "session_id": session_id, "final_score": normalized, "result_type": result_type, "result_title": title})
 
-@app.route("/api/unlock", methods=["POST"])
-def api_unlock():
-    data = request.json or {}; session_id = data.get("session_id"); ts = TestSession.query.get_or_404(session_id)
-    ts.unlocked = True; db.session.commit(); return jsonify({"ok": True, "redirect": f"/insight/{session_id}"})
-
 @app.route("/api/share", methods=["POST"])
 def api_share():
-    data = request.json or {}; session_id = data.get("session_id"); ts = TestSession.query.get_or_404(session_id)
-    ts.share_count = (ts.share_count or 0) + 1; db.session.commit(); return jsonify({"ok": True})
+    data = request.json or {}; session_id = data.get("session_id"); ts = get_owned_test_session(session_id)
+    if ts is None:
+        abort(404)
+    ts.share_count = (ts.share_count or 0) + 1; db.session.commit()
+    return jsonify({"ok": True, "share_url": _share_url(ts)})
 
-@app.route("/api/stats")
-def api_stats():
-    total = TestSession.query.count(); finished = TestSession.query.filter(TestSession.finished_at.isnot(None)).count()
-    unlocked = TestSession.query.filter_by(unlocked=True).count(); avg_score = db.session.query(db.func.avg(TestResult.final_score)).scalar() or 0
-    return jsonify({"total_sessions": total, "finished": finished, "unlocked": unlocked,
-                    "conversion_rate": round(unlocked / finished * 100, 1) if finished else 0, "avg_score": round(float(avg_score), 1)})
 
-@app.route("/payment/success")
-def payment_success():
-    session_id = request.args.get("session")
-    if session_id:
-        ts = TestSession.query.get(int(session_id))
-        if ts:
-            ts.unlocked = True; db.session.commit(); flash("결제가 완료되었습니다! AI 리포트를 확인하세요.", "success")
-            return redirect(url_for("insight_page", session_id=session_id))
-    return redirect(url_for("home_page"))
-
-@app.route("/payment/fail")
-def payment_fail():
-    session_id = request.args.get("session"); flash("결제가 취소되었습니다.", "error")
-    return redirect(url_for("result_page", session_id=session_id) if session_id else url_for("home_page"))
+@app.route("/healthz")
+def health_check():
+    try:
+        db.session.execute(db.text("SELECT 1"))
+    except Exception:
+        db.session.rollback()
+        return jsonify({"ok": False}), 503
+    return jsonify({"ok": True})
 
 def _today_score() -> int:
     seed = int(datetime.utcnow().strftime("%Y%m%d")); random.seed(seed); return random.randint(65, 98)
