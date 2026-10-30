@@ -1,6 +1,10 @@
 """Read-only Flask smoke tests with an isolated in-memory database."""
 import os
+import re
+import subprocess
+import sys
 import unittest
+from pathlib import Path
 
 os.environ["SECRET_KEY"] = "ci-test-secret-key-0123456789abcdef0123456789abcdef"
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
@@ -10,6 +14,24 @@ from models import db
 
 
 class SmokeTest(unittest.TestCase):
+    def test_deploy_smoke_import_uses_a_secret_the_app_accepts(self):
+        script = (Path(__file__).resolve().parents[1] / "scripts" / "deploy_lightsail.sh").read_text()
+        match = re.search(r"SECRET_KEY=([^\s]+)\s+DATABASE_URL=sqlite:///:memory:", script)
+        self.assertIsNotNone(match, "deployment smoke check must define its isolated environment")
+        result = subprocess.run(
+            [sys.executable, "-c", "from app import app; assert app.url_map"],
+            cwd=Path(__file__).resolve().parents[1],
+            env={
+                **os.environ,
+                "SECRET_KEY": match.group(1),
+                "DATABASE_URL": "sqlite:///:memory:",
+            },
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     @classmethod
     def setUpClass(cls):
         app.config["TESTING"] = True

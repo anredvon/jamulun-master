@@ -115,6 +115,46 @@ class SessionOwnershipMigrationTest(unittest.TestCase):
         finally:
             connection.close()
 
+    def test_failed_commit_after_alter_rolls_back_schema_and_preserves_rows(self):
+        from scripts import migrate_session_ownership
+
+        class FailCommitConnection(sqlite3.Connection):
+            fail_next_commit = False
+
+            def commit(self):
+                if self.fail_next_commit:
+                    self.fail_next_commit = False
+                    raise sqlite3.OperationalError("simulated commit failure")
+                return super().commit()
+
+        connection = sqlite3.connect(":memory:", factory=FailCommitConnection)
+        try:
+            connection.execute(
+                "CREATE TABLE test_sessions "
+                "(id INTEGER PRIMARY KEY, test_type TEXT NOT NULL)"
+            )
+            connection.execute(
+                "INSERT INTO test_sessions (id, test_type) VALUES (7, 'money')"
+            )
+            connection.commit()
+            connection.fail_next_commit = True
+
+            with self.assertRaises(sqlite3.OperationalError):
+                migrate_session_ownership.upgrade_connection(connection)
+
+            self.assertFalse(connection.in_transaction)
+            columns = [
+                row[1]
+                for row in connection.execute("PRAGMA table_info(test_sessions)")
+            ]
+            self.assertNotIn("owner_token_hash", columns)
+            self.assertEqual(
+                connection.execute("SELECT id, test_type FROM test_sessions").fetchall(),
+                [(7, "money")],
+            )
+        finally:
+            connection.close()
+
 
 class SessionOwnershipRouteTest(unittest.TestCase):
     @classmethod
@@ -196,6 +236,14 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         self.assertIn("무료 상세 리포트", insight.get_data(as_text=True))
 
     def test_other_browser_cannot_read_or_change_owned_session(self):
+        other_start = self.https_post(
+            self.other_client,
+            "/api/start",
+            json={"test_type": "money"},
+        )
+        self.assertEqual(other_start.status_code, 200)
+        self.assertIsNotNone(self.other_client.get_cookie("jaemulun_session"))
+
         read_paths = (
             f"/result/{self.session_id}",
             f"/insight/{self.session_id}",
@@ -221,6 +269,12 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         )
 
     def test_missing_altered_expired_and_legacy_ownership_are_denied(self):
+        missing_client = app.test_client()
+        missing_cookie_response = self.https_get(missing_client, f"/result/{self.session_id}")
+        missing_target_response = self.https_get(missing_client, "/result/999999")
+        self.assertEqual(missing_cookie_response.status_code, 404)
+        self.assertEqual(missing_cookie_response.get_data(), missing_target_response.get_data())
+
         self.owner_client.set_cookie("jaemulun_session", "not-a-valid-signed-cookie")
         altered = self.https_get(self.owner_client, f"/result/{self.session_id}")
         self.assertEqual(altered.status_code, 404)
@@ -238,12 +292,35 @@ class SessionOwnershipRouteTest(unittest.TestCase):
             app.config["PERMANENT_SESSION_LIFETIME"] = previous_lifetime
         self.assertEqual(expired.status_code, 404)
 
+        legacy_browser = app.test_client()
+        legacy_start = self.https_post(
+            legacy_browser,
+            "/api/start",
+            json={"test_type": "money"},
+        )
+        self.assertEqual(legacy_start.status_code, 200)
         with app.app_context():
             legacy = TestSession(test_type="money", selected_question_ids="")
             db.session.add(legacy)
             db.session.commit()
             legacy_id = legacy.id
-        self.assertEqual(self.https_get(self.owner_client, f"/result/{legacy_id}").status_code, 404)
+        legacy_response = self.https_get(legacy_browser, f"/result/{legacy_id}")
+        missing_response = self.https_get(legacy_browser, "/result/999999")
+        self.assertEqual(legacy_response.status_code, 404)
+        self.assertEqual(legacy_response.get_data(), missing_response.get_data())
+
+    def test_result_page_offers_owner_free_detailed_report(self):
+        self.https_post(
+            self.owner_client,
+            "/api/finish",
+            json={"session_id": self.session_id},
+        )
+
+        result = self.https_get(self.owner_client, f"/result/{self.session_id}")
+
+        self.assertEqual(result.status_code, 200)
+        self.assertIn(f'href="/insight/{self.session_id}"', result.get_data(as_text=True))
+        self.assertIn("무료 상세 리포트 보기", result.get_data(as_text=True))
 
     def test_payment_routes_cannot_unlock_a_session(self):
         unlock = self.https_post(
@@ -343,7 +420,14 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         self.assertEqual(health.get_json(), {"ok": True})
 
     def test_application_refuses_missing_or_known_default_secret_key(self):
-        for secret in (None, "too-short", "dev-secret-change-in-prod"):
+        for secret in (
+            None,
+            "too-short",
+            "dev-secret-change-in-prod",
+            "replace-with-a-random-secret-at-least-32-characters-long",
+            "REPLACE_WITH_A_RANDOM_SECRET",
+            "your-super-secret-key-here-change-this",
+        ):
             with self.subTest(secret_set=secret is not None):
                 env = {
                     "PATH": os.environ.get("PATH", ""),
@@ -362,6 +446,24 @@ class SessionOwnershipRouteTest(unittest.TestCase):
                 )
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("SECRET_KEY", result.stderr)
+
+    def test_application_loads_secret_key_from_project_dotenv(self):
+        test_secret = "dotenv-load-test-secret-0123456789abcdef"
+        with tempfile.TemporaryDirectory() as working_directory:
+            Path(working_directory, ".env").write_text(f"SECRET_KEY={test_secret}\n")
+            result = subprocess.run(
+                [sys.executable, "-c", "import core_app; assert core_app.app.secret_key"],
+                cwd=working_directory,
+                env={
+                    "PATH": os.environ.get("PATH", ""),
+                    "PYTHONPATH": str(REPO_ROOT),
+                    "DATABASE_URL": "sqlite:///:memory:",
+                },
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":

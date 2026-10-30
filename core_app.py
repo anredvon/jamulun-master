@@ -12,10 +12,19 @@ import random
 import json
 import os
 import secrets
+from dotenv import load_dotenv
+
+load_dotenv(os.path.join(os.getcwd(), ".env"))
 
 app = Flask(__name__)
 secret_key = os.environ.get("SECRET_KEY")
-if not secret_key or len(secret_key) < 32 or secret_key == "dev-secret-change-in-prod":
+known_secret_placeholders = {
+    "dev-secret-change-in-prod",
+    "replace-with-a-random-secret-at-least-32-characters-long",
+    "your-super-secret-key-here-change-this",
+    "REPLACE_WITH_A_RANDOM_SECRET",
+}
+if not secret_key or len(secret_key) < 32 or secret_key in known_secret_placeholders:
     raise RuntimeError("SECRET_KEY must be a random value of at least 32 characters")
 app.secret_key = secret_key
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///jaemulun.db")

@@ -27,7 +27,7 @@ python3 -m venv "$RELEASE/.venv"
 # Smoke-check the Python import without accessing the production database.
 (
   cd "$RELEASE"
-  SECRET_KEY=ci-only DATABASE_URL=sqlite:///:memory: \
+  SECRET_KEY=jaemulun-deploy-smoke-secret-0123456789abcdef DATABASE_URL=sqlite:///:memory: \
     "$RELEASE/.venv/bin/python" -c 'from app import app; assert app.url_map'
 )
 

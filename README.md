@@ -95,7 +95,7 @@ pip install -r requirements.txt
 
 # 4. 환경변수 설정
 cp .env.example .env
-# .env 파일에서 SECRET_KEY 수정 (선택)
+# .env 파일에서 SECRET_KEY를 무작위 32자 이상 값으로 반드시 설정
 
 # 5. DB 초기화 (테이블 생성)
 python app.py
@@ -145,7 +145,7 @@ bash deploy.sh YOUR_PYTHONANYWHERE_USERNAME
 
 ## ✅ 배포 전 체크리스트
 
-- [ ] `.env` 에서 `SECRET_KEY` 강력한 값으로 변경
+- [ ] `.env` 에서 `SECRET_KEY`를 무작위 32자 이상 값으로 설정
 - [ ] `DATABASE_URL` 운영 DB로 변경 (MySQL 권장)
 - [ ] `python seed_db.py` 로 질문 데이터 삽입 확인
 - [ ] `python seed_db.py --check` 로 질문 수 확인
