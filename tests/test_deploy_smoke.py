@@ -1,6 +1,7 @@
 """Read-only Flask smoke tests with an isolated in-memory database."""
 import os
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -57,7 +58,7 @@ class SmokeTest(unittest.TestCase):
             pip_shim.write_text("#!/bin/sh\nexit 0\n")
             python_shim = root / "shims" / "python3"
             python_shim.write_text(
-                "#!/bin/sh\nexec /private/tmp/jamulun-free-report-venv312/bin/python \"$@\"\n"
+                f"#!/bin/sh\nexec {shlex.quote(sys.executable)} \"$@\"\n"
             )
             pip_shim.chmod(0o755)
             python_shim.chmod(0o755)
