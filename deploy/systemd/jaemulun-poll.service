@@ -1,0 +1,13 @@
+[Unit]
+Description=Check GitHub main and deploy Jaemulun if changed
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=jaemulun
+Group=jaemulun
+WorkingDirectory=/srv/jaemulun
+ExecStart=/usr/bin/flock -n /srv/jaemulun/.deploy.lock /bin/bash /srv/jaemulun/control/poll_main.sh
+TimeoutStartSec=900
+TimeoutStopSec=60

@@ -25,7 +25,7 @@
       <button type="button" id="money-mission-btn" class="money-mission-btn">기억해둘게 <span aria-hidden="true">💜</span></button>
     </section>
   </div>
-  <div class="result-actions result-actions-compact"><a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-primary">친구에게 공유하기 <span aria-hidden="true">→</span></a><a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 흐름 둘러보기</a></div>
+  <div class="result-actions result-actions-compact"><a href="{{ url_for('insight_page', session_id=ts.id) }}" class="cta cta-primary">무료 상세 리포트 보기 <span aria-hidden="true">→</span></a><a href="{{ url_for('share_page', session_id=ts.id) }}" class="cta cta-secondary">친구에게 공유하기</a><a href="{{ url_for('home_page') }}" class="cta cta-secondary">다른 흐름 둘러보기</a></div>
 </div>{% include '_bottom_nav.html' %}</div>
 {% endblock %}
 {% block scripts %}

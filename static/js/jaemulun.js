@@ -5,7 +5,9 @@
     const testLabel = window.JAEMULUN_TEST_LABEL || '머니플로우';
     return {
       text: `${testLabel} 해봤어?\n오늘 돈 흐름 한번 가볍게 봐봐 👇`,
-      url: `${location.origin}/`
+      url: window.JAEMULUN_SHARE_URL
+        ? new URL(window.JAEMULUN_SHARE_URL, location.origin).href
+        : `${location.origin}/`
     };
   }
 

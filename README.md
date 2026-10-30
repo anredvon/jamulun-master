@@ -21,8 +21,8 @@ jaemulun/
 │   ├── base.html        # 공통 레이아웃 (헤더/푸터/플래시)
 │   ├── index.html       # 메인 페이지 (테스트 카드 3개)
 │   ├── test.html        # 테스트 진행 페이지
-│   ├── result.html      # 결과 페이지 (광고/결제 유도)
-│   └── insight.html     # 상세 인사이트 (잠금 해제 후)
+│   ├── result.html      # 방문자 쿠키 소유자 결과 페이지
+│   └── insight.html     # 소유자 전용 무료 상세 리포트
 │
 ├── static/
 │   ├── css/jaemulun.css # 전체 스타일시트 (모바일 우선)
@@ -67,8 +67,8 @@ jaemulun/
 | selected_question_ids | 이 세션에 고정된 질문 ID (쉼표 구분) |
 | answered_question_ids | 이미 답변한 질문 ID |
 | score | 누적 raw 점수 |
-| unlocked | 광고/결제 완료 여부 |
-| share_count | 공유 횟수 |
+| unlocked | 기존 데이터 호환용 레거시 필드 (접근 제어에 사용하지 않음) |
+| share_count | 소유자가 공유 화면을 열어 만든 공유 링크 발급 횟수 |
 
 ### test_results
 | 컬럼 | 설명 |
@@ -95,7 +95,7 @@ pip install -r requirements.txt
 
 # 4. 환경변수 설정
 cp .env.example .env
-# .env 파일에서 SECRET_KEY 수정 (선택)
+# .env 파일에서 SECRET_KEY를 무작위 32자 이상 값으로 반드시 설정
 
 # 5. DB 초기화 (테이블 생성)
 python app.py
@@ -127,15 +127,12 @@ bash deploy.sh YOUR_PYTHONANYWHERE_USERNAME
 
 ---
 
-## 🔌 추가 기능 연동 포인트
+## 🔒 리포트 접근과 공유
 
-### 광고 (AdFit / AdMob)
-- `result.html` → `unlock-btn` 클릭 시 광고 SDK 콜백 연동
-- `insight.html` → 광고 배너 영역 주석 해제
-
-### 결제 (토스페이먼츠)
-- `result.html` → "광고 없이 보기" 버튼에 토스 결제 SDK 연동
-- `app.py` → `payment_success()` 에 서버-to-서버 검증 로직 추가
+- 상세 리포트는 해당 세션을 만든 브라우저에서 무료로 확인합니다.
+- 결과·답변·공유 생성 경로는 `jaemulun_session` 쿠키의 소유권을 확인합니다.
+- 친구에게는 90일 동안 유효한 서명 링크로 점수와 유형 요약만 공유합니다.
+- 결제 잠금 경로와 공개 통계 API는 비활성화되어 있습니다.
 
 ### AI 인사이트 (OpenAI / Claude API)
 - `insight.html` → TODO 주석 영역에 API 호출 결과 렌더링
@@ -148,7 +145,7 @@ bash deploy.sh YOUR_PYTHONANYWHERE_USERNAME
 
 ## ✅ 배포 전 체크리스트
 
-- [ ] `.env` 에서 `SECRET_KEY` 강력한 값으로 변경
+- [ ] `.env` 에서 `SECRET_KEY`를 무작위 32자 이상 값으로 설정
 - [ ] `DATABASE_URL` 운영 DB로 변경 (MySQL 권장)
 - [ ] `python seed_db.py` 로 질문 데이터 삽입 확인
 - [ ] `python seed_db.py --check` 로 질문 수 확인
@@ -181,13 +178,14 @@ VALUES (LAST_INSERT_ID(), '선택지 1', 8, 1);
 |--------|-----|------|
 | GET | `/` | 메인 페이지 |
 | GET | `/test/<type>` | 테스트 진행 페이지 |
-| GET | `/result/<id>` | 결과 페이지 |
-| GET | `/insight/<id>` | 상세 인사이트 (잠금 해제 후) |
+| GET | `/result/<id>` | 방문자 쿠키 소유자의 결과 페이지 |
+| GET | `/insight/<id>` | 방문자 쿠키 소유자의 무료 상세 리포트 |
+| GET | `/shared/<token>` | 만료형 링크로 공유된 결과 요약 |
 | POST | `/api/start` | 세션 생성 + 질문 반환 |
 | POST | `/api/answer` | 답변 저장 |
 | POST | `/api/finish` | 결과 계산 |
-| POST | `/api/unlock` | 잠금 해제 |
-| POST | `/api/share` | 공유 카운트 기록 |
-| GET | `/api/stats` | 통계 (관리자용) |
-| GET | `/payment/success` | 결제 성공 콜백 |
-| GET | `/payment/fail` | 결제 실패 콜백 |
+| POST | `/api/share` | 소유 세션의 만료형 요약 공유 링크 생성 |
+| GET | `/healthz` | 데이터베이스 연결 상태만 확인 |
+
+세션 결과·수정 경로는 `jaemulun_session` 쿠키 소유권을 확인합니다. 결제 잠금 및
+공개 통계 API는 제공하지 않습니다.

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -Eeuo pipefail
 # ============================================================
 #  deploy.sh — PythonAnywhere 배포 자동화
 #  사용법: bash deploy.sh YOUR_PYTHONANYWHERE_USERNAME
@@ -29,6 +30,9 @@ if [ ! -f ".env" ]; then
   echo "   ✅  SECRET_KEY 자동 생성 완료"
   echo "   ⚠️   DATABASE_URL 은 수동으로 수정: $PA_HOME/.env"
 fi
+
+# Reject stale or placeholder keys before app/database initialization.
+python3 scripts/validate_secret.py .env
 
 # 3. DB 초기화 (테이블 생성)
 echo ""

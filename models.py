@@ -106,7 +106,7 @@ class Choice(db.Model):
 #
 #  사용자가 "테스트 시작" 누르면 1개 세션 생성됨
 #  selected_question_ids: 이 세션에 고정된 질문 ID 목록
-#  unlocked: 광고 시청 or 결제 완료 → insight 접근 가능
+#  unlocked: retained for legacy database compatibility; not used for access control
 # ──────────────────────────────────────────────────────────────
 class TestSession(db.Model):
     __tablename__ = "test_sessions"
@@ -133,11 +133,13 @@ class TestSession(db.Model):
     # 답변한 질문 수
 
     unlocked     = db.Column(db.Boolean, default=False, nullable=False)
-    # True: 광고 시청 or 결제 완료 → /insight/<id> 접근 허용
-    # TODO: 결제 검증 로직 연동 시 이 값 업데이트
+    # Legacy field retained for existing databases; report access no longer uses it.
+
+    owner_token_hash = db.Column(db.String(64), nullable=True)
+    # Browser owner credential digest; NULL for legacy sessions without ownership proof.
 
     share_count  = db.Column(db.Integer, default=0, nullable=False)
-    # 공유 버튼 누른 횟수 (카카오/링크복사 등 합산)
+    # Owner share-link issuance count; opening the share composer records intent.
 
     started_at   = db.Column(db.DateTime, default=datetime.utcnow)
     finished_at  = db.Column(db.DateTime, nullable=True)

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ test_label }} 결과 공유 · 머니플로우{% endblock %}
+{% block body_class %}share-page-v2{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/visual-assets.css') }}">{% endblock %}
+{% block body %}
+<div class="page-shell share-page share-page-compact">
+  <div class="shell">
+    <div class="topbar-lite share-topbar"><div class="brand"><div class="logo" aria-hidden="true"></div><span>머니플로우</span></div></div>
+    <section class="share-heading-v2">
+      <div class="hero-badge"><span class="dot"></span>SHARED MONEY FLOW</div>
+      <h1>친구의 <span class="grad">오늘의 흐름</span></h1>
+      <p>{{ test_label }} · 요약 결과</p>
+    </section>
+    <div class="share-card share-card-v2">
+      <div class="share-card-copy">
+        <div class="share-label">MY MONEY FLOW SCORE</div>
+        <div class="share-score-row"><strong>{{ result.score }}</strong><span>/100</span></div>
+        <div class="share-result-title">{{ result.title }}</div>
+        <div class="tags">{% for tag in result.tags %}<span>{{ tag }}</span>{% endfor %}</div>
+      </div>
+    </div>
+    <a href="{{ url_for('home_page') }}" class="share-done-link">나도 무료로 확인하기</a>
+  </div>
+</div>
+{% endblock %}
