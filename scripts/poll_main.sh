@@ -32,6 +32,12 @@ if [[ "$ACTIVE" == "releases/$SHA" ]]; then
   exit 0
 fi
 
+FAILED="$ROOT/failed/$SHA"
+if [[ -f "$FAILED" ]]; then
+  echo "Skipping previously failed release $SHA. Clear the marker manually after fixing it."
+  exit 0
+fi
+
 RELEASE="$ROOT/releases/$SHA"
 mkdir -p "$RELEASE"
 if [[ ! -f "$RELEASE/.release-ready" ]]; then
@@ -39,4 +45,9 @@ if [[ ! -f "$RELEASE/.release-ready" ]]; then
   touch "$RELEASE/.release-ready"
 fi
 
-bash "$RELEASE/scripts/deploy_lightsail.sh" "$SHA"
+if ! bash "$RELEASE/scripts/deploy_lightsail.sh" "$SHA"; then
+  mkdir -p "$ROOT/failed"
+  touch "$FAILED"
+  echo "Marked failed Jaemulun release $SHA" >&2
+  exit 1
+fi
