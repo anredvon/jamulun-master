@@ -139,7 +139,7 @@ class TestSession(db.Model):
     # Browser owner credential digest; NULL for legacy sessions without ownership proof.
 
     share_count  = db.Column(db.Integer, default=0, nullable=False)
-    # 공유 버튼 누른 횟수 (카카오/링크복사 등 합산)
+    # Owner share-link issuance count; opening the share composer records intent.
 
     started_at   = db.Column(db.DateTime, default=datetime.utcnow)
     finished_at  = db.Column(db.DateTime, nullable=True)

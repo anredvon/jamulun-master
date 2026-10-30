@@ -68,7 +68,7 @@ jaemulun/
 | answered_question_ids | 이미 답변한 질문 ID |
 | score | 누적 raw 점수 |
 | unlocked | 기존 데이터 호환용 레거시 필드 (접근 제어에 사용하지 않음) |
-| share_count | 공유 횟수 |
+| share_count | 소유자가 공유 화면을 열어 만든 공유 링크 발급 횟수 |
 
 ### test_results
 | 컬럼 | 설명 |

@@ -13,18 +13,13 @@ import json
 import os
 import secrets
 from dotenv import load_dotenv
+from secret_policy import is_valid_secret_key
 
 load_dotenv(os.path.join(os.getcwd(), ".env"))
 
 app = Flask(__name__)
 secret_key = os.environ.get("SECRET_KEY")
-known_secret_placeholders = {
-    "dev-secret-change-in-prod",
-    "replace-with-a-random-secret-at-least-32-characters-long",
-    "your-super-secret-key-here-change-this",
-    "REPLACE_WITH_A_RANDOM_SECRET",
-}
-if not secret_key or len(secret_key) < 32 or secret_key in known_secret_placeholders:
+if not is_valid_secret_key(secret_key):
     raise RuntimeError("SECRET_KEY must be a random value of at least 32 characters")
 app.secret_key = secret_key
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///jaemulun.db")
@@ -61,6 +56,12 @@ def _share_token_serializer() -> URLSafeTimedSerializer:
 def _share_url(test_session: TestSession) -> str:
     token = _share_token_serializer().dumps({"session_id": test_session.id})
     return url_for("public_share_page", token=token)
+
+
+def _issue_share_url(test_session: TestSession) -> str:
+    test_session.share_count = (test_session.share_count or 0) + 1
+    db.session.commit()
+    return _share_url(test_session)
 
 
 def get_owned_test_session(session_id: int) -> TestSession | None:
@@ -161,7 +162,7 @@ def share_page(session_id):
     result_tags = _result_tags(ts.test_type, result.result_type if result else None)
     share_data = {"score": result.final_score if result else 0, "delta_text": "이번 주 +4점", "rank": 28, "tags": result_tags}
     return render_template("share.html", ts=ts, result=share_data, test_type=ts.test_type,
-                           test_label=test_label, share_url=_share_url(ts))
+                           test_label=test_label, share_url=_issue_share_url(ts))
 
 
 @app.route("/shared/<token>")
@@ -245,8 +246,7 @@ def api_share():
     data = request.json or {}; session_id = data.get("session_id"); ts = get_owned_test_session(session_id)
     if ts is None:
         abort(404)
-    ts.share_count = (ts.share_count or 0) + 1; db.session.commit()
-    return jsonify({"ok": True, "share_url": _share_url(ts)})
+    return jsonify({"ok": True, "share_url": _issue_share_url(ts)})
 
 
 @app.route("/healthz")

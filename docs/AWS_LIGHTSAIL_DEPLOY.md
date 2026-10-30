@@ -83,8 +83,7 @@ For an existing restored **SQLite** database, take and verify a separate backup,
 then add the nullable browser-ownership column before starting this release:
 
 ```bash
-sudo -u jaemulun /srv/jaemulun/releases/<SHA>/.venv/bin/python \
-  /srv/jaemulun/releases/<SHA>/scripts/migrate_session_ownership.py \
+sudo -u jaemulun python3 /srv/jaemulun/repo/scripts/migrate_session_ownership.py \
   --database /srv/jaemulun/shared/jaemulun.sqlite3
 ```
 

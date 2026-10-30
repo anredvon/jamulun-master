@@ -210,6 +210,25 @@ class SessionOwnershipRouteTest(unittest.TestCase):
     def https_post(self, client, path, **kwargs):
         return client.post(path, base_url="https://localhost", **kwargs)
 
+    def assert_private_session_routes_are_hidden(self, client, session_id):
+        for path in (
+            f"/result/{session_id}",
+            f"/insight/{session_id}",
+            f"/share/{session_id}",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(self.https_get(client, path).status_code, 404)
+
+        payloads = (
+            ("/api/answer", {"session_id": session_id, "question_id": self.question_id, "choice_id": self.choice_id}),
+            ("/api/finish", {"session_id": session_id}),
+            ("/api/share", {"session_id": session_id}),
+        )
+        for path, payload in payloads:
+            with self.subTest(path=path):
+                response = self.https_post(client, path, json=payload)
+                self.assertEqual(response.status_code, 404)
+
     def test_new_session_gets_secure_cookie_and_owner_can_read_free_insight(self):
         cookie = self.owner_client.get_cookie("jaemulun_session")
         self.assertIsNotNone(cookie)
@@ -244,24 +263,7 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         self.assertEqual(other_start.status_code, 200)
         self.assertIsNotNone(self.other_client.get_cookie("jaemulun_session"))
 
-        read_paths = (
-            f"/result/{self.session_id}",
-            f"/insight/{self.session_id}",
-            f"/share/{self.session_id}",
-        )
-        for path in read_paths:
-            with self.subTest(path=path):
-                self.assertEqual(self.https_get(self.other_client, path).status_code, 404)
-
-        payloads = (
-            ("/api/answer", {"session_id": self.session_id, "question_id": self.question_id, "choice_id": self.choice_id}),
-            ("/api/finish", {"session_id": self.session_id}),
-            ("/api/share", {"session_id": self.session_id}),
-        )
-        for path, payload in payloads:
-            with self.subTest(path=path):
-                response = self.https_post(self.other_client, path, json=payload)
-                self.assertEqual(response.status_code, 404)
+        self.assert_private_session_routes_are_hidden(self.other_client, self.session_id)
 
         self.assertEqual(
             self.https_get(self.other_client, f"/result/{self.session_id}").get_data(),
@@ -274,10 +276,10 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         missing_target_response = self.https_get(missing_client, "/result/999999")
         self.assertEqual(missing_cookie_response.status_code, 404)
         self.assertEqual(missing_cookie_response.get_data(), missing_target_response.get_data())
+        self.assert_private_session_routes_are_hidden(missing_client, self.session_id)
 
         self.owner_client.set_cookie("jaemulun_session", "not-a-valid-signed-cookie")
-        altered = self.https_get(self.owner_client, f"/result/{self.session_id}")
-        self.assertEqual(altered.status_code, 404)
+        self.assert_private_session_routes_are_hidden(self.owner_client, self.session_id)
 
         expiring_client = app.test_client()
         start = expiring_client.post(
@@ -288,9 +290,10 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         try:
             app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(seconds=-1)
             expired = self.https_get(expiring_client, f"/result/{expiring_id}")
+            self.assertEqual(expired.status_code, 404)
+            self.assert_private_session_routes_are_hidden(expiring_client, expiring_id)
         finally:
             app.config["PERMANENT_SESSION_LIFETIME"] = previous_lifetime
-        self.assertEqual(expired.status_code, 404)
 
         legacy_browser = app.test_client()
         legacy_start = self.https_post(
@@ -308,6 +311,7 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         missing_response = self.https_get(legacy_browser, "/result/999999")
         self.assertEqual(legacy_response.status_code, 404)
         self.assertEqual(legacy_response.get_data(), missing_response.get_data())
+        self.assert_private_session_routes_are_hidden(legacy_browser, legacy_id)
 
     def test_result_page_offers_owner_free_detailed_report(self):
         self.https_post(
@@ -346,6 +350,9 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         composer = self.https_get(self.owner_client, f"/share/{self.session_id}")
         self.assertEqual(composer.status_code, 200)
         self.assertIn("JAEMULUN_SHARE_URL", composer.get_data(as_text=True))
+        with app.app_context():
+            test_session = db.session.get(TestSession, self.session_id)
+            self.assertEqual(test_session.share_count, 1)
 
         response = self.https_post(
             self.owner_client,
