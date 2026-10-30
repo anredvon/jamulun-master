@@ -110,8 +110,23 @@ sudo -u jaemulun git -C /srv/jaemulun/repo archive "$SHA" | \
   sudo -u jaemulun tar -xf - -C "/srv/jaemulun/releases/$SHA"
 ```
 
-This creates release code but does not touch DB contents. After confirming the
-DB migration is complete and the environment file is correct:
+This creates release code but does not touch DB contents. For a **brand-new** SQLite DB,
+create a Python environment in this staged release and initialize it explicitly
+(the following commands are NOT for an existing restored database):
+
+```bash
+sudo -iu jaemulun
+set -a; source /etc/jaemulun.env; set +a
+cd /srv/jaemulun/releases/<replace-with-the-SHA-from-above>
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -c "from app import app, db; app.app_context().push(); db.create_all()"
+.venv/bin/python seed_db.py
+exit
+```
+
+For any existing production DB, restore and validate it separately instead.
+After confirming the DB migration is complete and the environment file is correct:
 
 ```bash
 sudo -u jaemulun bash \
@@ -157,7 +172,10 @@ Pause automatic releases at any time:
 sudo systemctl stop jaemulun-poll.timer
 ```
 
-A new main commit will then be picked up at the next poll. This is *polling*,
+A new main commit will then be picked up at the next poll. If an update fails,
+its SHA is written under `/srv/jaemulun/failed/` to avoid repeatedly restarting
+an unhealthy release. Investigate logs and correct the cause before removing that
+marker and rerunning the poller. This is *polling*,
 not an instantaneous push webhook. Configure a GitHub main branch protection
 rule that requires the CI checks to pass before merging.
 
