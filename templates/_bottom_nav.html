@@ -7,7 +7,7 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v2M12 18.5v2M4.8 6.2l1.4 1.4m11.6 9.6 1.4 1.4M3.5 12h2m13 0h2M4.8 17.8l1.4-1.4m11.6-9.6 1.4-1.4"/><circle cx="12" cy="12" r="5.2"/><path d="M10.2 12.2l1.2 1.2 2.5-2.8"/></svg>
     <span>오늘</span>
   </a>
-  <a href="{{ url_for('intro_page', test_type='future') }}" class="app-nav-item{% if active_tab == 'diagnosis' %} is-active{% endif %}">
+  <a href="{{ url_for('check_page') }}" class="app-nav-item{% if active_tab == 'diagnosis' %} is-active{% endif %}">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.3 10.7 14l4.8-5"/></svg>
     <span>체크</span>
   </a>
