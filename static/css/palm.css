@@ -38,16 +38,9 @@
 .palm-result-card{text-align:center;padding-top:22px;}
 .palm-result-kicker{font-size:9px;font-weight:900;letter-spacing:.18em;color:#8065d2;}
 .palm-result-heading{margin:7px 0 0;color:#352b4b;font-size:20px;font-weight:900;letter-spacing:-.04em;}
-.palm-result-scan{width:150px;height:142px;margin:10px auto 8px;border-radius:24px;background:radial-gradient(circle,#f6f1ff,#fff 72%);}
-.palm-result-scan svg{width:100%;height:100%;fill:none;stroke:#8b70dc;stroke-width:3.6;stroke-linecap:round;}
-.palm-scan-path{stroke-dasharray:1;stroke-dashoffset:1;}
-.palm-result-card.is-scanning .palm-scan-path{animation:draw-palm-line 1.25s ease forwards;}
-.palm-result-card.is-scanning .palm-head-path{animation-delay:.4s;}
-.palm-result-card.is-scanning .palm-fate-path{animation-delay:.8s;}
 .palm-result-copy.is-revealed{animation:palm-copy-reveal .45s ease both;}
 @keyframes palm-copy-reveal{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
 @keyframes palm-notice-in{from{opacity:0;scale:.96}to{opacity:1;scale:1}}
-@keyframes draw-palm-line{to{stroke-dashoffset:0;}}
 .palm-result-disclaimer{max-width:280px;margin:0 auto 16px;color:#9992a2;font-size:9px;line-height:1.55;}
 .palm-result-copy{padding:15px;border-radius:18px;background:#f8f6fc;text-align:left;}
 .palm-result-types{font-size:10px;font-weight:800;color:#8d829d;}
@@ -61,7 +54,7 @@
 .palm-today-tip strong{display:block;color:#6749c9;font-size:11px;}
 .palm-today-tip p{margin:4px 0 0;color:#50446c;font-size:11px;font-weight:800;line-height:1.6;}
 .palm-scope-note{margin:10px 0 0;color:#8b8494;font-size:9px;line-height:1.55;}
-.palm-result.is-result-ready .palm-result-scan,.palm-result.is-result-ready .palm-result-disclaimer{display:none;}
+.palm-result.is-result-ready .palm-result-disclaimer{display:none;}
 .palm-result.is-result-ready{scroll-margin-top:12px;}
 .palm-preview-card.is-analysis-complete .palm-scan-line{opacity:0;}
 .palm-preview-card.is-analysis-complete .palm-photo-frame{box-shadow:inset 0 0 0 2px rgba(103,73,201,.22);}
