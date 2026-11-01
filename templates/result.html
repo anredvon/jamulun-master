@@ -29,6 +29,7 @@
 </div>{% include '_bottom_nav.html' %}</div>
 {% endblock %}
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/history-store.js') }}"></script>
 <script>
   window.JAEMULUN_TEST_TYPE = {{ test_type | tojson }};
   window.JAEMULUN_TEST_LABEL = {{ test_label | tojson }};
@@ -37,19 +38,11 @@
     type: {{ test_type | tojson }},
     label: {{ test_label | tojson }},
     score: {{ (result.final_score if result else 0) | tojson }},
-    title: {{ (result.result_title if result else '') | tojson }}
+    title: {{ (result.result_title if result else '') | tojson }},
+    summary: {{ (result.result_desc if result else '') | tojson }}
   };
   (() => {
-    const key = 'moneyflow_history_v1';
-    const entry = {...window.MONEYFLOW_RESULT,
-      date: new Intl.DateTimeFormat('ko-KR', {month:'short', day:'numeric'}).format(new Date()),
-      createdAt: new Date().toISOString()
-    };
-    try {
-      const current = JSON.parse(localStorage.getItem(key) || '[]');
-      const next = [entry, ...(Array.isArray(current) ? current.filter(item => String(item.id) !== String(entry.id)) : [])].slice(0, 30);
-      localStorage.setItem(key, JSON.stringify(next));
-    } catch (_) {}
+    window.MoneyFlowHistory?.add(window.MONEYFLOW_RESULT);
   })();
 </script>
 <script src="{{ url_for('static', filename='js/moneyflow-fun.js') }}"></script>

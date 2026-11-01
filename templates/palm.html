@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}오늘의 손금 보기 · 머니플로우{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/palm.css') }}">{% endblock %}
+{% block body %}
+<div class="page-shell palm-page"><main class="shell palm-shell">
+  {% set active_tab = 'today' %}{% include '_app_header.html' %}
+  <header class="palm-hero">
+    <span class="hero-badge"><span class="dot"></span>PALM FLOW · FOR FUN</span>
+    <h1>손바닥 선으로<br><span class="grad">오늘의 재물 흐름 보기</span></h1>
+    <p>손 사진의 선 모양을 이 기기에서 간단히 살펴보고<br>재미로 보는 전통 손금 이야기를 만나보세요.</p>
+  </header>
+
+  <section class="palm-step-card" id="palm-capture">
+    <div class="palm-step-heading"><span>01</span><div><strong>손바닥 사진을 준비해요</strong><p>손바닥을 펴고 손목까지 화면 안에 담아주세요.</p></div></div>
+    <input class="palm-file-input" id="palm-file-input" type="file" accept="image/*" capture="environment" aria-label="손바닥 사진 찍기 또는 선택">
+    <div class="palm-actions">
+      <button type="button" class="cta cta-primary" id="palm-camera-button">손 사진 찍기</button>
+      <button type="button" class="cta cta-secondary" id="palm-gallery-button">사진 보관함에서 선택</button>
+    </div>
+    <p class="palm-privacy">🔒 손 사진은 이 기기에서만 처리하고 저장하거나 전송하지 않아요.</p>
+  </section>
+
+  <section class="palm-preview-card is-hidden" id="palm-preview-card" aria-live="polite">
+    <div class="palm-step-heading"><span>02</span><div><strong>손금 선을 살펴보고 있어요</strong><p id="palm-status">사진을 준비하는 중이에요.</p></div></div>
+    <div class="palm-photo-frame"><img id="palm-preview" alt="선택한 손바닥 사진 미리보기"><canvas id="palm-overlay" aria-hidden="true"></canvas><span class="palm-scan-line"></span></div>
+    <div class="palm-actions"><button type="button" class="cta cta-secondary" id="palm-retake-button">다른 사진 선택</button></div>
+  </section>
+
+  <section class="palm-review-card is-hidden" id="palm-review" aria-labelledby="palm-review-title">
+    <div class="palm-step-heading"><span>03</span><div><strong id="palm-review-title">사진에서 찾은 선 모양을 확인해요</strong><p id="palm-quality-note">선 후보는 참고용이에요. 다르면 직접 바꿔주세요.</p></div></div>
+    <div class="palm-selectors">
+      <label>마음선<select id="palm-heart-type" name="heart-type"></select></label>
+      <label>두뇌선<select id="palm-head-type" name="head-type"></select></label>
+      <label>운명선<select id="palm-fate-type" name="fate-type"></select></label>
+    </div>
+    <button type="button" class="cta cta-primary palm-result-button" id="palm-result-button">확인한 선으로 결과 보기</button>
+  </section>
+
+  <section class="palm-result-card is-hidden" id="palm-result" aria-live="polite">
+    <div class="palm-result-kicker">TODAY'S PALM FLOW</div>
+    <div class="palm-result-scan" id="palm-result-scan"><svg viewBox="0 0 180 170" role="img" aria-label="확인한 세 손금선을 훑는 애니메이션"><path pathLength="1" class="palm-scan-path palm-heart-path" d="M38 62 Q84 42 141 64"/><path pathLength="1" class="palm-scan-path palm-head-path" d="M37 82 Q91 97 145 79"/><path pathLength="1" class="palm-scan-path palm-fate-path" d="M91 145 Q95 104 90 56"/></svg></div>
+    <p class="palm-result-disclaimer">전통 손금에서 착안한 재미용 해석이에요. 미래의 수익을 예측하거나 보장하지 않아요.</p>
+    <div class="palm-result-copy is-hidden" id="palm-result-copy"><span id="palm-result-types"></span><h2 id="palm-result-title"></h2><p id="palm-result-summary"></p><strong id="palm-result-one-line"></strong></div>
+    <button type="button" class="cta cta-secondary" id="palm-again-button">다시 보기</button>
+    <a href="{{ url_for('home_page') }}" class="cta cta-primary">홈으로</a>
+  </section>
+</main>{% include '_bottom_nav.html' %}</div>
+{% endblock %}
+{% block scripts %}<script type="application/json" id="palm-combo-data">{{ palm_combinations | tojson }}</script><script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/palm-analysis.js') }}"></script><script src="{{ url_for('static', filename='js/palm-combinations.js') }}"></script><script src="{{ url_for('static', filename='js/palm.js') }}"></script>{% endblock %}

@@ -4,7 +4,7 @@
 {% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/tarot.css') }}">{% endblock %}
 {% block body %}
 <div class="page-shell tarot-page"><main class="shell tarot-shell">
-  {% set active_tab = 'tarot' %}{% include '_app_header.html' %}
+  {% set active_tab = 'today' %}{% include '_app_header.html' %}
   <section class="tarot-hero" aria-labelledby="tarot-title">
     <div class="hero-badge"><span class="dot"></span>오늘의 타로카드 뽑기</div>
     <h1 id="tarot-title">지금 끌리는 카드를<br><span class="grad">한 장 골라보세요</span></h1>
@@ -25,4 +25,4 @@
 <div class="tarot-collection-modal is-hidden" id="tarot-collection-modal" role="dialog" aria-modal="true" aria-labelledby="tarot-collection-title"><div class="tarot-modal-backdrop" data-close-collection></div><section class="tarot-collection-panel"><button type="button" class="tarot-modal-close" data-close-collection aria-label="닫기">×</button><div class="collection-head"><span class="collection-kicker">MY CARD COLLECTION</span><h2 id="tarot-collection-title">나의 머니 타로</h2><p><strong id="collection-count">0</strong> / 24장의 흐름을 발견했어요.</p><div class="collection-badge" id="collection-badge">첫 카드를 만나보세요 ✨</div></div><div class="collection-grid" id="collection-grid"></div><div class="collection-detail is-hidden" id="collection-detail"><img id="collection-detail-image" src="" alt=""><div><span id="collection-detail-en"></span><strong id="collection-detail-title"></strong><p id="collection-detail-meta"></p></div></div></section></div>
 <script type="application/json" id="tarot-data">{{ tarot_cards | tojson }}</script>
 {% endblock %}
-{% block scripts %}<script src="{{ url_for('static', filename='js/tarot.js') }}"></script>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/tarot.js') }}"></script>{% endblock %}

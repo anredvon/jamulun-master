@@ -7,9 +7,15 @@ registered here so every entrypoint importing ``app`` receives the same routes.
 from flask import render_template
 
 from core_app import app, db
+from investment_quote_integration import register_investment_quotes
+from palm_integration import register_palm
 from tarot_integration import register_tarot
+from today_integration import register_today
 
 register_tarot(app)
+register_palm(app)
+register_investment_quotes(app)
+register_today(app)
 
 
 @app.route("/history")

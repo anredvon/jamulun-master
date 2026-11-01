@@ -1,5 +1,6 @@
 """Read-only Flask smoke tests with an isolated in-memory database."""
 import os
+import json
 import re
 import shlex
 import subprocess
@@ -7,6 +8,9 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+
+from flask import render_template
 
 os.environ["SECRET_KEY"] = "ci-test-secret-key-0123456789abcdef0123456789abcdef"
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
@@ -152,10 +156,84 @@ class SmokeTest(unittest.TestCase):
     def test_home(self):
         self.assertEqual(self.client.get("/").status_code, 200)
 
+    def test_home_has_four_primary_daily_activities(self):
+        response = self.client.get("/home")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        for label in ("오늘의 타로카드 뽑기", "오늘의 손금 보기", "재물 흐름 체크", "오늘의 한 줄 투자 명언 뽑기"):
+            with self.subTest(label=label):
+                self.assertIn(label, html)
+        for href in ('href="/tarot"', 'href="/palm"', 'href="/intro/future"', 'href="/investment-quotes"'):
+            with self.subTest(href=href):
+                self.assertIn(href, html)
+        self.assertNotIn("나의 소비 스타일", html)
+        self.assertNotIn("오늘의 재물운</strong>", html)
+
     def test_history_and_tarot(self):
         for path in ("/history", "/tarot"):
             with self.subTest(path=path):
                 self.assertEqual(self.client.get(path).status_code, 200)
+
+    def test_palm_page_keeps_the_photo_on_device(self):
+        response = self.client.get("/palm")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn('id="palm-file-input"', html)
+        self.assertIn('accept="image/*"', html)
+        self.assertIn('capture="environment"', html)
+        self.assertIn("사진 보관함에서 선택", html)
+        self.assertIn("손 사진은 이 기기에서만 처리", html)
+        self.assertNotIn("enctype=\"multipart/form-data\"", html)
+        self.assertNotIn('action="/palm', html)
+
+    def test_investment_quote_page_is_reachable(self):
+        response = self.client.get("/investment-quotes")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("투자 명언 뽑기", html)
+        self.assertIn("투자 명언은 읽을거리이며 개인별 매수·매도 조언이 아니에요.", html)
+
+    def test_today_hub_and_bottom_navigation_routes(self):
+        today = self.client.get("/today")
+        self.assertEqual(today.status_code, 200)
+        today_html = today.get_data(as_text=True)
+        for href in ('href="/tarot"', 'href="/palm"', 'href="/investment-quotes"'):
+            with self.subTest(href=href):
+                self.assertIn(href, today_html)
+
+        for path in ("/home", "/today", "/intro/future", "/history"):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 200)
+                html = response.get_data(as_text=True)
+                self.assertIn('aria-label="주요 메뉴"', html)
+                self.assertIn('href="/today"', html)
+                self.assertIn("오늘", html)
+
+    def test_root_stays_the_intro_page_and_home_is_the_activity_page(self):
+        root_html = self.client.get("/").get_data(as_text=True)
+        home_html = self.client.get("/home").get_data(as_text=True)
+        self.assertIn("오늘의 돈 흐름", root_html)
+        self.assertNotIn("home-actions", root_html)
+        self.assertIn("home-actions", home_html)
+
+    def test_result_page_uses_shared_history_store(self):
+        with app.test_request_context():
+            html = render_template(
+                "result.html",
+                ts=SimpleNamespace(id=17),
+                result=SimpleNamespace(final_score=82, result_title="안정 흐름", result_desc="차근차근 살펴봐요."),
+                result_tags=[],
+                test_type="future",
+                test_label="재물 흐름",
+            )
+
+        store_script = html.index("/static/js/history-store.js")
+        result_data = html.index("window.MONEYFLOW_RESULT")
+        self.assertLess(store_script, result_data)
+        self.assertIn("MoneyFlowHistory?.add(window.MONEYFLOW_RESULT)", html)
+        self.assertIn(f"summary: {json.dumps('차근차근 살펴봐요.')}", html)
+        self.assertIn('score: 82', html)
 
     def test_invalid_quiz(self):
         response = self.client.post("/api/start", json={"test_type": "unknown"})

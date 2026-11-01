@@ -1,51 +1,93 @@
 (() => {
   'use strict';
-  const KEY = 'moneyflow_history_v1';
   const list = document.getElementById('history-list');
   const empty = document.getElementById('history-empty');
   const summary = document.getElementById('history-summary');
   const weekly = document.getElementById('weekly-flow');
-  if (!list || !empty || !summary) return;
+  if (!list || !empty || !summary || !window.MoneyFlowHistoryView) return;
 
-  let items = [];
-  try { items = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (_) { items = []; }
-  if (!Array.isArray(items) || !items.length) return;
+  const view = window.MoneyFlowHistoryView.buildHistoryView(window.MoneyFlowHistory?.read() || []);
+  if (!view.count) return;
 
   empty.classList.add('is-hidden');
   summary.classList.remove('is-hidden');
-  document.getElementById('history-count').textContent = `${items.length}개`;
-  document.getElementById('history-latest-score').textContent = `${items[0].score ?? '-'}점`;
+  document.getElementById('history-count').textContent = `${view.count}개`;
+  document.getElementById('history-latest-score').textContent = view.latestFutureScore === null
+    ? '—'
+    : `${view.latestFutureScore}점`;
 
-  if (weekly) {
+  if (weekly && view.futureTrend.length) {
     weekly.classList.remove('is-hidden');
-    const recent = items.slice(0, 7).reverse();
     const bars = document.getElementById('weekly-flow-bars');
     const delta = document.getElementById('weekly-flow-delta');
     const note = document.getElementById('weekly-flow-note');
-    recent.forEach((item, index) => {
-      const score = Math.max(8, Math.min(100, Number(item.score) || 0));
+    view.futureTrend.forEach((item, index) => {
       const bar = document.createElement('span');
-      bar.style.height = `${score}%`;
-      bar.title = `${item.date || index + 1}: ${item.score || 0}점`;
-      if (index === recent.length - 1) bar.classList.add('is-latest');
+      const height = Math.max(8, Math.min(100, item.score));
+      bar.style.height = `${height}%`;
+      bar.title = `${item.date || index + 1}: ${item.score}점`;
+      if (index === view.futureTrend.length - 1) bar.classList.add('is-latest');
       bars.appendChild(bar);
     });
-    if (recent.length >= 2) {
-      const change = (Number(recent[recent.length - 1].score) || 0) - (Number(recent[0].score) || 0);
+
+    if (view.futureTrend.length >= 2) {
+      const first = view.futureTrend[0].score;
+      const last = view.futureTrend[view.futureTrend.length - 1].score;
+      const change = last - first;
       delta.textContent = change === 0 ? '흐름 유지 →' : `${change > 0 ? '+' : ''}${change}점 ${change > 0 ? '↗' : '↘'}`;
-      note.textContent = change > 0 ? '최근 흐름이 조금씩 좋아지고 있어요. 이 페이스를 이어가봐요.' : change < 0 ? '조금 흔들려도 괜찮아요. 오늘의 작은 미션부터 다시 시작해봐요.' : '최근 흐름이 안정적으로 이어지고 있어요.';
+      note.textContent = change > 0
+        ? '최근 재물 흐름 체크 점수가 조금씩 좋아지고 있어요.'
+        : change < 0
+          ? '점수는 참고로만 보고, 오늘의 작은 습관부터 살펴봐요.'
+          : '최근 재물 흐름 체크 점수가 비슷하게 이어지고 있어요.';
     } else {
       delta.textContent = '첫 기록 ✦';
-      note.textContent = '한 번 더 확인하면 첫 번째 변화가 보이기 시작해요.';
+      note.textContent = '재물 흐름 체크 기록이 더 쌓이면 변화를 보여드릴게요.';
     }
   }
 
-  const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>';
-  const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-  items.slice(0, 30).forEach(item => {
+  const icons = { future: '↗', money: '₩', spending: '◉', tarot: '✦', palm: '☼', quote: '“' };
+  view.rows.forEach((item) => {
     const row = document.createElement('article');
     row.className = 'history-item';
-    row.innerHTML = `<span class="history-item-icon">${icon}</span><div class="history-item-copy"><div class="history-item-top"><strong>${escapeHtml(item.label || '머니 리포트')}</strong><time>${escapeHtml(item.date || '')}</time></div><p>${escapeHtml(item.title || '나의 머니 흐름')}</p></div><div class="history-item-score">${escapeHtml(item.score)}<small>/100</small></div>`;
+    const icon = document.createElement('span');
+    icon.className = 'history-item-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = icons[item.type] || '•';
+
+    const copy = document.createElement('div');
+    copy.className = 'history-item-copy';
+    const top = document.createElement('div');
+    top.className = 'history-item-top';
+    const label = document.createElement('strong');
+    label.textContent = item.label;
+    top.appendChild(label);
+    if (item.date) {
+      const date = document.createElement('time');
+      date.textContent = item.date;
+      top.appendChild(date);
+    }
+    const title = document.createElement('p');
+    title.className = 'history-item-title';
+    title.textContent = item.title;
+    copy.append(top, title);
+    if (item.summary) {
+      const detail = document.createElement('p');
+      detail.className = 'history-item-summary';
+      detail.textContent = item.summary;
+      copy.appendChild(detail);
+    }
+    row.append(icon, copy);
+
+    if (item.score !== undefined) {
+      const score = document.createElement('div');
+      score.className = 'history-item-score';
+      score.textContent = String(item.score);
+      const suffix = document.createElement('small');
+      suffix.textContent = '/100';
+      score.appendChild(suffix);
+      row.appendChild(score);
+    }
     list.appendChild(row);
   });
 })();

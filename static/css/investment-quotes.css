@@ -1,0 +1,16 @@
+.quote-shell{min-height:100dvh;padding-bottom:calc(92px + env(safe-area-inset-bottom));}
+.quote-hero{text-align:center;padding:21px 5px 19px;}
+.quote-hero h1{margin:15px 0 8px;font-size:29px;line-height:1.2;font-weight:900;letter-spacing:-.055em;}
+.quote-hero p{margin:0;color:#817b8d;font-size:12px;line-height:1.7;}
+.quote-stage{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:280px;margin:5px 0 13px;padding:30px 22px 22px;border:1px solid #ebe6f5;border-radius:28px;background:radial-gradient(circle at top right,#f5f0ff 0,transparent 47%),linear-gradient(150deg,#fff,#fbfaff);box-shadow:0 13px 30px rgba(45,32,78,.07);text-align:center;}
+.quote-mark{height:38px;color:#9a80e4;font-family:Georgia,serif;font-size:67px;line-height:.9;opacity:.7;}
+.quote-text{margin:14px 0;color:#382d50;font-size:20px;font-weight:900;line-height:1.6;letter-spacing:-.04em;word-break:keep-all;}
+.quote-original{margin:0 0 16px;color:#8a8493;font-family:Georgia,serif;font-size:11px;line-height:1.6;}
+.quote-attribution{display:flex;flex-direction:column;align-items:center;gap:5px;padding-top:14px;border-top:1px solid #eeeaf5;}
+.quote-attribution strong{font-size:11px;color:#5b506c;}
+.quote-attribution a{font-size:10px;color:#7659cf;text-decoration:none;font-weight:800;}
+.quote-attribution small{font-size:9px;color:#a19aa9;}
+.quote-save-status{margin:15px 0 0;color:#958e9d;font-size:10px;line-height:1.5;}
+.quote-draw-button{width:100%;min-height:50px;font-size:13px;}
+.quote-disclaimer{margin:13px 8px 0;text-align:center;color:#a09aa8;font-size:9px;line-height:1.5;}
+.quote-page .is-hidden{display:none!important;}
