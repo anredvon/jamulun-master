@@ -101,6 +101,10 @@ def home_page():
     today_score = _today_score()
     return render_template("home.html", today_score=today_score)
 
+@app.route("/check")
+def check_page():
+    return render_template("check.html")
+
 @app.route("/intro/<test_type>")
 def intro_page(test_type):
     if test_type not in VALID_TEST_TYPES:
@@ -110,7 +114,7 @@ def intro_page(test_type):
         "spending": {
             "badge": "소비 패턴 분석", "heading_before": "나의 소비 습관을", "heading_highlight": "유형으로 확인",
             "desc": "평소 소비 패턴을 기준으로 계획형인지, 즉흥형인지 가볍게 확인합니다.",
-            "bullets": ["일상적인 소비 습관을 기준으로 성향을 분석합니다.", "답변 흐름은 가볍지만 결과 문구는 신뢰감 있게 구성합니다.", "퀴즈 UI는 공통으로 사용되며 제목과 결과 메시지만 다르게 적용합니다."]},
+            "bullets": ["평소 소비 선택에 가까운 답을 골라주세요.", "5개의 질문으로 나의 소비 스타일을 살펴봐요.", "결과와 함께 이번 주 실천 아이디어도 확인해요."]},
         "money": {
             "badge": "오늘의 금전운", "heading_before": "오늘 하루의", "heading_highlight": "재물 흐름 확인",
             "desc": "오늘 소비해도 괜찮을지 금전운의 흐름을 가볍게 체크해보세요.",

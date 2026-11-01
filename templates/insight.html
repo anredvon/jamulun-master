@@ -1,103 +1,43 @@
 {% extends "base.html" %}
-{% block title %}상세 인사이트{% endblock %}
-
+{% block title %}상세 리포트 · 머니플로우{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/insight.css') }}">{% endblock %}
 {% block body %}
 {% set rtype = result.result_type if result else 'bronze' %}
+{% set tips = {
+  'money': ['오늘 사용할 금액을 먼저 정해두세요.', '결제 전 필요한 지출인지 한 번 더 살펴보세요.', '하루 지출을 저녁에 짧게 기록해보세요.'],
+  'spending': ['구매 전 하루 기다리기를 해보세요.', '고정비와 자유 지출을 나눠 살펴보세요.', '자주 쓰는 구독 서비스를 한 번 점검해보세요.'],
+  'future': ['가까운 저축 목표와 기간을 적어보세요.', '예상치 못한 지출을 위한 여유 자금을 확인해보세요.', '매달 이어갈 수 있는 작은 금액부터 정해보세요.']
+} %}
+<div class="page-shell insight-page"><main class="shell insight-shell">
+  {% set active_tab = 'diagnosis' %}{% include '_app_header.html' %}
+  <header class="insight-hero">
+    <span class="hero-badge"><span class="dot"></span>MY MONEY REPORT</span>
+    <h1>나의 상세 리포트</h1>
+    <span class="insight-free-label">무료 상세 리포트</span>
+    <p>{{ {'money':'오늘의 재물운', 'spending':'나의 소비 스타일', 'future':'재물 흐름 체크'}.get(ts.test_type, '머니 체크') }} 결과를 차근히 살펴봐요.</p>
+  </header>
 
-<div class="insight-shell">
+  <section class="insight-score-card insight-score-{{ rtype }}" aria-label="머니 흐름 점수">
+    <div class="insight-score-label">MY MONEY FLOW SCORE</div>
+    <div class="insight-score-number"><strong>{{ result.final_score if result else 0 }}</strong><span>/ 100</span></div>
+    <div class="insight-score-track"><span style="width:{{ result.final_score if result else 0 }}%"></span></div>
+    <div class="insight-score-result"><strong>{{ result.result_title if result else '결과를 준비 중이에요' }}</strong><span>{{ {'gold':'좋은 흐름을 이어가고 있어요', 'silver':'안정적인 습관을 쌓고 있어요', 'bronze':'작은 실천이 도움이 될 수 있어요', 'caution':'기본 흐름부터 점검해보세요'}.get(rtype, '내 흐름을 가볍게 살펴봐요') }}</span></div>
+  </section>
 
-  <!-- 점수 헤더 -->
-  <div class="result-score-card result-card-{{ rtype }}">
-    <p class="result-score-label">무료 상세 리포트 · ✅ 확인 가능</p>
-    <div class="result-score-big">
-      <span class="result-score-num">{{ result.final_score if result else 0 }}</span>
-      <span class="result-score-denom">/100</span>
-    </div>
-    <div class="result-score-bar-wrap">
-      <div class="result-score-bar" style="width:{{ result.final_score if result else 0 }}%"></div>
-    </div>
-    <p class="insight-hero-title">{{ result.result_title if result else '' }}</p>
-  </div>
+  <section class="insight-card">
+    <div class="insight-section-heading"><span class="insight-section-icon">✦</span><div><small>RESULT SUMMARY</small><h2>이번 결과 요약</h2></div></div>
+    <p class="insight-summary">{{ result.result_desc if result else '' }}</p>
+    <div class="insight-tags"><span>{{ {'money':'오늘의 흐름', 'spending':'소비 패턴', 'future':'재물 준비'}.get(ts.test_type, '머니 체크') }}</span><span>{{ result.result_title if result else '' }}</span></div>
+  </section>
 
-  <!-- 결과 설명 -->
-  <div class="insight-section-card">
-    <h3 class="insight-section-title">📊 소비 패턴 요약</h3>
-    <p class="insight-section-body">{{ result.result_desc if result else '' }}</p>
-    <ul class="insight-list">
-      <li>
-        <span class="insight-dot dot-{{ rtype }}"></span>
-        <span>현재 유형은 <strong>{{ result.result_title if result else '' }}</strong>입니다.</span>
-      </li>
-      <li>
-        <span class="insight-dot dot-{{ rtype }}"></span>
-        <span>테스트 유형: <strong>{{ {'money':'오늘 금전운', 'spending':'소비 성향', 'future':'미래 자산'}.get(ts.test_type, ts.test_type) }}</strong></span>
-      </li>
-    </ul>
-  </div>
+  <section class="insight-card">
+    <div class="insight-section-heading"><span class="insight-section-icon insight-icon-warn">✓</span><div><small>THIS WEEK</small><h2>이번 주 작은 실천</h2></div></div>
+    <p class="insight-section-desc">큰 결심보다, 지금 할 수 있는 한 가지부터 골라보세요.</p>
+    <ol class="insight-tip-list">{% for tip in tips.get(ts.test_type, tips['money']) %}<li><span>{{ loop.index }}</span><p>{{ tip }}</p></li>{% endfor %}</ol>
+  </section>
 
-  <!-- 주의 포인트 -->
-  <div class="insight-section-card">
-    <h3 class="insight-section-title">⚠️ 주의해야 할 지출 포인트</h3>
-    <ul class="insight-list">
-      {% if rtype == 'caution' %}
-        <li><span class="insight-dot dot-red"></span><span>충동 구매 전 24시간 대기 규칙을 실천해보세요.</span></li>
-        <li><span class="insight-dot dot-red"></span><span>세일 기간에는 예산 상한선을 미리 정해두세요.</span></li>
-        <li><span class="insight-dot dot-red"></span><span>월말 결산을 꼭 하는 습관을 들여보세요.</span></li>
-      {% elif rtype == 'bronze' %}
-        <li><span class="insight-dot dot-yellow"></span><span>카드 할부 사용 빈도를 체크해보세요.</span></li>
-        <li><span class="insight-dot dot-yellow"></span><span>고정비와 변동비를 분리해 관리하면 좋습니다.</span></li>
-        <li><span class="insight-dot dot-yellow"></span><span>소액이라도 정기 저축 자동이체를 설정해두세요.</span></li>
-      {% elif rtype == 'silver' %}
-        <li><span class="insight-dot dot-blue"></span><span>투자 비중을 조금 더 높여볼 시기입니다.</span></li>
-        <li><span class="insight-dot dot-blue"></span><span>비상금 3~6개월치 확보 여부를 점검하세요.</span></li>
-        <li><span class="insight-dot dot-blue"></span><span>세금 혜택이 있는 절세 상품을 활용해보세요.</span></li>
-      {% else %}
-        <li><span class="insight-dot dot-green"></span><span>자산 배분 비율을 주기적으로 리밸런싱하세요.</span></li>
-        <li><span class="insight-dot dot-green"></span><span>N잡·부수입 채널 추가를 고려해보세요.</span></li>
-        <li><span class="insight-dot dot-green"></span><span>장기 투자 목표가 있다면 포트폴리오를 점검해보세요.</span></li>
-      {% endif %}
-    </ul>
-  </div>
-
-  <!-- 이번 주 실천 팁 -->
-  <div class="insight-section-card">
-    <h3 class="insight-section-title">✅ 이번 주 실천 팁</h3>
-    <ol class="insight-tip-list">
-      <li>오늘 지출 내역을 앱이나 노트에 기록해보세요.</li>
-      <li>이번 주 불필요한 구독 서비스가 있는지 확인하세요.</li>
-      <li>다음 달 예산 계획을 10분만 투자해서 잡아보세요.</li>
-    </ol>
-  </div>
-
-  <!-- 홈으로 + 공유 -->
-  <div class="insight-action-row">
-    <a class="toss-btn toss-btn-primary" href="{{ url_for('index') }}">다른 테스트 해보기</a>
-    <button class="toss-btn toss-btn-outline" id="insight-share-btn" data-session-id="{{ ts.id }}">
-      결과 공유하기 📤
-    </button>
-  </div>
-
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-  document.getElementById('insight-share-btn')?.addEventListener('click', async () => {
-    const sid = Number(document.getElementById('insight-share-btn').dataset.sessionId);
-    const response = await fetch('/api/share', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: sid })
-    });
-    if (!response.ok) return;
-    const payload = await response.json();
-    if (!payload.share_url) return;
-    const shareUrl = new URL(payload.share_url, window.location.origin).href;
-    if (navigator.share) {
-      navigator.share({ title: 'AI 재물운 요약', url: shareUrl }).catch(() => {});
-    } else {
-      navigator.clipboard?.writeText(shareUrl).then(() => alert('요약 공유 링크 복사됨!'));
-    }
-  });
-</script>
+  <aside class="insight-note"><span aria-hidden="true">ⓘ</span><p>이 리포트는 선택한 답변을 바탕으로 제공하는 생활 점검용 콘텐츠예요. 특정 금융상품이나 투자 결정을 권유하지 않아요.</p></aside>
+  <div class="insight-actions"><a class="cta cta-primary" href="{{ url_for('result_page', session_id=ts.id) }}">결과 화면으로 돌아가기</a><a class="cta cta-secondary" href="{{ url_for('check_page') }}">다른 체크 해보기</a></div>
+</main>{% include '_bottom_nav.html' %}</div>
 {% endblock %}

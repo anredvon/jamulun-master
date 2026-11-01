@@ -9,9 +9,8 @@
   const el = {
     camera: $('palm-camera-button'), gallery: $('palm-gallery-button'), capture: $('palm-capture'),
     preview: $('palm-preview'), canvas: $('palm-overlay'), status: $('palm-status'),
-    review: $('palm-review'), quality: $('palm-quality-note'), retake: $('palm-retake-button'),
-    resultButton: $('palm-result-button'), result: $('palm-result'), again: $('palm-again-button'), completeNotice: $('palm-complete-notice'),
-    heart: $('palm-heart-type'), head: $('palm-head-type'), fate: $('palm-fate-type'),
+    retake: $('palm-retake-button'), result: $('palm-result'), again: $('palm-again-button'), completeNotice: $('palm-complete-notice'),
+    scanCenter: $('palm-scan-center'),
     resultCopy: $('palm-result-copy'), resultTypes: $('palm-result-types'), resultTitle: $('palm-result-title'),
     resultOneLine: $('palm-result-one-line'), resultReadings: $('palm-line-readings'), resultHeading: $('palm-result-heading')
   };
@@ -44,31 +43,10 @@
       f4: '갈라져 보이는 운명선은 여러 관심사와 선택지를 함께 살피는 흐름으로 풀이해요.'
     }
   };
-  const selectors = { heart: el.heart, head: el.head, fate: el.fate };
   let activeUrls = new Set();
   let analysisCanvas = null;
   let candidates = { heart: null, head: null, fate: null };
   let generation = 0;
-
-  function fillSelect(select, items, selected) {
-    select.replaceChildren();
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = selected ? '사진에서 찾은 후보를 확인해 주세요' : '후보를 못 찾았어요 · 직접 선택';
-    select.appendChild(placeholder);
-    for (const [id, label] of Object.entries(items)) {
-      const option = document.createElement('option');
-      option.value = id;
-      option.textContent = label;
-      if (id === selected) option.selected = true;
-      select.appendChild(option);
-    }
-    select.value = selected || '';
-  }
-
-  function updateConfirmButton() {
-    el.resultButton.disabled = !Object.values(selectors).every((select) => Boolean(select.value));
-  }
 
   function applyLineShapes(lineTypes) {
     const paths = {
@@ -90,8 +68,7 @@
     }
   }
 
-  function handleConfirmedLines(event) {
-    const lineTypes = { heart: event.detail.heartId, head: event.detail.headId, fate: event.detail.fateId };
+  function renderResult(lineTypes) {
     let id;
     try { id = window.MoneyFlowPalmCombinations.comboId(lineTypes.heart, lineTypes.head, lineTypes.fate); }
     catch (_) { return; }
@@ -101,7 +78,7 @@
     applyLineShapes(lineTypes);
     el.resultTitle.textContent = result.title;
     el.resultOneLine.textContent = result.oneLine;
-    el.resultTypes.textContent = `마음선 ${lineTypes.heart} · 두뇌선 ${lineTypes.head} · 운명선 ${lineTypes.fate}`;
+    el.resultTypes.textContent = '사진에서 추정한 선 모양을 바탕으로 한 재미용 풀이';
     el.resultReadings.replaceChildren();
     for (const [key, title] of [['heart', '마음선'], ['head', '두뇌선'], ['fate', '운명선']]) {
       const card = document.createElement('article');
@@ -117,20 +94,17 @@
     el.resultCopy.classList.remove('is-revealed');
     el.completeNotice.classList.add('is-hidden');
     el.result.classList.remove('is-result-ready');
-    el.result.classList.remove('is-scanning');
-    void el.result.offsetWidth;
-    el.result.classList.add('is-scanning');
+    el.result.classList.add('is-result-ready');
+    el.resultCopy.classList.remove('is-hidden');
+    el.resultCopy.classList.add('is-revealed');
+    el.resultHeading.textContent = '내 손금은 이렇게 풀이돼요';
+    el.result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const drawId = `palm-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    window.MoneyFlowHistory?.add({
+      id: drawId, type: 'palm', label: '오늘의 손금', title: result.title, summary: result.oneLine,
+      meta: { comboId: result.id, lineTypes }
+    });
     window.MoneyFlowPalm.dispose();
-    window.setTimeout(() => {
-      el.result.classList.remove('is-scanning');
-      el.result.classList.add('is-hidden');
-      el.completeNotice.classList.remove('is-hidden');
-      const drawId = `palm-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      window.MoneyFlowHistory?.add({
-        id: drawId, type: 'palm', label: '오늘의 손금', title: result.title, summary: result.oneLine,
-        meta: { comboId: result.id, lineTypes }
-      });
-    }, 2200);
   }
 
   function revokeUrls() {
@@ -139,7 +113,10 @@
   }
 
   function finishPreviewScan() {
+    previewCard.classList.remove('is-scanning');
     previewCard.classList.add('is-analysis-complete');
+    el.scanCenter.classList.add('is-hidden');
+    el.completeNotice.classList.remove('is-hidden');
   }
 
   function dispose() {
@@ -160,15 +137,12 @@
     dispose();
     candidates = { heart: null, head: null, fate: null };
     previewCard.classList.add('is-hidden');
-    el.review.classList.add('is-hidden');
     el.result.classList.add('is-hidden');
     el.result.classList.remove('is-scanning');
     el.result.classList.remove('is-result-ready');
     el.completeNotice.classList.add('is-hidden');
     el.resultCopy.classList.add('is-hidden');
     el.capture.classList.remove('is-hidden');
-    for (const [name, select] of Object.entries(selectors)) fillSelect(select, labels[name], null);
-    updateConfirmButton();
   }
 
   function resizeToCanvas(image, canvas) {
@@ -195,14 +169,20 @@
     const operation = ++generation;
     if (file.size > 12 * 1024 * 1024) {
       el.status.textContent = '사진이 너무 커요. 12MB 이하의 사진을 선택해주세요.';
+      el.capture.classList.add('is-hidden');
       previewCard.classList.remove('is-hidden');
-      finishPreviewScan();
+      previewCard.classList.remove('is-scanning', 'is-analysis-complete');
+      el.scanCenter.classList.add('is-hidden');
+      el.completeNotice.classList.add('is-hidden');
       return;
     }
     el.capture.classList.add('is-hidden');
     previewCard.classList.remove('is-hidden');
-    el.review.classList.add('is-hidden');
-    el.status.textContent = '사진의 선 모양을 이 기기에서 살펴보고 있어요…';
+    previewCard.classList.remove('is-analysis-complete');
+    previewCard.classList.add('is-scanning');
+    el.scanCenter.classList.remove('is-hidden');
+    el.completeNotice.classList.add('is-hidden');
+    el.status.textContent = '손바닥 선을 읽고 있어요';
 
     const sourceUrl = URL.createObjectURL(file);
     activeUrls.add(sourceUrl);
@@ -214,6 +194,8 @@
         image.src = sourceUrl;
       });
       if (operation !== generation) return;
+      el.preview.src = sourceUrl;
+      const scanStartedAt = performance.now();
       analysisCanvas = document.createElement('canvas');
       const imageData = resizeToCanvas(image, analysisCanvas);
       const result = window.MoneyFlowPalmAnalysis.analyzeImageData(imageData, analysisCanvas.width, analysisCanvas.height);
@@ -230,20 +212,17 @@
       analysisCanvas.width = 0;
       analysisCanvas.height = 0;
       analysisCanvas = null;
-      el.status.textContent = result.quality === 'usable'
-        ? '사진에서 찾은 선 후보를 표시했어요.'
-        : '선이 잘 보이지 않아요. 밝은 곳에서 다시 찍거나 유형을 직접 골라주세요.';
-      el.quality.textContent = '후보는 사진의 명암을 바탕으로 한 참고값이에요. 틀리면 바꿔도 괜찮아요.';
-      for (const [name, select] of Object.entries(selectors)) fillSelect(select, labels[name], candidates[name]);
-      el.review.classList.remove('is-hidden');
+      candidates = { heart: result.heartCandidate || 'h1', head: result.headCandidate || 'd1', fate: result.fateCandidate || 'f1' };
+      await new Promise((resolve) => window.setTimeout(resolve, Math.max(0, 2600 - (performance.now() - scanStartedAt))));
+      if (operation !== generation) return;
+      el.status.textContent = '손금 분석이 완료되었습니다.';
       finishPreviewScan();
-      updateConfirmButton();
     } catch (_) {
       URL.revokeObjectURL(sourceUrl);
       activeUrls.delete(sourceUrl);
       el.status.textContent = '사진을 읽지 못했어요. 다른 사진을 선택해주세요.';
-      el.review.classList.add('is-hidden');
-      finishPreviewScan();
+      previewCard.classList.remove('is-scanning');
+      el.scanCenter.classList.add('is-hidden');
     }
   }
 
@@ -260,32 +239,10 @@
   el.again.addEventListener('click', resetPhotoFlow);
   el.completeNotice.addEventListener('click', () => {
     el.completeNotice.classList.add('is-hidden');
-    el.result.classList.remove('is-hidden');
-    el.result.classList.add('is-result-ready');
-    el.resultCopy.classList.remove('is-hidden');
-    el.resultCopy.classList.add('is-revealed');
-    el.resultHeading.textContent = '내 손금은 이렇게 풀이돼요';
-    el.result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    el.result.focus({ preventScroll: true });
-  });
-  for (const select of Object.values(selectors)) select.addEventListener('change', updateConfirmButton);
-  el.resultButton.addEventListener('click', () => {
-    if (el.resultButton.disabled) return;
     el.capture.classList.add('is-hidden');
     previewCard.classList.add('is-hidden');
-    previewCard.classList.remove('is-analysis-complete');
-    el.review.classList.add('is-hidden');
     el.result.classList.remove('is-hidden');
-    window.dispatchEvent(new CustomEvent('moneyflow:palm-confirmed', { detail: {
-      heartId: el.heart.value,
-      headId: el.head.value,
-      fateId: el.fate.value
-    }}));
-    dispose();
+    renderResult(candidates);
   });
-  window.addEventListener('moneyflow:palm-confirmed', handleConfirmedLines);
-
-  for (const [name, select] of Object.entries(selectors)) fillSelect(select, labels[name], null);
-  updateConfirmButton();
-  window.MoneyFlowPalm = { dispose, reset: resetPhotoFlow, getConfirmedLineTypes: () => ({ heartId: el.heart.value, headId: el.head.value, fateId: el.fate.value }) };
+  window.MoneyFlowPalm = { dispose, reset: resetPhotoFlow };
 })();
