@@ -10,10 +10,10 @@
     camera: $('palm-camera-button'), gallery: $('palm-gallery-button'), capture: $('palm-capture'),
     preview: $('palm-preview'), canvas: $('palm-overlay'), status: $('palm-status'),
     review: $('palm-review'), quality: $('palm-quality-note'), retake: $('palm-retake-button'),
-    resultButton: $('palm-result-button'), result: $('palm-result'), again: $('palm-again-button'),
+    resultButton: $('palm-result-button'), result: $('palm-result'), again: $('palm-again-button'), completeNotice: $('palm-complete-notice'),
     heart: $('palm-heart-type'), head: $('palm-head-type'), fate: $('palm-fate-type'),
     resultCopy: $('palm-result-copy'), resultTypes: $('palm-result-types'), resultTitle: $('palm-result-title'),
-    resultSummary: $('palm-result-summary'), resultOneLine: $('palm-result-one-line')
+    resultOneLine: $('palm-result-one-line'), resultReadings: $('palm-line-readings'), resultHeading: $('palm-result-heading')
   };
   let combinations = [];
   try { combinations = JSON.parse(comboNode.textContent || '[]'); } catch (_) { combinations = []; }
@@ -21,6 +21,28 @@
     heart: { h1: '비교적 곧은 마음선', h2: '바깥쪽으로 올라가는 마음선', h3: '바깥쪽으로 내려가는 마음선', h4: '안쪽으로 휘는 마음선', h5: '둥글게 휘는 마음선' },
     head: { d1: '비교적 곧은 두뇌선', d2: '손가락 쪽으로 올라가는 두뇌선', d3: '손목 쪽으로 내려가는 두뇌선', d4: '안쪽으로 휘는 두뇌선', d5: '둥글게 휘는 두뇌선' },
     fate: { f1: '중앙을 곧게 지나는 운명선', f2: '한쪽으로 기운 운명선', f3: '중간에 끊겨 보이는 운명선', f4: '갈라져 보이는 운명선' }
+  };
+  const readings = {
+    heart: {
+      h1: '곧게 뻗은 마음선은 감정을 차분히 다루고 현실적인 균형을 중시하는 모습으로 풀이해요.',
+      h2: '위로 향하는 마음선은 밝고 적극적으로 마음을 표현하는 성향으로 풀이해요.',
+      h3: '아래로 향하는 마음선은 생각이 깊고 공감의 폭이 넓은 모습으로 풀이해요.',
+      h4: '안쪽으로 휘는 마음선은 관계에서 신중하고 속마음을 천천히 나누는 모습으로 풀이해요.',
+      h5: '둥글게 휘는 마음선은 정이 많고 주변과 따뜻함을 나누는 모습으로 풀이해요.'
+    },
+    head: {
+      d1: '곧은 두뇌선은 순서와 현실성을 중시하는 생각 방식으로 풀이해요.',
+      d2: '위로 향하는 두뇌선은 목표를 세우고 구체적으로 추진하는 모습으로 풀이해요.',
+      d3: '아래로 향하는 두뇌선은 상상력과 직관을 살려 가능성을 넓히는 모습으로 풀이해요.',
+      d4: '완만하게 휘는 두뇌선은 상황에 따라 판단을 조정하는 유연함으로 풀이해요.',
+      d5: '둥글게 휘는 두뇌선은 한 주제를 깊이 생각하고 충분히 살피는 모습으로 풀이해요.'
+    },
+    fate: {
+      f1: '중앙을 이어 가는 운명선은 한 방향으로 꾸준히 쌓아가는 흐름으로 풀이해요.',
+      f2: '기울어진 운명선은 환경과 선택에 따라 진로의 폭을 넓혀 가는 흐름으로 풀이해요.',
+      f3: '중간에 끊겨 보이는 운명선은 변화의 시기에 잠시 멈춰 새 방향을 찾는 흐름으로 풀이해요.',
+      f4: '갈라져 보이는 운명선은 여러 관심사와 선택지를 함께 살피는 흐름으로 풀이해요.'
+    }
   };
   const selectors = { heart: el.heart, head: el.head, fate: el.fate };
   let activeUrls = new Set();
@@ -78,22 +100,34 @@
 
     applyLineShapes(lineTypes);
     el.resultTitle.textContent = result.title;
-    el.resultSummary.textContent = result.summary;
     el.resultOneLine.textContent = result.oneLine;
     el.resultTypes.textContent = `마음선 ${lineTypes.heart} · 두뇌선 ${lineTypes.head} · 운명선 ${lineTypes.fate}`;
+    el.resultReadings.replaceChildren();
+    for (const [key, title] of [['heart', '마음선'], ['head', '두뇌선'], ['fate', '운명선']]) {
+      const card = document.createElement('article');
+      card.className = 'palm-reading-item';
+      const heading = document.createElement('h4');
+      heading.textContent = `${title} · ${labels[key][lineTypes[key]]}`;
+      const description = document.createElement('p');
+      description.textContent = readings[key][lineTypes[key]];
+      card.append(heading, description);
+      el.resultReadings.appendChild(card);
+    }
     el.resultCopy.classList.add('is-hidden');
     el.resultCopy.classList.remove('is-revealed');
+    el.completeNotice.classList.add('is-hidden');
+    el.result.classList.remove('is-result-ready');
     el.result.classList.remove('is-scanning');
     void el.result.offsetWidth;
     el.result.classList.add('is-scanning');
     window.MoneyFlowPalm.dispose();
     window.setTimeout(() => {
       el.result.classList.remove('is-scanning');
-      el.resultCopy.classList.remove('is-hidden');
-      el.resultCopy.classList.add('is-revealed');
+      el.result.classList.add('is-hidden');
+      el.completeNotice.classList.remove('is-hidden');
       const drawId = `palm-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       window.MoneyFlowHistory?.add({
-        id: drawId, type: 'palm', label: '오늘의 손금', title: result.title, summary: result.summary,
+        id: drawId, type: 'palm', label: '오늘의 손금', title: result.title, summary: result.oneLine,
         meta: { comboId: result.id, lineTypes }
       });
     }, 2200);
@@ -129,6 +163,9 @@
     el.review.classList.add('is-hidden');
     el.result.classList.add('is-hidden');
     el.result.classList.remove('is-scanning');
+    el.result.classList.remove('is-result-ready');
+    el.completeNotice.classList.add('is-hidden');
+    el.resultCopy.classList.add('is-hidden');
     el.capture.classList.remove('is-hidden');
     for (const [name, select] of Object.entries(selectors)) fillSelect(select, labels[name], null);
     updateConfirmButton();
@@ -221,6 +258,16 @@
   input.addEventListener('change', () => { void inspectFile(input.files?.[0]); });
   el.retake.addEventListener('click', resetPhotoFlow);
   el.again.addEventListener('click', resetPhotoFlow);
+  el.completeNotice.addEventListener('click', () => {
+    el.completeNotice.classList.add('is-hidden');
+    el.result.classList.remove('is-hidden');
+    el.result.classList.add('is-result-ready');
+    el.resultCopy.classList.remove('is-hidden');
+    el.resultCopy.classList.add('is-revealed');
+    el.resultHeading.textContent = '내 손금은 이렇게 풀이돼요';
+    el.result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.result.focus({ preventScroll: true });
+  });
   for (const select of Object.values(selectors)) select.addEventListener('change', updateConfirmButton);
   el.resultButton.addEventListener('click', () => {
     if (el.resultButton.disabled) return;

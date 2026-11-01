@@ -37,11 +37,25 @@
     <button type="button" class="cta cta-primary palm-result-button" id="palm-result-button">확인한 선으로 결과 보기</button>
   </section>
 
-  <section class="palm-result-card is-hidden" id="palm-result" aria-live="polite">
-    <div class="palm-result-kicker">TODAY'S PALM FLOW</div>
+  <button type="button" class="palm-complete-notice is-hidden" id="palm-complete-notice" aria-live="polite" aria-label="손금 분석이 완료되었습니다. 결과 보기">
+    <span class="palm-complete-icon" aria-hidden="true">✓</span>
+    <span><strong>손금 분석이 완료되었습니다.</strong><small>눌러서 손금별 해석을 확인해보세요</small></span>
+    <span class="palm-complete-arrow" aria-hidden="true">›</span>
+  </button>
+
+  <section class="palm-result-card is-hidden" id="palm-result" aria-live="polite" tabindex="-1">
+    <div class="palm-result-kicker">오늘의 손금 이야기</div>
+    <h2 class="palm-result-heading" id="palm-result-heading">사진에서 확인한 세 가지 선</h2>
     <div class="palm-result-scan" id="palm-result-scan"><svg viewBox="0 0 180 170" role="img" aria-label="확인한 세 손금선을 훑는 애니메이션"><path pathLength="1" class="palm-scan-path palm-heart-path" d="M38 62 Q84 42 141 64"/><path pathLength="1" class="palm-scan-path palm-head-path" d="M37 82 Q91 97 145 79"/><path pathLength="1" class="palm-scan-path palm-fate-path" d="M91 145 Q95 104 90 56"/></svg></div>
-    <p class="palm-result-disclaimer">전통 손금에서 착안한 재미용 해석이에요. 미래의 수익을 예측하거나 보장하지 않아요.</p>
-    <div class="palm-result-copy is-hidden" id="palm-result-copy"><span id="palm-result-types"></span><h2 id="palm-result-title"></h2><p id="palm-result-summary"></p><strong id="palm-result-one-line"></strong></div>
+    <p class="palm-result-disclaimer" id="palm-result-disclaimer">전통 손금에서 착안한 재미용 해석이에요. 미래의 수익을 예측하거나 보장하지 않아요.</p>
+    <div class="palm-result-copy is-hidden" id="palm-result-copy">
+      <span class="palm-result-types" id="palm-result-types"></span>
+      <h3 id="palm-result-title"></h3>
+      <p class="palm-result-intro">손금은 손바닥의 선을 상징적으로 풀이하는 전통 문화예요. 아래 내용은 사진에서 고른 선 모양에 맞춘 가벼운 이야기입니다.</p>
+      <div class="palm-line-readings" id="palm-line-readings"></div>
+      <div class="palm-today-tip"><strong>오늘의 작은 생각</strong><p id="palm-result-one-line"></p></div>
+      <p class="palm-scope-note">이번 결과는 마음선·두뇌선·운명선 세 가지를 바탕으로 만들었어요. 재물선·사업선·결혼선 등 다른 선은 아직 분석하지 않아요.</p>
+    </div>
     <button type="button" class="cta cta-secondary" id="palm-again-button">다시 보기</button>
     <a href="{{ url_for('home_page') }}" class="cta cta-primary">홈으로</a>
   </section>
