@@ -1,6 +1,7 @@
 .insight-shell{padding-top:18px;padding-bottom:calc(100px + env(safe-area-inset-bottom));}
 .insight-hero{text-align:center;padding:16px 6px 18px;}
 .insight-hero h1{margin:11px 0 5px;color:#2f2939;font-size:27px;font-weight:900;letter-spacing:-.05em;}
+.insight-free-label{display:inline-block;margin:0 0 4px;color:#7b63bd;font-size:9px;font-weight:800;}
 .insight-hero p{margin:0;color:#898392;font-size:11px;line-height:1.55;}
 .insight-score-card{position:relative;overflow:hidden;margin-bottom:10px;padding:19px 18px 16px;border-radius:23px;background:linear-gradient(130deg,#38217e,#7250d3);color:#fff;box-shadow:0 13px 28px rgba(76,48,159,.17);}
 .insight-score-card:after{position:absolute;content:"";width:150px;height:150px;right:-63px;top:-69px;border-radius:50%;background:rgba(255,255,255,.08);}
