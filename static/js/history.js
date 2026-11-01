@@ -15,6 +15,7 @@
   document.getElementById('history-latest-score').textContent = view.latestFutureScore === null
     ? '—'
     : `${view.latestFutureScore}점`;
+  if (view.latestFutureScore === null) document.getElementById('history-score-summary')?.classList.add('is-hidden');
 
   if (weekly && view.futureTrend.length) {
     weekly.classList.remove('is-hidden');

@@ -16,7 +16,7 @@
 .check-icon-spending{background:#eff5ff;}
 .check-icon-money{background:#fff5e9;}
 .check-option-copy{display:flex;min-width:0;flex-direction:column;align-items:flex-start;gap:2px;}
-.check-option-eyebrow{color:#9386b5;font-size:7px;font-weight:900;letter-spacing:.14em;line-height:1.2;}
+.check-option-eyebrow{color:#806bb1;font-size:9px;font-weight:850;letter-spacing:-.01em;line-height:1.25;}
 .check-option-copy strong{color:#292632;font-size:15px;font-weight:850;letter-spacing:-.035em;line-height:1.35;}
 .check-option-copy small{overflow:hidden;max-width:100%;color:#898392;font-size:10px;line-height:1.45;text-overflow:ellipsis;white-space:nowrap;}
 .check-option-meta{display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:3px 7px;border:1px solid #eeeaf7;border-radius:999px;background:#faf9fd;color:#857c96;font-size:8px;font-weight:750;line-height:1.2;}
@@ -24,4 +24,4 @@
 .check-option-arrow{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:#f2eeff;color:#6848cc;font-size:20px;font-weight:750;}
 .check-footnote{display:flex;justify-content:center;align-items:center;gap:5px;margin:14px 0 0;color:#9993a1;font-size:10px;line-height:1.5;text-align:center;}
 .check-footnote span{display:grid;place-items:center;width:15px;height:15px;border-radius:50%;background:#e8f6ee;color:#47a36a;font-size:9px;font-weight:900;}
-@media(max-width:380px){.check-hero{padding-top:9px;padding-bottom:16px}.check-hero h1{font-size:23px}.check-hero p{font-size:10.5px}.check-option{grid-template-columns:44px minmax(0,1fr) 32px;gap:9px;min-height:105px;padding:11px 10px;border-radius:18px}.check-option-icon{width:44px;height:44px;border-radius:14px}.check-option-icon svg{width:26px;height:26px}.check-option-copy strong{font-size:14px}.check-option-copy small{font-size:9px}.check-option-meta{font-size:7.5px}.check-option-arrow{width:32px;height:32px;font-size:18px}}
+@media(max-width:380px){.check-hero{padding-top:9px;padding-bottom:16px}.check-hero h1{font-size:23px}.check-hero p{font-size:10.5px}.check-option{grid-template-columns:44px minmax(0,1fr) 32px;gap:9px;min-height:105px;padding:11px 10px;border-radius:18px}.check-option-icon{width:44px;height:44px;border-radius:14px}.check-option-icon svg{width:26px;height:26px}.check-option-copy strong{font-size:14px}.check-option-copy small{font-size:9px}.check-option-meta{font-size:8px}.check-option-arrow{width:32px;height:32px;font-size:18px}}
