@@ -1,16 +1,24 @@
 {% extends "base.html" %}
-{% block title %}오늘의 작은 머니 루틴 · 머니플로우{% endblock %}
+{% block title %}오늘의 머니 루틴 · 머니플로우{% endblock %}
 {% block body_class %}has-app-chrome{% endblock %}
 {% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/today.css') }}">{% endblock %}
 {% block body %}
 <div class="page-shell today-page"><main class="shell today-shell">
   {% set active_tab = 'today' %}{% include '_app_header.html' %}
-  <header class="today-hero"><span class="hero-badge"><span class="dot"></span>YOUR DAILY MONEY RITUAL</span><h1>오늘, 마음 가는<br><span class="grad">한 가지부터</span></h1><p>가볍게 뽑고 살펴보는<br>오늘의 머니 루틴이에요.</p></header>
-  <section class="today-actions" aria-label="오늘의 콘텐츠">
+  <header class="today-hero"><span class="hero-badge"><span class="dot"></span>오늘의 머니 루틴</span><h1>오늘은 한 가지,<br><span class="grad">가볍게 살펴봐요</span></h1><p>매일 바뀌는 작은 제안으로<br>돈에 대한 생각을 정리해보세요.</p></header>
+  <section class="today-feature" aria-labelledby="today-feature-title">
+    <div class="today-feature-top"><span class="today-feature-mark" aria-hidden="true">✦</span><span id="today-feature-date">오늘의 추천</span></div>
+    <h2 id="today-feature-title">오늘의 타로카드 한 장</h2>
+    <p id="today-feature-copy">카드 한 장을 골라 오늘의 금전 흐름을 가볍게 살펴보세요.</p>
+    <a id="today-feature-link" href="{{ url_for('tarot.tarot_page') }}">오늘의 카드 만나기 <span aria-hidden="true">→</span></a>
+  </section>
+  <div class="today-actions-heading"><strong>더 둘러보기</strong><span>원하는 콘텐츠를 골라보세요</span></div>
+  <section class="today-actions" aria-label="더 둘러보기">
     <a class="today-action today-tarot" href="{{ url_for('tarot.tarot_page') }}"><span class="today-icon" aria-hidden="true">✦</span><span><strong>오늘의 타로카드</strong><small>마음이 가는 카드 한 장을 만나보세요</small></span><b aria-hidden="true">→</b></a>
     <a class="today-action today-palm" href="{{ url_for('palm.palm_page') }}"><span class="today-icon" aria-hidden="true">☼</span><span><strong>오늘의 손금 보기</strong><small>손 사진의 선을 확인하고 재미로 읽어요</small></span><b aria-hidden="true">→</b></a>
     <a class="today-action today-quote" href="{{ url_for('investment_quotes.investment_quotes_page') }}"><span class="today-icon" aria-hidden="true">“</span><span><strong>오늘의 한 줄 투자 명언</strong><small>출처가 있는 문장 한 줄을 뽑아봐요</small></span><b aria-hidden="true">→</b></a>
   </section>
-  <a href="{{ url_for('intro_page', test_type='future') }}" class="today-check-link"><span><strong>재물 흐름 체크</strong><small>5문항 · 약 30초</small></span><b aria-hidden="true">체크하기 →</b></a>
+  <a href="{{ url_for('check_page') }}" class="today-check-link"><span><strong>머니 체크 둘러보기</strong><small>관심 있는 주제와 간단한 질문을 골라요</small></span><b aria-hidden="true">종류 보기 →</b></a>
 </main>{% include '_bottom_nav.html' %}</div>
 {% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/today.js') }}"></script>{% endblock %}
