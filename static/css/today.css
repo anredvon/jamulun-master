@@ -14,10 +14,11 @@
 .today-actions{display:grid;gap:10px;}
 .today-action{display:grid;grid-template-columns:48px minmax(0,1fr) 28px;align-items:center;gap:12px;min-height:82px;padding:13px 14px;border:1px solid #ebe7f2;border-radius:21px;background:#fff;box-shadow:0 8px 22px rgba(45,32,78,.05);}
 .today-action:active{transform:scale(.992);}
-.today-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:#f2eeff;color:#7455d2;font-size:23px;font-weight:900;}
-.today-tarot .today-icon{background:#f0edff;color:#6749c9;}
-.today-palm .today-icon{background:#fff2e8;color:#cc8641;}
-.today-quote .today-icon{background:#edf7f1;color:#39845d;font-family:Georgia,serif;font-size:30px;}
+.today-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:#f2eeff;}
+.today-icon svg{display:block;width:25px;height:25px;overflow:visible;}
+.today-tarot .today-icon{background:#eef8f1;}
+.today-palm .today-icon{background:#fff2e8;}
+.today-quote .today-icon{background:#edf7f1;}
 .today-action>span:nth-child(2){display:flex;flex-direction:column;gap:4px;min-width:0;}
 .today-action strong{color:#342b4a;font-size:13px;font-weight:900;}
 .today-action small,.today-check-link small{color:#898393;font-size:10px;line-height:1.4;}
