@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}오늘의 한 줄 투자 명언 · 머니플로우{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/investment-quotes.css') }}">{% endblock %}
+{% block body %}
+<div class="page-shell quote-page"><main class="shell quote-shell">
+  {% set active_tab = 'today' %}{% include '_app_header.html' %}
+  <header class="quote-hero"><span class="hero-badge"><span class="dot"></span>INVESTING NOTES</span><h1>오늘의 한 줄<br><span class="grad">투자 명언 뽑기</span></h1><p>오래 생각해볼 만한 문장을<br>출처와 함께 한 장씩 만나보세요.</p></header>
+  <section class="quote-stage" aria-live="polite" aria-atomic="true">
+    <div class="quote-mark" aria-hidden="true">“</div>
+    <p class="quote-text" id="quote-text">오늘은 어떤 문장이 기다리고 있을까요?</p>
+    <p class="quote-original is-hidden" id="quote-original"></p>
+    <div class="quote-attribution is-hidden" id="quote-attribution"><strong id="quote-author"></strong><a id="quote-source" href="#" target="_blank" rel="noopener noreferrer">원문 출처 보기 ↗</a><small id="quote-source-title"></small></div>
+    <p class="quote-save-status" id="quote-save-status" role="status">버튼을 눌러 한 줄을 뽑아보세요.</p>
+  </section>
+  <button type="button" class="cta cta-primary quote-draw-button" id="quote-draw-button">오늘의 한 줄 뽑기 <span aria-hidden="true">✦</span></button>
+  <p class="quote-disclaimer">투자 명언은 읽을거리이며 개인별 매수·매도 조언이 아니에요.</p>
+</main>{% include '_bottom_nav.html' %}</div>
+<script type="application/json" id="investment-quote-data">{{ quotes | tojson }}</script>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/investment-quotes.js') }}"></script>{% endblock %}

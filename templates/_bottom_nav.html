@@ -3,9 +3,9 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.7 12 3.8l8.5 6.9v8.1a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7z"/><path d="M9.2 20.5v-6.1h5.6v6.1"/></svg>
     <span>홈</span>
   </a>
-  <a href="{{ url_for('tarot.tarot_page') }}" class="app-nav-item{% if active_tab == 'tarot' %} is-active{% endif %}">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="3"/><path d="M8.4 7.5h7.2M8.4 11h7.2M8.4 14.5h4.5"/></svg>
-    <span>타로</span>
+  <a href="{{ url_for('today.today_page') }}" class="app-nav-item{% if active_tab == 'today' %} is-active{% endif %}">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v2M12 18.5v2M4.8 6.2l1.4 1.4m11.6 9.6 1.4 1.4M3.5 12h2m13 0h2M4.8 17.8l1.4-1.4m11.6-9.6 1.4-1.4"/><circle cx="12" cy="12" r="5.2"/><path d="M10.2 12.2l1.2 1.2 2.5-2.8"/></svg>
+    <span>오늘</span>
   </a>
   <a href="{{ url_for('intro_page', test_type='future') }}" class="app-nav-item{% if active_tab == 'diagnosis' %} is-active{% endif %}">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.3 10.7 14l4.8-5"/></svg>

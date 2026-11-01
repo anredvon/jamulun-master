@@ -17,6 +17,8 @@
 .history-item-top strong{font-size:13px;font-weight:900;color:#342b4a;}
 .history-item-top time{font-size:9px;font-weight:700;color:#aaa4b2;white-space:nowrap;}
 .history-item-copy p{margin:3px 0 0;color:#777181;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.history-item-copy .history-item-title{font-size:12px;font-weight:800;color:#514765;}
+.history-item-copy .history-item-summary{font-size:10px;color:#898393;}
 .history-item-score{font-size:18px;font-weight:900;color:#684ac8;white-space:nowrap;}
 .history-item-score small{font-size:9px;color:#aaa4b2;}
 .history-empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 16px 10px;}
