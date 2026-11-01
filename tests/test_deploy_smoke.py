@@ -186,6 +186,16 @@ class SmokeTest(unittest.TestCase):
         self.assertNotIn("enctype=\"multipart/form-data\"", html)
         self.assertNotIn('action="/palm', html)
 
+    def test_palm_scan_stops_after_analysis_and_resets_for_retake(self):
+        root = Path(__file__).resolve().parents[1]
+        css = (root / "static" / "css" / "palm.css").read_text()
+        js = (root / "static" / "js" / "palm.js").read_text()
+
+        self.assertIn(".palm-preview-card.is-analysis-complete .palm-scan-line", css)
+        self.assertRegex(css, r"\.palm-preview-card\.is-analysis-complete \.palm-scan-line\s*\{[^}]*animation:\s*none")
+        self.assertIn("function finishPreviewScan()", js)
+        self.assertIn("previewCard.classList.remove('is-analysis-complete')", js)
+
     def test_investment_quote_page_is_reachable(self):
         response = self.client.get("/investment-quotes")
         self.assertEqual(response.status_code, 200)

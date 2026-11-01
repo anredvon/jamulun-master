@@ -104,6 +104,10 @@
     activeUrls.clear();
   }
 
+  function finishPreviewScan() {
+    previewCard.classList.add('is-analysis-complete');
+  }
+
   function dispose() {
     revokeUrls();
     if (analysisCanvas) {
@@ -155,6 +159,7 @@
     if (file.size > 12 * 1024 * 1024) {
       el.status.textContent = '사진이 너무 커요. 12MB 이하의 사진을 선택해주세요.';
       previewCard.classList.remove('is-hidden');
+      finishPreviewScan();
       return;
     }
     el.capture.classList.add('is-hidden');
@@ -194,12 +199,14 @@
       el.quality.textContent = '후보는 사진의 명암을 바탕으로 한 참고값이에요. 틀리면 바꿔도 괜찮아요.';
       for (const [name, select] of Object.entries(selectors)) fillSelect(select, labels[name], candidates[name]);
       el.review.classList.remove('is-hidden');
+      finishPreviewScan();
       updateConfirmButton();
     } catch (_) {
       URL.revokeObjectURL(sourceUrl);
       activeUrls.delete(sourceUrl);
       el.status.textContent = '사진을 읽지 못했어요. 다른 사진을 선택해주세요.';
       el.review.classList.add('is-hidden');
+      finishPreviewScan();
     }
   }
 
@@ -219,6 +226,7 @@
     if (el.resultButton.disabled) return;
     el.capture.classList.add('is-hidden');
     previewCard.classList.add('is-hidden');
+    previewCard.classList.remove('is-analysis-complete');
     el.review.classList.add('is-hidden');
     el.result.classList.remove('is-hidden');
     window.dispatchEvent(new CustomEvent('moneyflow:palm-confirmed', { detail: {
