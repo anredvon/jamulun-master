@@ -1,8 +1,8 @@
 /* Money Flow Lotto: reference-led purple and champagne-gold visual system. */
 :root{--lotto-ink:#201334;--lotto-night:#180d2d;--lotto-purple:#6e3dd1;--lotto-violet:#a56aff;--lotto-gold:#f6cf76;--lotto-lilac:#e8dcff;--lotto-muted:#897f98}
 .home-action-lotto{position:relative;overflow:hidden;border-color:#d9c5ff!important;background:linear-gradient(112deg,#fff 0%,#faf6ff 58%,#f4eaff 100%)!important;box-shadow:0 8px 20px #6943a914!important}
-.home-action-icon-lotto{position:relative;background:linear-gradient(145deg,#fff1bd,#ffd45f)!important;box-shadow:0 3px 10px #b8793330}
-.home-action-icon-lotto img{display:block;width:43px;height:43px;object-fit:contain;filter:drop-shadow(0 2px 4px #8f622b35)}
+.home-action-icon-lotto{position:relative;background:linear-gradient(145deg,#f5f0ff,#e9e1ff)!important;box-shadow:0 3px 10px #6943a91b}
+.home-action-icon-lotto svg{width:29px;height:29px;filter:drop-shadow(0 2px 3px #39245b30)}
 .home-action-lotto .home-action-arrow{background:#f0e7ff!important;color:#7042c6!important}
 .home-action-lotto .home-action-copy strong{color:#3e2a65}
 .lotto-page{min-height:100dvh;background:radial-gradient(ellipse at 50% 0,#fff 0%,#f7f1ff 44%,#f3effa 100%);color:#282137}
