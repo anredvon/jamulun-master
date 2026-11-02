@@ -226,7 +226,7 @@ class SmokeTest(unittest.TestCase):
         self.assertIn("오늘의 문장", today_html)
         self.assertIn("출처 보기", today_html)
         self.assertNotIn('href="/palm"', today_html)
-        self.assertNotIn('href="/tarot"', today_html)
+        self.assertNotIn("today-feature-link", today_html)
         self.assertNotIn('href="/investment-quotes"', today_html)
 
         for path in ("/home", "/today", "/intro/future", "/history"):
