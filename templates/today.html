@@ -7,6 +7,12 @@
   <main class="shell today-shell">
     {% set active_tab = 'today' %}{% include '_app_header.html' %}
 
+    <section class="today-intro" aria-labelledby="today-page-title">
+      <p class="today-intro-kicker"><span aria-hidden="true"></span>오늘의 콘텐츠</p>
+      <h1 id="today-page-title">오늘을 <span>가볍게</span> 시작해요</h1>
+      <p class="today-intro-copy">명언 한 줄과 별자리 운세를 만나보세요.</p>
+    </section>
+
     <section class="today-content" aria-label="오늘의 콘텐츠">
       <article class="today-card quote-card" aria-labelledby="daily-quote-title">
         <div class="today-card-heading">
