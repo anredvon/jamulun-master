@@ -182,8 +182,7 @@ class SmokeTest(unittest.TestCase):
     def test_history_explains_on_device_history_and_server_records_separately(self):
         html = self.client.get("/history").get_data(as_text=True)
         self.assertIn("이 기기의 브라우저에 저장돼요", html)
-        self.assertIn("체크 결과와 로또 추첨번호는 서버에도 기록되며", html)
-        self.assertIn("‘내 로또 기록’에서 다시 볼 수 있어요", html)
+        self.assertIn("로또 번호는 서비스 기록에 저장돼요", html)
         self.assertIn("손 사진은 업로드하거나 보관하지 않아요", html)
 
     def test_history_and_tarot(self):
