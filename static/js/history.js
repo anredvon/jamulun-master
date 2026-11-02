@@ -204,7 +204,6 @@
           ? copy.uncertainReading : copy.readings?.[key]?.[id];
         if (title && description) {
           const block = node('div', 'history-detail-reading');
-          block.append(node('h3', '', name));
           block.append(node('strong', '', title));
           block.append(node('p', '', description));
           detailContent.append(section(name, block));
