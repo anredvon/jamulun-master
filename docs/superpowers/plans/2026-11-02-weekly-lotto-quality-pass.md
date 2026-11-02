@@ -144,7 +144,7 @@
 - Consumes: verified implementation and test results from Tasks 1–5.
 - Produces: an updated PR #12 with accurate behavior, test evidence, and uncompleted device/production checks clearly identified.
 
-- [ ] **Step 1: Inspect the final diff** against PR #12 and confirm only approved files and behavior changed.
-- [ ] **Step 2: Run a code review pass** for data ownership, quota races, schedule truthfulness, reduced-motion, and sharing privacy.
-- [ ] **Step 3: Update documentation and PR text** using only observed test outcomes; do not mark unperformed manual or production checks complete.
-- [ ] **Step 4: Leave PR #12 in Draft**; do not merge or deploy.
+- [x] **Step 1: Inspect the final diff** against PR #12 and confirm only approved files and behavior changed.
+- [x] **Step 2: Run a code review pass** for data ownership, quota races, schedule truthfulness, reduced-motion, and sharing privacy. Review findings for reveal timing, list semantics, and missing Canvas context were fixed and re-reviewed; the routine-schedule caveat is visible and documented.
+- [x] **Step 3: Update documentation and PR text** using only observed test outcomes; do not mark unperformed manual or production checks complete.
+- [x] **Step 4: Leave PR #12 in Draft**; do not merge or deploy.
