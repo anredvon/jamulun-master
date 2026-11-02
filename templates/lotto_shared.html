@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}공유받은 로또번호 · 머니플로우{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/lotto.css') }}">{% endblock %}
+{% block body %}
+<main class="lotto-shared-page">
+  <div class="lotto-shared-wrap">
+    <p class="lotto-kicker">✦ MONEY FLOW · LOTTO 6/45 ✦</p>
+    <h1>공유받은 로또번호</h1>
+    <p>제{{ result.round }}회 · {{ result.sequence }}번째 추첨 결과</p>
+    <div class="lotto-result-card is-public">
+      <div class="lotto-card-top">✦ 이번 주의 행운번호 <span>LOTTO 6/45</span></div>
+      <div class="lotto-card-round">제{{ result.round }}회 · {{ result.sequence }}번째 추첨</div>
+      <div class="lotto-number-row">
+      {% for n in result.numbers %}
+        <span class="lotto-ball {% if n <= 10 %}lotto-ball-yellow{% elif n <= 20 %}lotto-ball-blue{% elif n <= 30 %}lotto-ball-red{% elif n <= 40 %}lotto-ball-gray{% else %}lotto-ball-green{% endif %}">{{ n }}</span>
+      {% endfor %}
+      </div>
+      <div class="lotto-card-footer">당신의 한 주에도 작은 행운이 함께하길 ✨</div>
+    </div>
+    <p class="lotto-fineprint">무작위로 생성된 오락용 번호입니다. 당첨을 예측하거나 보장하지 않습니다.</p>
+    <a class="lotto-primary lotto-shared-cta" href="{{ url_for('lotto.page') }}">나도 이번 주 로또번호 받기</a>
+  </div>
+</main>
+{% endblock %}
