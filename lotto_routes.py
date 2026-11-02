@@ -52,6 +52,11 @@ def page():
     return render_template("lotto.html")
 
 
+@lotto_bp.route("/lotto/history")
+def history_page():
+    return render_template("lotto_history.html")
+
+
 @lotto_bp.route("/api/lotto/status")
 def status():
     return jsonify(_status_payload(_owner_hash()))

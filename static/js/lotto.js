@@ -10,10 +10,16 @@
   const $stage = $('lotto-stage-intro');
   const $progress = $('lotto-stage-progress');
   const $stageNumbers = $('lotto-stage-numbers');
+  const $experience = $('lotto-experience');
+  const $entry = $('lotto-entry');
+  const $theater = $('lotto-theater');
+  const $resultArea = $('lotto-result-area');
+  const $resultDraw = $('lotto-result-draw-button');
+  const $entryError = $('lotto-entry-error');
   $stageNumbers.setAttribute('role', 'list');
   const $progressFill = $('lotto-progress-fill');
   const $stars = $('lotto-stage-stars');
-  const state = { draws: [], round: null, date: null, remaining: 3, busy: false, speed: 0.2 };
+  const state = { draws: [], round: null, date: null, remaining: 3, busy: false, speed: 0.2, view: 'entry' };
   const BALL_CLASSES = ['yellow', 'blue', 'red', 'gray', 'green'];
   const PLAIN_TEXT = '로또번호는 무작위 생성된 오락용 번호이며 당첨을 보장하지 않습니다.';
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -80,6 +86,8 @@
   function renderCard(draw) {
     const article = document.createElement('article');
     article.className = 'lotto-result-card';
+    if (article.dataset) article.dataset.sequence = String(draw.sequence);
+    article.setAttribute('data-sequence', String(draw.sequence));
     const heading = document.createElement('div');
     heading.className = 'lotto-card-top';
     const left = document.createElement('strong');
@@ -108,9 +116,14 @@
     shareImage.addEventListener('click', () => exportImage(draw, shareImage));
     const shareLink = document.createElement('button');
     shareLink.type = 'button';
-    shareLink.textContent = '링크 공유';
+    shareLink.innerHTML = '<span aria-hidden="true">↗</span><span>공유하기</span>';
     shareLink.addEventListener('click', () => shareResultLink(draw, shareLink));
-    actions.append(shareImage, shareLink);
+    shareImage.innerHTML = '<span aria-hidden="true">⇩</span><span>이미지 저장</span>';
+    const history = document.createElement('a');
+    history.className = 'lotto-action-link';
+    history.href = '/lotto/history';
+    history.innerHTML = '<span aria-hidden="true">◷</span><span>내 기록</span>';
+    actions.append(shareImage, shareLink, history);
     article.append(heading, round, numbers, footer, actions);
     return article;
   }
@@ -119,21 +132,39 @@
     $('lotto-round').textContent = '제' + (state.round || '—') + '회';
     $('lotto-remaining').textContent = '남은 추첨 ' + state.remaining + '/3';
     $('lotto-draw-date').textContent = state.date ? formatDrawDate(state.date) + ' 추첨' : '';
+    if ($('lotto-round-result')) $('lotto-round-result').textContent = '제 ' + (state.round || '—') + ' 회';
+    if ($('lotto-result-quota')) $('lotto-result-quota').textContent = state.remaining <= 0 ? '이번 회차 추첨 완료' : '남은 추첨 ' + state.remaining + '/3';
+    if ($('lotto-stage-round')) $('lotto-stage-round').textContent = '제' + (state.round || '—') + '회 행운 번호';
     $list.replaceChildren();
-    state.draws.slice().sort((a, b) => a.sequence - b.sequence).forEach((r) => {
-      $list.append(renderCard(r));
-      saveHistory(r);
-    });
-    $draw.disabled = state.busy || state.remaining <= 0;
-    $draw.textContent = state.busy ? '추첨하고 있어요…'
+    const orderedDraws = state.draws.slice().sort((a, b) => a.sequence - b.sequence);
+    orderedDraws.forEach(saveHistory);
+    if (orderedDraws.length) $list.append(renderCard(orderedDraws[orderedDraws.length - 1]));
+    const label = state.busy ? '행운 번호를 추첨하고 있어요…'
       : state.remaining <= 0 ? '이번 회차 추첨 3회 완료'
-      : state.draws.length
-        ? '✦ 다시 추첨하기 (' + state.remaining + '회 남음)'
-        : '✦ 이번 주 번호 뽑기 (' + state.remaining + '회 남음)';
-    if (!state.busy) notice(state.remaining <= 0
-      ? '이번 회차의 세 번호 조합을 모두 받았어요. 다음 회차에 다시 만나요!'
+      : (state.draws.length ? '다시 추첨하기 (' + state.remaining + '회 남음)' : '행운 번호 추첨하기 ✨');
+    $draw.disabled = state.busy || state.remaining <= 0;
+    $draw.textContent = label;
+    if ($resultDraw) {
+      $resultDraw.disabled = state.busy || state.remaining <= 0;
+      $resultDraw.textContent = label;
+    }
+    const view = state.busy && state.view === 'drawing'
+      ? 'drawing' : (state.draws.length ? 'result' : 'entry');
+    state.view = view;
+    setView(state.view);
+    if (!state.busy && $message) notice(state.remaining <= 0
+      ? '이번 회차의 번호를 모두 받았어요. 다음 회차에 다시 만나요!'
       : state.draws.length ? '번호가 자동 저장됐어요. 다시 추첨하거나 친구와 공유해보세요.'
       : '추첨 버튼을 눌러 이번 주 번호를 받아보세요. 번호는 무작위로 생성돼요.');
+  }
+
+  function setView(view) {
+    state.view = view;
+    if (!$experience || !$entry || !$theater || !$resultArea) return;
+    $experience.dataset.state = view;
+    $entry.hidden = view !== 'entry';
+    $theater.hidden = view !== 'drawing';
+    $resultArea.hidden = view !== 'result';
   }
 
   async function refresh() {
@@ -142,6 +173,7 @@
     state.round = data.round;
     state.date = data.draw_date;
     state.remaining = data.remaining;
+    state.view = state.draws.length ? 'result' : 'entry';
     render();
     return data;
   }
@@ -198,9 +230,16 @@
 
     $progressFill.style.width = '100%';
     state.speed = 0.2;
-    $progress.hidden = true;
+    $progress.hidden = false;
     $stage.hidden = false;
-    const card = [...$list.querySelectorAll('.lotto-result-card')].at(-1);
+    $stage.innerHTML = '<strong>행운 번호가<br>도착했어요!</strong><span>당신의 이번 주 숫자를 확인해보세요 ✨</span>';
+    await sleep(reducedMotion ? 0 : 320);
+    state.busy = false;
+    state.view = 'result';
+    render();
+    const resultTitle = $('lotto-results-title');
+    resultTitle?.focus?.({ preventScroll: true });
+    const card = [...$list.querySelectorAll('.lotto-result-card')].find((node) => node.dataset?.sequence === String(draw.sequence));
     if (card) card.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'center' });
   }
 
@@ -216,9 +255,13 @@
   // Draw result is committed on the server *before* visual animation.
   async function performDraw() {
     if (state.busy || state.remaining <= 0) return;
+    if ($entryError) {
+      $entryError.hidden = true;
+      $entryError.textContent = '';
+    }
     state.busy = true;
+    state.view = state.draws.length ? 'result' : 'entry';
     render();
-    notice(state.draws.length ? '새로운 번호를 추첨하고 있어요.' : '이번 주 첫 번째 로또번호를 추첨해요!');
     // Reuse this UUID if a fetch is retried in the same running request.
     const key = crypto.randomUUID ? crypto.randomUUID() : fallbackUuid();
     try {
@@ -233,9 +276,15 @@
       state.round = draw.round;
       state.date = draw.draw_date;
       render();
+      setView('drawing');
       await animateResult(draw);
     } catch (error) {
+      state.view = state.draws.length ? 'result' : 'entry';
       notice(error.message, true);
+      if (!state.draws.length && $entryError) {
+        $entryError.textContent = error.message;
+        $entryError.hidden = false;
+      }
       // The request may have reached the server. Query status before allowing another attempt.
       try { await refresh(); } catch (_) { /* show the original error */ }
     } finally {
@@ -420,8 +469,13 @@
 
   const canvasAnimation = createCanvasAnimation();
   $draw.addEventListener('click', () => performDraw());
+  $resultDraw?.addEventListener('click', () => performDraw());
   refresh().catch((error) => {
     notice('현재 로또 서비스를 불러올 수 없어요. 새로고침 후 다시 시도해 주세요.', true);
+    if ($entryError) {
+      $entryError.textContent = '로또 정보를 불러오지 못했어요. 연결을 확인한 뒤 새로고침해 주세요.';
+      $entryError.hidden = false;
+    }
     $draw.disabled = true;
     $draw.textContent = '연결 상태 확인 필요';
     console.error('lotto init:', error);

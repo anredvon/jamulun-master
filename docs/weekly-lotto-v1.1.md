@@ -3,19 +3,21 @@
 연결 기획: [Issue #11](https://github.com/anredvon/jamulun-master/issues/11)
 
 ## 구현 범위
-- 홈 메뉴(타로 아래, 손금 위) → /lotto
+- 홈 메뉴(타로·손금 아래, 세 번째 콘텐츠 메뉴) → /lotto
+- 홈의 로또 메뉴, `/lotto` 진입·추첨·결과 화면을 보라색/금색 테마로 정리하고 기존 캐릭터·코인 이미지를 재사용
 - 최초 방문과 재방문 모두 저장된 결과만 표시하며, 새 번호는 추첨 버튼을 눌렀을 때 생성
 - Flask 서버에서 `secrets.SystemRandom`로 6/45 무작위 번호 확정
 - 쿠키 기반 익명 소유자별 회차당 3회, 세트 간 조합 중복 방지
 - UNIQUE 제약 + 멱등 UUID + 충돌 재시도
-- 추첨 중에만 실행되는 Canvas 볼 애니메이션(화면 비표시/감소된 모션에서는 정지) / 프리미엄 결과 카드 / 이미지·링크 공유 폴백
+- 추첨 중에만 실행되는 Canvas 볼 애니메이션(화면 비표시/감소된 모션에서는 정지) / 순차 번호 공개 / 저장·공유·기록·재추첨 액션이 있는 결과 카드
+- `/lotto/history` 개인 기록 화면: 이번 회차와 지난 회차 탭, 서버 소유자 범위의 기록, KST 회차 일정
 - 동일 회차 3세트 이력 및 기존 로컬 기록 스토어 연동
 - 오락용 랜덤 번호 고지, 구매/당첨 예측 기능 없음
 
 ## 파일
 - `lotto_service.py`, `lotto_models.py`, `lotto_routes.py`, `lotto_integration.py`
-- `templates/lotto.html`, `templates/lotto_shared.html`
-- `static/css/lotto.css`, `static/js/lotto.js`
+- `templates/lotto.html`, `templates/lotto_history.html`, `templates/lotto_shared.html`
+- `static/css/lotto.css`, `static/js/lotto.js`, `static/js/lotto-history.js`
 - `scripts/migrate_lotto.py`
 - `tests/test_lotto.py`
 - 홈/메인 앱/기록 통합: `templates/home.html`, `app.py`, history 관련 파일
