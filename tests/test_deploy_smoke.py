@@ -160,22 +160,24 @@ class SmokeTest(unittest.TestCase):
         response = self.client.get("/home")
         self.assertEqual(response.status_code, 200)
         html = response.get_data(as_text=True)
-        for label in ("오늘의 타로카드 뽑기", "오늘의 손금 보기", "나의 돈 습관 알아보기", "오늘의 한 줄 투자 명언 뽑기"):
+        for label in ("오늘의 타로카드 뽑기", "오늘의 손금 보기", "나의 돈 습관 알아보기", "이번 주 로또번호 받기"):
             with self.subTest(label=label):
                 self.assertIn(label, html)
-        for href in ('href="/tarot"', 'href="/palm"', 'href="/check"', 'href="/investment-quotes"'):
+        for href in ('href="/tarot"', 'href="/palm"', 'href="/check"', 'href="/lotto"'):
             with self.subTest(href=href):
                 self.assertIn(href, html)
         self.assertNotIn("나의 소비 스타일", html)
         self.assertNotIn("오늘의 재물운</strong>", html)
+        self.assertNotIn("오늘의 한 줄 투자 명언 뽑기", html)
 
     def test_home_and_today_have_clear_non_predictive_content_promises(self):
         home = self.client.get("/home").get_data(as_text=True)
         today = self.client.get("/today").get_data(as_text=True)
         self.assertIn("재미로 즐기는 콘텐츠와 돈 관리 습관", home)
         self.assertNotIn('<em>NEW</em></span><span>마음이 가는 카드', home)
-        self.assertIn("매일 타로카드 한 장으로", today)
-        self.assertNotIn('class="today-action today-tarot"', today)
+        self.assertIn("오늘의 한 줄", today)
+        self.assertIn("개인별 투자 조언은 아니에요", today)
+        self.assertNotIn("매일 타로카드 한 장으로", today)
 
     def test_history_explains_on_device_history_and_server_records_separately(self):
         html = self.client.get("/history").get_data(as_text=True)
@@ -214,20 +216,18 @@ class SmokeTest(unittest.TestCase):
 
     def test_investment_quote_page_is_reachable(self):
         response = self.client.get("/investment-quotes")
-        self.assertEqual(response.status_code, 200)
-        html = response.get_data(as_text=True)
-        self.assertIn("투자 명언 뽑기", html)
-        self.assertIn("투자 명언은 읽을거리이며 개인별 매수·매도 조언이 아니에요.", html)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], "/today")
 
     def test_today_hub_and_bottom_navigation_routes(self):
         today = self.client.get("/today")
         self.assertEqual(today.status_code, 200)
         today_html = today.get_data(as_text=True)
-        for href in ('href="/palm"', 'href="/investment-quotes"'):
-            with self.subTest(href=href):
-                self.assertIn(href, today_html)
-        self.assertIn("today-feature-link", today_html)
-        self.assertIn("오늘의 타로카드 한 장", (Path(__file__).resolve().parents[1] / "static/js/today.js").read_text())
+        self.assertIn("오늘의 문장", today_html)
+        self.assertIn("출처 보기", today_html)
+        self.assertNotIn('href="/palm"', today_html)
+        self.assertNotIn("today-feature-link", today_html)
+        self.assertNotIn('href="/investment-quotes"', today_html)
 
         for path in ("/home", "/today", "/intro/future", "/history"):
             with self.subTest(path=path):

@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, url_for
 
 
 investment_quotes_bp = Blueprint("investment_quotes", __name__)
@@ -12,4 +12,4 @@ QUOTE_CATALOG = json.loads((Path(__file__).parent / "static/data/investment_quot
 
 @investment_quotes_bp.route("/investment-quotes")
 def investment_quotes_page():
-    return render_template("investment_quotes.html", quotes=QUOTE_CATALOG)
+    return redirect(url_for("today.today_page"))
