@@ -9,9 +9,7 @@
     {% include '_app_header.html' %}
 
     <section class="history-hero">
-      <div class="hero-badge"><span class="dot"></span>내가 살펴본 기록</div>
       <h1>나의 기록</h1>
-      <p>콘텐츠 결과를 종류별로 모아봐요.</p>
     </section>
 
     <details class="history-storage-details">
@@ -41,8 +39,8 @@
       </div>
       <h2 id="history-empty-title">아직 쌓인 기록이 없어요</h2>
       <p id="history-empty-copy">둘러본 콘텐츠가 여기에 차곡차곡 모여요.</p>
-      <button id="history-empty-reset" type="button" class="history-empty-reset" hidden>전체 기록 보기</button>
       <a id="history-empty-link" href="{{ url_for('home_page') }}" class="history-empty-home">콘텐츠 둘러보기 <span aria-hidden="true">→</span></a>
+      <button id="history-empty-reset" type="button" class="history-empty-reset" hidden>전체 기록 보기</button>
     </section>
   </div>
   {% include '_bottom_nav.html' %}
