@@ -7,12 +7,12 @@
   {% set active_tab = 'diagnosis' %}{% include '_app_header.html' %}
   <section class="hero result-hero diagnosis-hero result-hero-compact">
     <div class="hero-badge"><span class="dot"></span>MY MONEY REPORT</div>
-    {% if test_type == 'spending' %}<h2><span class="grad">나의 소비 스타일</span></h2><p>선택을 바탕으로 평소의 소비 패턴을 정리했어요.</p>
-    {% elif test_type == 'future' %}<h2><span class="grad">나의 재물 흐름</span></h2><p>선택을 바탕으로 지금의 돈 관리 흐름을 정리했어요.</p>
-    {% else %}<h2><span class="grad">오늘의 재물운</span></h2><p>선택을 바탕으로 오늘 참고할 금전 흐름을 정리했어요.</p>{% endif %}
+    {% if test_type == 'spending' %}<h2><span class="grad">나의 소비 스타일</span></h2><p>고른 답을 바탕으로 소비 습관을 돌아봐요.</p>
+    {% elif test_type == 'future' %}<h2><span class="grad">나의 돈 관리 습관</span></h2><p>고른 답을 바탕으로 지금 실천 중인 습관을 살펴봐요.</p>
+    {% else %}<h2><span class="grad">오늘의 재물운</span></h2><p>오늘 하루를 가볍게 돌아보는 오락 콘텐츠예요.</p>{% endif %}
   </section>
   <div class="result-card result-report-card result-report-v2">
-    <section class="money-score-card money-score-v2" aria-label="머니 플로우 점수"><div class="money-score-copy"><div class="money-score-kicker">MY MONEY FLOW SCORE</div><div class="money-score-value"><strong>{{ result.final_score if result else 0 }}</strong><span>/100</span></div><div class="money-score-type">{{ result.result_title if result else '-' }}</div><div class="money-score-meta">{% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}</div></div><div class="result-mascot-wrap" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_coin.png') }}" alt=""></div></section>
+    <section class="money-score-card money-score-v2" aria-label="응답 점수"><div class="money-score-copy"><div class="money-score-kicker">내 답변을 바탕으로 한 점수</div><div class="money-score-value"><strong>{{ result.final_score if result else 0 }}</strong><span>/100</span></div><div class="money-score-type">{{ result.result_title if result else '-' }}</div><div class="money-score-meta">{% for tag in result_tags %}<span>{{ tag }}</span>{% endfor %}</div><small class="money-score-note">정답이나 재물 상태를 측정하는 점수가 아니에요. 오늘의 생활 습관을 가볍게 돌아보는 참고로 봐주세요.</small></div><div class="result-mascot-wrap" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_coin.png') }}" alt=""></div></section>
     <section class="result-insight-v2"><div class="result-insight-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_02.png') }}" alt=""></div><div><span class="result-insight-label">오늘의 한마디</span><p>{{ result.result_desc if result else '' }}</p></div></section>
 
     <section class="money-mission" aria-labelledby="money-mission-title">

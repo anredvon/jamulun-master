@@ -18,11 +18,11 @@
     <p>{{ {'money':'오늘의 재물운', 'spending':'나의 소비 스타일', 'future':'재물 흐름 체크'}.get(ts.test_type, '머니 체크') }} 결과를 차근히 살펴봐요.</p>
   </header>
 
-  <section class="insight-score-card insight-score-{{ rtype }}" aria-label="머니 흐름 점수">
-    <div class="insight-score-label">MY MONEY FLOW SCORE</div>
+  <section class="insight-score-card insight-score-{{ rtype }}" aria-label="응답 점수">
+    <div class="insight-score-label">내 답변을 바탕으로 한 점수</div>
     <div class="insight-score-number"><strong>{{ result.final_score if result else 0 }}</strong><span>/ 100</span></div>
     <div class="insight-score-track"><span style="width:{{ result.final_score if result else 0 }}%"></span></div>
-    <div class="insight-score-result"><strong>{{ result.result_title if result else '결과를 준비 중이에요' }}</strong><span>{{ {'gold':'좋은 흐름을 이어가고 있어요', 'silver':'안정적인 습관을 쌓고 있어요', 'bronze':'작은 실천이 도움이 될 수 있어요', 'caution':'기본 흐름부터 점검해보세요'}.get(rtype, '내 흐름을 가볍게 살펴봐요') }}</span></div>
+    <div class="insight-score-result"><strong>{{ result.result_title if result else '결과를 준비 중이에요' }}</strong><span>재물 상태나 미래를 측정하는 점수가 아니에요. 선택한 답변을 돌아보는 참고로 봐주세요.</span></div>
   </section>
 
   <section class="insight-card">

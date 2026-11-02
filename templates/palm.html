@@ -7,8 +7,8 @@
   {% set active_tab = 'today' %}{% include '_app_header.html' %}
   <header class="palm-hero">
     <span class="hero-badge"><span class="dot"></span>PALM FLOW · FOR FUN</span>
-    <h1>손바닥 선으로<br><span class="grad">오늘의 재물 흐름 보기</span></h1>
-    <p>사진에서 보이는 감정선·두뇌선·운명선을 살펴보고<br>전통 손금 풀이를 재미로 만나보세요.</p>
+    <h1>내 손바닥 선을<br><span class="grad">전통 풀이로 살펴봐요</span></h1>
+    <p>사진에서 보이는 감정선·두뇌선·운명선을<br>일상 속 모습에 빗대어 가볍게 풀어봐요.</p>
   </header>
 
   <section class="palm-step-card" id="palm-capture">
@@ -18,7 +18,7 @@
       <button type="button" class="cta cta-primary" id="palm-camera-button">손 사진 찍기</button>
       <button type="button" class="cta cta-secondary" id="palm-gallery-button">사진 보관함에서 선택</button>
     </div>
-    <p class="palm-privacy">🔒 손 사진은 이 기기에서만 처리하고 저장하거나 전송하지 않아요.</p>
+    <p class="palm-privacy">🔒 손 사진은 기기 안에서만 살펴보고 업로드하거나 보관하지 않아요.</p>
   </section>
 
   <section class="palm-preview-card is-hidden" id="palm-preview-card" aria-live="polite">
@@ -33,18 +33,18 @@
   <section class="palm-result-card is-hidden" id="palm-result" aria-live="polite" tabindex="-1">
     <div class="palm-result-kicker">내 손금 한눈에 보기</div>
     <h2 class="palm-result-heading" id="palm-result-heading">오늘의 손금 풀이</h2>
-    <p class="palm-result-disclaimer" id="palm-result-disclaimer">사진에서 선 모양을 간단히 추정한 전통 손금 이야기예요. 재미로만 봐주세요.</p>
+    <p class="palm-result-disclaimer" id="palm-result-disclaimer">사진에서 선 모양을 간단히 살펴본 전통 손금 이야기예요. 과학적 진단이나 재물·투자 예측이 아니니 가볍게 참고해주세요.</p>
     <div class="palm-result-copy is-hidden" id="palm-result-copy">
       <span class="palm-result-types" id="palm-result-types"></span>
       <h3 id="palm-result-title"></h3>
-      <p class="palm-result-intro">세 선의 모양을 바탕으로 전통 손금에서 전해지는 성향을 정리했어요.</p>
+      <p class="palm-result-intro">사진에서 보이는 세 선을 전통 풀이에 따라 일상 속 모습으로 풀어봤어요.</p>
       <div class="palm-line-readings" id="palm-line-readings"></div>
       <div class="palm-today-tip"><strong>오늘의 작은 생각</strong><p id="palm-result-one-line"></p></div>
-      <p class="palm-scope-note">사진 속 선을 단순 추정한 오락용 콘텐츠예요. 과학적 진단이나 재물·투자 예측이 아니며, 재물선 등 다른 선은 판별하지 않아요.</p>
+      <p class="palm-scope-note">손금 풀이는 전통 이야기로, 가볍게 참고해요. 재물선 등 다른 선은 판별하지 않아요.</p>
     </div>
     <button type="button" class="cta cta-secondary" id="palm-again-button">다시 보기</button>
     <a href="{{ url_for('home_page') }}" class="cta cta-primary">홈으로</a>
   </section>
 </main>{% include '_bottom_nav.html' %}</div>
 {% endblock %}
-{% block scripts %}<script type="application/json" id="palm-combo-data">{{ palm_combinations | tojson }}</script><script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/palm-analysis.js') }}"></script><script src="{{ url_for('static', filename='js/palm-combinations.js') }}"></script><script src="{{ url_for('static', filename='js/palm.js') }}"></script>{% endblock %}
+{% block scripts %}<script type="application/json" id="palm-combo-data">{{ palm_combinations | tojson }}</script><script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/palm-analysis.js') }}"></script><script src="{{ url_for('static', filename='js/palm-combinations.js') }}"></script><script src="{{ url_for('static', filename='js/palm-copy.js') }}"></script><script src="{{ url_for('static', filename='js/palm.js') }}"></script>{% endblock %}

@@ -169,6 +169,21 @@ class SmokeTest(unittest.TestCase):
         self.assertNotIn("나의 소비 스타일", html)
         self.assertNotIn("오늘의 재물운</strong>", html)
 
+    def test_home_and_today_have_clear_non_predictive_content_promises(self):
+        home = self.client.get("/home").get_data(as_text=True)
+        today = self.client.get("/today").get_data(as_text=True)
+        self.assertIn("재미로 즐기는 콘텐츠와 돈 관리 습관", home)
+        self.assertNotIn('<em>NEW</em></span><span>마음이 가는 카드', home)
+        self.assertIn("매일 타로카드 한 장으로", today)
+        self.assertNotIn('class="today-action today-tarot"', today)
+
+    def test_history_explains_on_device_history_and_server_records_separately(self):
+        html = self.client.get("/history").get_data(as_text=True)
+        self.assertIn("이 기기의 브라우저에 저장돼요", html)
+        self.assertIn("체크 결과와 로또 추첨번호는 서버에도 기록되며", html)
+        self.assertIn("‘내 로또 기록’에서 다시 볼 수 있어요", html)
+        self.assertIn("손 사진은 업로드하거나 보관하지 않아요", html)
+
     def test_history_and_tarot(self):
         for path in ("/history", "/tarot"):
             with self.subTest(path=path):
@@ -182,9 +197,10 @@ class SmokeTest(unittest.TestCase):
         self.assertIn('accept="image/*"', html)
         self.assertIn('capture="environment"', html)
         self.assertIn("사진 보관함에서 선택", html)
-        self.assertIn("손 사진은 이 기기에서만 처리", html)
+        self.assertIn("손 사진은 기기 안에서만 살펴보고 업로드하거나 보관하지 않아요", html)
         self.assertNotIn("enctype=\"multipart/form-data\"", html)
         self.assertNotIn('action="/palm', html)
+        self.assertIn("전통 손금 이야기예요. 과학적 진단이나 재물·투자 예측이 아니니 가볍게 참고해주세요", html)
 
     def test_palm_scan_stops_after_analysis_and_resets_for_retake(self):
         root = Path(__file__).resolve().parents[1]
@@ -207,9 +223,11 @@ class SmokeTest(unittest.TestCase):
         today = self.client.get("/today")
         self.assertEqual(today.status_code, 200)
         today_html = today.get_data(as_text=True)
-        for href in ('href="/tarot"', 'href="/palm"', 'href="/investment-quotes"'):
+        for href in ('href="/palm"', 'href="/investment-quotes"'):
             with self.subTest(href=href):
                 self.assertIn(href, today_html)
+        self.assertIn("today-feature-link", today_html)
+        self.assertIn("오늘의 타로카드 한 장", (Path(__file__).resolve().parents[1] / "static/js/today.js").read_text())
 
         for path in ("/home", "/today", "/intro/future", "/history"):
             with self.subTest(path=path):
@@ -219,6 +237,18 @@ class SmokeTest(unittest.TestCase):
                 self.assertIn('aria-label="주요 메뉴"', html)
                 self.assertIn('href="/today"', html)
                 self.assertIn("오늘", html)
+
+    def test_money_check_result_is_framed_as_answer_based_reflection(self):
+        from core_app import _calc_result
+
+        for score in (30, 60, 80, 95):
+            with self.subTest(score=score):
+                _, _, description = _calc_result(score, "future")
+                self.assertNotRegex(description, r"투자|수익|성장합니다|성과가 빨라")
+                self.assertRegex(description, r"답변|선택|한 가지|살펴|확인")
+
+        html = self.client.get("/intro/future").get_data(as_text=True)
+        self.assertIn("재미와 생활 점검을 위한", html)
 
     def test_root_stays_the_intro_page_and_home_is_the_activity_page(self):
         root_html = self.client.get("/").get_data(as_text=True)

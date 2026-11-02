@@ -6,9 +6,9 @@
 <div class="page-shell intro-page diagnosis-page"><div class="shell intro-shell">
   {% set active_tab = 'diagnosis' %}{% include '_app_header.html' %}
   <section class="diagnosis-hero intro-hero intro-hero-compact">
-    {% if test_type == 'future' %}<div class="hero-badge"><span class="dot"></span>5문항 머니 체크</div><h1>지금 나의 돈 흐름을<br><span class="grad">가볍게 살펴봐요</span></h1><p>몇 번의 선택으로 현재의 돈 관리 흐름과 준비 상태를 발견해보세요.</p>
-    {% elif test_type == 'spending' %}<div class="hero-badge"><span class="dot"></span>MY SPENDING STYLE</div><h1>나의 소비 습관에는<br><span class="grad">어떤 스타일이 있을까요?</span></h1><p>평소의 선택을 따라가며 나만의 소비 패턴을 가볍게 발견해보세요.</p>
-    {% else %}<div class="hero-badge"><span class="dot"></span>TODAY'S MONEY FLOW</div><h1>오늘의 돈 흐름을<br><span class="grad">가볍게 만나봐요</span></h1><p>오늘 소비와 선택에 참고할 재물 흐름을 짧은 질문으로 확인해보세요.</p>{% endif %}
+    {% if test_type == 'future' %}<div class="hero-badge"><span class="dot"></span>5문항 머니 체크</div><h1>지금 나의 돈 흐름을<br><span class="grad">가볍게 살펴봐요</span></h1><p>몇 번의 선택으로 현재의 돈 관리 습관을 돌아봐요.<br>재미와 생활 점검을 위한 콘텐츠예요.</p>
+    {% elif test_type == 'spending' %}<div class="hero-badge"><span class="dot"></span>MY SPENDING STYLE</div><h1>나의 소비 습관에는<br><span class="grad">어떤 스타일이 있을까요?</span></h1><p>평소의 소비 선택을 따라가며 내 습관을 돌아봐요.<br>정답이 있는 진단은 아니에요.</p>
+    {% else %}<div class="hero-badge"><span class="dot"></span>TODAY'S MONEY FLOW</div><h1>오늘의 돈 흐름을<br><span class="grad">가볍게 만나봐요</span></h1><p>오늘을 돌아보는 짧은 질문이에요.<br>재물운을 예측하거나 금융 조언을 제공하지 않아요.</p>{% endif %}
   </section>
   <div class="intro-mascot-stage" aria-hidden="true"><img class="intro-mascot-cloud intro-mascot-cloud-left" src="{{ url_for('static', filename='images/ui/wealth_check/cloud_small.png') }}" alt=""><img class="intro-mascot-cloud intro-mascot-cloud-right" src="{{ url_for('static', filename='images/ui/wealth_check/cloud_large.png') }}" alt=""><img class="intro-mascot-heart" src="{{ url_for('static', filename='images/ui/wealth_check/cat_hug_heart.png') }}" alt=""><img class="intro-mascot-coin intro-mascot-coin-a" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_01.png') }}" alt=""><img class="intro-mascot-coin intro-mascot-coin-b" src="{{ url_for('static', filename='images/ui/wealth_check/coin_gold_02.png') }}" alt=""><img class="intro-mascot-spark" src="{{ url_for('static', filename='images/ui/wealth_check/sparkle_01.png') }}" alt=""></div>
   <div class="info-card intro-card diagnosis-intro-card intro-card-compact">
