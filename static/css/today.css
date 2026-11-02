@@ -11,25 +11,26 @@
 .today-intro h1{margin:0;color:#282332;font-size:26px;line-height:1.22;font-weight:750;letter-spacing:-.055em;}
 .today-intro h1 span{color:#6848cf;}
 .today-intro-copy{margin:8px 0 0;color:#898194;font-size:13px;line-height:1.45;font-weight:400;letter-spacing:-.015em;}
-.today-content{display:grid;gap:12px;margin:16px 0 auto;}
+.today-content{display:grid;flex:1 0 auto;align-content:center;gap:clamp(12px,2vh,18px);margin:clamp(14px,2.5vh,22px) 0 0;}
 .today-card{min-width:0;border:1px solid #e4dafd;border-radius:22px;background:linear-gradient(145deg,rgba(250,247,255,.98),#fff 80%);box-shadow:0 10px 28px rgba(68,45,131,.065);}
-.quote-card{padding:16px 18px 14px;}
+.quote-card{position:relative;overflow:hidden;padding:20px 20px 17px;border-color:#ded2ff;background:radial-gradient(ellipse at 100% 0,rgba(239,232,255,.72),transparent 48%),linear-gradient(145deg,#fff,#fcfaff 82%);box-shadow:0 12px 30px rgba(68,45,131,.085);}
 .today-card-heading{display:flex;align-items:center;gap:10px;min-width:0;}
 .today-card-mark{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:13px;background:#eee8ff;color:#7051d0;}
-.quote-mark{padding-top:7px;font-family:Georgia,serif;font-size:37px;line-height:1;font-weight:400;}
+.quote-card .today-card-mark{flex-basis:42px;width:42px;height:42px;border-radius:15px;background:#eee8ff;}
+.quote-mark{padding-top:8px;font-family:Georgia,serif;font-size:40px;line-height:1;font-weight:400;}
 .today-heading-copy{display:flex;flex-direction:column;gap:2px;min-width:0;}
 .today-heading-copy h1,.today-heading-copy h2{margin:0;color:#6649c5;font-size:16px;line-height:1.35;font-weight:700;letter-spacing:-.035em;}
 .today-heading-copy time{color:#948ba2;font-size:11px;line-height:1.35;font-weight:400;}
-.quote-card blockquote{margin:12px 0 10px;color:#302742;font-size:16px;line-height:1.55;font-weight:400;letter-spacing:-.035em;}
+.quote-card blockquote{margin:16px 0 15px;color:#302742;font-size:19px;line-height:1.58;font-weight:550;letter-spacing:-.04em;}
 .quote-attribution{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:9px;border-top:1px solid #eee9f6;color:#64567a;font-size:12px;line-height:1.4;font-weight:500;}
 .quote-attribution a{display:inline-flex;align-items:center;gap:4px;min-height:34px;color:#7051ca;font-size:11px;line-height:1.4;font-weight:500;text-decoration:none;white-space:nowrap;}
 .quote-source-title{display:block;margin-top:0;color:#9690a0;font-size:10px;line-height:1.35;font-weight:400;}
-.horoscope-card{padding:16px 18px 14px;}
+.horoscope-card{padding:17px 18px 15px;border-color:#ebe4fa;background:linear-gradient(145deg,#f8f5ff,#fff 76%);box-shadow:0 7px 20px rgba(68,45,131,.05);}
 .horoscope-heading-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .horoscope-mark svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round;}
 .zodiac-select-trigger{display:inline-flex;align-items:center;gap:6px;min-height:42px;max-width:150px;padding:5px 10px;border:1px solid #e8e0fb;border-radius:14px;background:#f7f3ff;color:#573eae;font-family:inherit;font-size:12px;font-weight:500;line-height:1.2;white-space:nowrap;cursor:pointer;}
 .zodiac-select-trigger:active{background:#eee8ff;}
-.selected-zodiac-icon{display:grid;place-items:center;width:25px;height:25px;flex:0 0 25px;color:#7254cb;}
+.selected-zodiac-icon{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;color:#7254cb;}
 .selected-zodiac-icon svg{width:100%;height:100%;overflow:visible;fill:#fff;stroke:currentColor;stroke-width:1.35;stroke-linecap:round;}
 .select-chevron{width:16px;height:16px;flex:0 0 16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .horoscope-copy{min-height:50px;margin:13px 0 8px;color:#352c45;font-size:15px;line-height:1.58;font-weight:400;letter-spacing:-.025em;}
@@ -55,6 +56,6 @@
 .zodiac-option-dates{color:#9b93a7;font-size:9px;line-height:1.25;font-weight:400;}
 body.zodiac-sheet-open{overflow:hidden;}
 @keyframes zodiac-sheet-rise{from{transform:translateY(18px);opacity:.75}to{transform:translateY(0);opacity:1}}
-@media(max-height:740px){.today-shell{padding-top:calc(6px + env(safe-area-inset-top));}.today-shell .app-header{padding-bottom:8px;}.today-intro{margin-top:12px}.today-intro-kicker{margin-bottom:7px;padding:6px 12px}.today-intro h1{font-size:23px}.today-intro-copy{margin-top:5px;font-size:12px}.today-content{gap:9px;margin-top:12px}.quote-card,.horoscope-card{padding-top:13px;padding-bottom:11px;}.quote-card blockquote{margin:9px 0 8px;font-size:15px;line-height:1.48}.horoscope-copy{min-height:42px;margin-top:9px;font-size:14px;}}
+@media(max-height:740px){.today-shell{padding-top:calc(6px + env(safe-area-inset-top));}.today-shell .app-header{padding-bottom:8px;}.today-intro{margin-top:12px}.today-intro-kicker{margin-bottom:7px;padding:6px 12px}.today-intro h1{font-size:23px}.today-intro-copy{margin-top:5px;font-size:12px}.today-content{gap:9px;margin-top:12px}.quote-card,.horoscope-card{padding-top:13px;padding-bottom:11px;}.quote-card blockquote{margin:10px 0 9px;font-size:16px;line-height:1.48}.horoscope-copy{min-height:42px;margin-top:9px;font-size:14px;}}
 @media(max-width:360px){.quote-card,.horoscope-card{padding-left:14px;padding-right:14px;}.today-heading-copy h1,.today-heading-copy h2{font-size:15px}.zodiac-select-trigger{max-width:132px;padding:4px 7px;font-size:11px}.horoscope-copy{font-size:14px}.zodiac-sheet-panel{padding-left:13px;padding-right:13px}.zodiac-option{min-height:88px}}
 @media(prefers-reduced-motion:reduce){.zodiac-sheet-panel,.zodiac-option{animation:none;transition:none}}
