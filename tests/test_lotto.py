@@ -8,7 +8,7 @@ import os
 import secrets
 import tempfile
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 from zoneinfo import ZoneInfo
@@ -39,6 +39,13 @@ class LottoServiceTest(unittest.TestCase):
                          (1249, datetime(2026, 11, 7, tzinfo=tz).date()))
         self.assertEqual(current_draw(datetime(2026, 11, 7, 19, 59, tzinfo=tz))[0], 1249)
         self.assertEqual(current_draw(datetime(2026, 11, 7, 20, 0, tzinfo=tz))[0], 1250)
+
+    def test_utc_timestamp_uses_kst_sales_cutoff(self):
+        before_cutoff = datetime(2026, 11, 7, 10, 59, tzinfo=timezone.utc)
+        at_cutoff = datetime(2026, 11, 7, 11, 0, tzinfo=timezone.utc)
+        self.assertEqual(current_draw(before_cutoff)[0], 1249)
+        self.assertEqual(current_draw(at_cutoff),
+                         (1250, datetime(2026, 11, 14, tzinfo=ZoneInfo("Asia/Seoul")).date()))
 
     def test_reject_naive_datetime(self):
         with self.assertRaises(ValueError):
