@@ -10,7 +10,8 @@
     spending: '소비 스타일',
     tarot: '오늘의 타로',
     palm: '오늘의 손금',
-    quote: '투자 한 줄'
+    quote: '투자 한 줄',
+    lotto: '이번 주 로또번호'
   };
 
   function numericScore(item) {
