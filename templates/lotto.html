@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}이번 주 로또번호 받기 · 머니플로우{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/lotto.css') }}">{% endblock %}
+{% block body %}
+<div class="page-shell lotto-page">
+  <div class="shell lotto-shell">
+    {% set active_tab = 'home' %}
+    {% include '_app_header.html' %}
+    <a class="lotto-back" href="{{ url_for('home_page') }}">← 홈으로 돌아가기</a>
+    <section class="lotto-heading" aria-labelledby="lotto-title">
+      <div class="lotto-kicker">✦ MONEY FLOW · LOTTO 6/45 ✦</div>
+      <h1 id="lotto-title">이번 주 <span>로또번호 받기</span></h1>
+      <p>45개의 번호 중 나만의 행운 조합을 만나보세요.</p>
+      <div class="lotto-statusline"><span id="lotto-round">회차 확인 중…</span><span id="lotto-remaining">회차당 최대 3번</span></div>
+    </section>
+
+    <section class="lotto-theater" aria-label="로또 추첨 애니메이션">
+      <div class="lotto-theater-shimmer" aria-hidden="true"></div>
+      <div class="lotto-light lotto-light-left" aria-hidden="true"></div>
+      <div class="lotto-light lotto-light-right" aria-hidden="true"></div>
+      <div class="lotto-machine" id="lotto-machine" aria-hidden="true">
+        <div class="lotto-machine-ring"></div>
+        <canvas id="lotto-canvas" width="600" height="600"></canvas>
+        <div class="lotto-glass"></div>
+        <div class="lotto-machine-neck"></div>
+        <div class="lotto-machine-base"><span>✦</span></div>
+      </div>
+      <div class="lotto-stage-intro" id="lotto-stage-intro">
+        <strong>이번 주 행운을 뽑는 순간</strong>
+        <span>당신을 위한 숫자 여섯 개</span>
+      </div>
+      <div class="lotto-stage-progress" id="lotto-stage-progress" hidden aria-live="polite">
+        <span>행운의 번호를 추첨하고 있어요</span>
+        <div class="lotto-progress-track"><i id="lotto-progress-fill"></i></div>
+        <div class="lotto-stage-numbers" id="lotto-stage-numbers" aria-label="추첨 중 등장한 번호"></div>
+      </div>
+      <div class="lotto-stage-stars" id="lotto-stage-stars" aria-hidden="true"></div>
+    </section>
+
+    <section class="lotto-results" aria-labelledby="lotto-results-title">
+      <div class="lotto-results-head">
+        <div><span>YOUR LUCKY NUMBERS</span><h2 id="lotto-results-title">내 로또번호</h2></div>
+        <span id="lotto-draw-date">추첨일 확인 중…</span>
+      </div>
+      <div id="lotto-message" class="lotto-notice" role="status" aria-live="polite">회차 정보를 불러오는 중입니다.</div>
+      <div id="lotto-results-list" class="lotto-result-list" aria-live="polite"></div>
+      <button id="lotto-draw-button" class="lotto-primary" type="button" disabled>추첨 준비 중…</button>
+      <a class="lotto-history-link" href="#lotto-results-title">이번 회차에 받은 모든 번호를 확인할 수 있어요</a>
+      <p class="lotto-fineprint">이 서비스는 오락용 로또 6/45 번호를 무작위 생성합니다. 당첨 가능성을 높이거나 당첨을 예측·보장하지 않습니다. 실제 복권 판매 서비스가 아닙니다.</p>
+    </section>
+  </div>
+  {% include '_bottom_nav.html' %}
+</div>
+{% endblock %}
+{% block scripts %}<script defer src="{{ url_for('static', filename='js/lotto.js') }}"></script>{% endblock %}
