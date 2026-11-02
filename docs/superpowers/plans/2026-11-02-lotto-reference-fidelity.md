@@ -113,7 +113,7 @@
 - Consumes: completed UI states, current server APIs and repository constraints.
 - Produces: updated existing Draft PR #12, still unmerged and undeployed.
 
-- [ ] **Step 1: Review the diff** for accidental changes to global navigation, draw logic, ownership, quotas, and share privacy.
-- [ ] **Step 2: Perform a fresh code review** of the UI/route changes and resolve material findings.
-- [ ] **Step 3: Update PR #12 text** to describe delivered screens and distinguish local checks from device/production checks.
-- [ ] **Step 4: Keep PR #12 Draft** and do not merge or deploy.
+- [x] **Step 1: Review the diff** for accidental changes to global navigation, draw logic, ownership, quotas, and share privacy.
+- [x] **Step 2: Perform a fresh code review** of the UI/route changes and resolve material findings.
+- [x] **Step 3: Update PR #12 text** to describe delivered screens and distinguish local checks from device/production checks.
+- [x] **Step 4: Keep PR #12 Draft** and do not merge or deploy.
