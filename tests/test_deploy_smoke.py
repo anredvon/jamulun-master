@@ -175,8 +175,9 @@ class SmokeTest(unittest.TestCase):
         today = self.client.get("/today").get_data(as_text=True)
         self.assertIn("재미로 즐기는 콘텐츠와 돈 관리 습관", home)
         self.assertNotIn('<em>NEW</em></span><span>마음이 가는 카드', home)
-        self.assertIn("오늘의 한 줄", today)
-        self.assertIn("개인별 투자 조언은 아니에요", today)
+        self.assertIn("오늘의 명언", today)
+        self.assertIn("오늘의 별자리 운세", today)
+        self.assertIn("재미로 가볍게 참고해 주세요", today)
         self.assertNotIn("매일 타로카드 한 장으로", today)
 
     def test_history_explains_on_device_history_and_server_records_separately(self):
@@ -222,7 +223,9 @@ class SmokeTest(unittest.TestCase):
         today = self.client.get("/today")
         self.assertEqual(today.status_code, 200)
         today_html = today.get_data(as_text=True)
-        self.assertIn("오늘의 문장", today_html)
+        self.assertIn("오늘의 명언", today_html)
+        self.assertIn("별자리 선택", today_html)
+        self.assertIn("머니플로우 콘텐츠", today_html)
         self.assertIn("출처 보기", today_html)
         self.assertNotIn('href="/palm"', today_html)
         self.assertNotIn("today-feature-link", today_html)
