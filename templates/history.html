@@ -9,33 +9,34 @@
     {% include '_app_header.html' %}
 
     <section class="history-hero">
-      <div class="hero-badge"><span class="dot"></span>MY MONEY LOG</div>
-      <h1>나의 <span class="grad">머니 기록</span></h1>
-      <p>이 기기에서 살펴본 콘텐츠 결과를 모아봐요.</p>
+      <div class="hero-badge"><span class="dot"></span>내가 살펴본 기록</div>
+      <h1>나의 기록</h1>
+      <p>콘텐츠 결과를 종류별로 모아봐요.</p>
     </section>
 
-    <p class="history-storage-note">이 화면에는 이 기기의 브라우저에 저장된 결과 요약이 보여요. 체크 결과와 로또 추첨번호는 서버에도 기록되며, 로또는 ‘내 로또 기록’에서 다시 볼 수 있어요. 손 사진은 업로드하거나 보관하지 않아요.</p>
+    <p class="history-storage-note">타로·손금·체크·명언은 이 기기의 브라우저에 저장돼요. 로또 번호는 서비스 기록에 저장돼요. 손 사진은 업로드하거나 보관하지 않아요.</p>
 
-    <section id="history-summary" class="history-summary is-hidden" aria-label="기록 요약">
-      <div class="history-summary-count"><span>이 기기의 기록</span><strong id="history-count">0개</strong><small>타로·손금·명언·체크·로또 결과 요약이 보여요</small></div>
-      <div id="history-score-summary"><span>최근 체크 응답 점수</span><strong id="history-latest-score">—</strong></div>
-    </section>
+    <div class="history-filters" role="group" aria-label="기록 종류">
+      <button type="button" data-history-filter="all" aria-pressed="true" class="is-active">전체</button>
+      <button type="button" data-history-filter="tarot" aria-pressed="false">타로</button>
+      <button type="button" data-history-filter="palm" aria-pressed="false">손금</button>
+      <button type="button" data-history-filter="lotto" aria-pressed="false">로또</button>
+      <button type="button" data-history-filter="check" aria-pressed="false">체크</button>
+      <button type="button" data-history-filter="quote" aria-pressed="false">명언</button>
+    </div>
 
-    <section id="weekly-flow" class="weekly-flow is-hidden" aria-label="최근 머니 플로우">
-      <div class="weekly-flow-head"><div><span>RECENT CHECK SCORES</span><strong>최근 체크 점수</strong></div><em id="weekly-flow-delta">기록을 모으는 중</em></div>
-      <div id="weekly-flow-bars" class="weekly-flow-bars" aria-hidden="true"></div>
-      <p id="weekly-flow-note">결과가 쌓이면 흐름의 변화를 보여드릴게요.</p>
-    </section>
+    <div class="history-results-meta"><strong id="history-count">기록을 불러오는 중</strong><span id="history-load-error" role="status" hidden></span></div>
 
     <section id="history-list" class="history-list" aria-live="polite"></section>
 
-    <section id="history-empty" class="history-empty">
+    <section id="history-empty" class="history-empty is-hidden">
       <div class="history-empty-visual" aria-hidden="true">
-        <img src="{{ url_for('static', filename='images/ui/wealth_check/cat_crystal_ball.png') }}" alt="">
+        <svg viewBox="0 0 48 48"><path d="M13 9h17l7 7v22H13z"/><path d="M30 9v8h7M19 24h12M19 29h12M19 34h7"/><circle cx="12" cy="18" r="7"/></svg>
       </div>
-      <h2>아직 쌓인 기록이 없어요</h2>
-      <p>타로·손금·명언·체크·로또 결과 요약이<br>이 기기의 브라우저에 저장돼요.</p>
-      <a href="{{ url_for('home_page') }}" class="cta cta-primary">첫 기록 만들기 <span aria-hidden="true">→</span></a>
+      <h2 id="history-empty-title">아직 쌓인 기록이 없어요</h2>
+      <p id="history-empty-copy">둘러본 콘텐츠가 여기에 차곡차곡 모여요.</p>
+      <button id="history-empty-reset" type="button" class="history-empty-reset" hidden>전체 기록 보기</button>
+      <a href="{{ url_for('home_page') }}" class="history-empty-home">콘텐츠 둘러보기 <span aria-hidden="true">→</span></a>
     </section>
   </div>
   {% include '_bottom_nav.html' %}

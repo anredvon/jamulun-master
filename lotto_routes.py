@@ -3,7 +3,7 @@ import json
 import time
 from uuid import UUID, uuid4
 
-from flask import Blueprint, abort, current_app, jsonify, render_template, request, url_for
+from flask import Blueprint, abort, current_app, jsonify, redirect, render_template, request, url_for
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from sqlalchemy.exc import IntegrityError, OperationalError
 
@@ -54,7 +54,7 @@ def page():
 
 @lotto_bp.route("/lotto/history")
 def history_page():
-    return render_template("lotto_history.html")
+    return redirect(url_for("history_page", filter="lotto"), code=302)
 
 
 @lotto_bp.route("/api/lotto/status")
