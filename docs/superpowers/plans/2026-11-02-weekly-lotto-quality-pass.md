@@ -148,4 +148,3 @@
 - [ ] **Step 2: Run a code review pass** for data ownership, quota races, schedule truthfulness, reduced-motion, and sharing privacy.
 - [ ] **Step 3: Update documentation and PR text** using only observed test outcomes; do not mark unperformed manual or production checks complete.
 - [ ] **Step 4: Leave PR #12 in Draft**; do not merge or deploy.
-
