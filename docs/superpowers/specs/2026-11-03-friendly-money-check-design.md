@@ -10,7 +10,8 @@ Make the Home entry and quiz selection screen clearly feel like a friendly set o
 - Name the Home entry `나의 돈 습관 알아보기` and route it to the three-choice check hub.
 - Use `나를 알아보는 머니 테스트` as the hub label and a question-shaped headline.
 - Name the three quizzes `나의 돈 관리 습관 알아보기`, `나의 소비 스타일 알아보기`, and `오늘의 금전운 알아보기`.
-- Keep the existing four-tab navigation unchanged until its revised structure is agreed.
+- Move the Home shortcut to a recognizable house icon in the upper-right header.
+- Use four bottom tabs: `오늘`, `타로`, `체크`, and `기록`. The Today page remains a daily-content overview; Tarot opens the card draw directly.
 
 ## Approaches
 
@@ -21,7 +22,7 @@ Make the Home entry and quiz selection screen clearly feel like a friendly set o
 ## Constraints
 
 - Preserve the three existing quiz destinations and their questionnaire behavior.
-- Do not change bottom navigation in this pass.
+- Keep bottom navigation to four items and keep each tab's route behavior explicit.
 - Keep the light entertainment and self-reflection framing; do not imply financial advice or guaranteed outcomes.
 
 ## Acceptance

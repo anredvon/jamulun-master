@@ -156,14 +156,14 @@ class SmokeTest(unittest.TestCase):
     def test_home(self):
         self.assertEqual(self.client.get("/").status_code, 200)
 
-    def test_home_has_four_primary_daily_activities(self):
+    def test_home_links_money_quizzes_to_the_check_hub(self):
         response = self.client.get("/home")
         self.assertEqual(response.status_code, 200)
         html = response.get_data(as_text=True)
-        for label in ("오늘의 타로카드 뽑기", "오늘의 손금 보기", "재물 흐름 체크", "오늘의 한 줄 투자 명언 뽑기"):
+        for label in ("오늘의 타로카드 뽑기", "오늘의 손금 보기", "나의 돈 습관 알아보기", "오늘의 한 줄 투자 명언 뽑기"):
             with self.subTest(label=label):
                 self.assertIn(label, html)
-        for href in ('href="/tarot"', 'href="/palm"', 'href="/intro/future"', 'href="/investment-quotes"'):
+        for href in ('href="/tarot"', 'href="/palm"', 'href="/check"', 'href="/investment-quotes"'):
             with self.subTest(href=href):
                 self.assertIn(href, html)
         self.assertNotIn("나의 소비 스타일", html)

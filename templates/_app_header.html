@@ -6,5 +6,7 @@
       <small>오늘의 돈 흐름을 가볍게 발견해보세요</small>
     </span>
   </a>
-  <span class="app-header-sparkle" aria-hidden="true">✦</span>
+  <a class="app-header-home{% if active_tab == 'home' %} is-active{% endif %}" href="{{ url_for('home_page') }}" aria-label="홈" title="홈으로">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.7 12 3.8l8.5 6.9v8.1a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7z"/><path d="M9.2 20.5v-6.1h5.6v6.1"/></svg>
+  </a>
 </header>

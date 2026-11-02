@@ -4,7 +4,7 @@
 {% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/tarot.css') }}">{% endblock %}
 {% block body %}
 <div class="page-shell tarot-page"><main class="shell tarot-shell">
-  {% set active_tab = 'today' %}{% include '_app_header.html' %}
+  {% set active_tab = 'tarot' %}{% include '_app_header.html' %}
   <section class="tarot-hero" aria-labelledby="tarot-title">
     <div class="hero-badge"><span class="dot"></span>오늘의 타로카드 뽑기</div>
     <h1 id="tarot-title">지금 끌리는 카드를<br><span class="grad">한 장 골라보세요</span></h1>
