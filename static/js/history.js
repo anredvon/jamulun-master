@@ -47,7 +47,7 @@
     }
   }
 
-  const icons = { future: '↗', money: '₩', spending: '◉', tarot: '✦', palm: '☼', quote: '“' };
+  const icons = { future: '↗', money: '₩', spending: '◉', tarot: '✦', palm: '☼', quote: '“', lotto: '⑥' };
   view.rows.forEach((item) => {
     const row = document.createElement('article');
     row.className = 'history-item';

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}내 로또 기록 · 머니플로우{% endblock %}
+{% block body_class %}has-app-chrome{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/lotto.css') }}">{% endblock %}
+{% block body %}
+<div class="page-shell lotto-page lotto-history-page">
+  <div class="shell lotto-shell">
+    {% set active_tab = 'history' %}
+    {% include '_app_header.html' %}
+    <a class="lotto-back" href="{{ url_for('lotto.page') }}"><span aria-hidden="true">‹</span> 로또번호 받기</a>
+    <main class="lotto-history-screen" id="lotto-history-screen">
+      <header class="lotto-history-header"><span class="lotto-kicker">✦ MY LUCKY ARCHIVE ✦</span><h1>내 로또 기록</h1><p>이번 주에 받은 행운의 번호를 모아봤어요.</p></header>
+      <div class="lotto-history-tabs" role="tablist" aria-label="로또 기록 기간">
+        <button id="lotto-history-current-tab" type="button" role="tab" aria-selected="true" aria-controls="lotto-history-current" class="is-active">이번 회차</button>
+        <button id="lotto-history-past-tab" type="button" role="tab" aria-selected="false" aria-controls="lotto-history-past">지난 기록</button>
+      </div>
+      <p class="lotto-history-status" id="lotto-history-status" role="status" aria-live="polite">기록을 불러오는 중입니다.</p>
+      <section id="lotto-history-current" class="lotto-history-panel" role="tabpanel" aria-labelledby="lotto-history-current-tab"></section>
+      <section id="lotto-history-past" class="lotto-history-panel" role="tabpanel" aria-labelledby="lotto-history-past-tab" hidden></section>
+      <aside class="lotto-schedule-card">
+        <span class="lotto-schedule-icon" aria-hidden="true">▦</span>
+        <div><strong id="lotto-history-round">이번 회차 추첨 일정</strong><p id="lotto-history-date">토요일 판매 마감 20:00 · 추첨 20:35경</p></div>
+      </aside>
+      <p class="lotto-schedule-note lotto-history-caveat">정기 일정 기준으로 안내하며, 방송·운영 사정에 따른 비정기 변경은 실시간 반영되지 않을 수 있습니다.</p>
+      <a class="lotto-primary lotto-history-cta" href="{{ url_for('lotto.page') }}">이번 주 번호 받기 ✨</a>
+      <p class="lotto-fineprint">무작위로 생성된 오락용 번호입니다. 당첨을 예측하거나 보장하지 않습니다.</p>
+    </main>
+  </div>
+  {% include '_bottom_nav.html' %}
+</div>
+{% endblock %}
+{% block scripts %}<script defer src="{{ url_for('static', filename='js/lotto-history.js') }}"></script>{% endblock %}

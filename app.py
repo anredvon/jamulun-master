@@ -11,11 +11,13 @@ from investment_quote_integration import register_investment_quotes
 from palm_integration import register_palm
 from tarot_integration import register_tarot
 from today_integration import register_today
+from lotto_integration import register_lotto
 
 register_tarot(app)
 register_palm(app)
 register_investment_quotes(app)
 register_today(app)
+register_lotto(app)
 
 
 @app.route("/history")
