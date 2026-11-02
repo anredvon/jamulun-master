@@ -67,7 +67,7 @@
 .lotto-progress-track i{display:block;width:0;height:100%;border-radius:20px;background:linear-gradient(90deg,#a37ac0,#dec595);transition:width .32s ease}
 .lotto-stage-numbers{display:flex;align-items:center;justify-content:center;gap:clamp(4px,1.7vw,8px);min-height:39px}
 .lotto-stage-numbers .lotto-ball{flex:0 0 36px;width:36px;min-width:36px;height:36px;aspect-ratio:1;border:1px solid #ffffffa6;font-size:12px;box-shadow:inset -4px -6px 8px #1c11353d,inset 4px 4px 7px #ffffffa3,0 5px 10px #09020b56;animation:lotto-stage-ball-land .42s cubic-bezier(.2,.7,.3,1) both}
-.lotto-stage-foot{position:absolute;bottom:13px;left:0;width:100%;color:#bfb3ca;font-size:10px;letter-spacing:.015em}
+.lotto-stage-foot{position:relative;bottom:auto;left:auto;width:100%;margin-top:8px;color:#bfb3ca;font-size:10px;letter-spacing:.015em}
 .lotto-live-dot{display:inline-block;width:5px;height:5px;margin:0 5px 1px 0;border-radius:50%;background:#ccb27e;box-shadow:0 0 6px #d7c18f80;animation:lotto-pulse 1.4s ease-in-out infinite alternate}
 .lotto-stage-stars{position:absolute;inset:0;z-index:4;pointer-events:none}
 .lotto-sparkle{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffe9aa;box-shadow:0 0 12px 2px #ffdb7b;animation:lotto-spark 850ms ease-out both}
