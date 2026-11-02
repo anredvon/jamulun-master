@@ -28,6 +28,16 @@
     $message.classList.toggle('is-error', error);
   }
 
+  function showShareLinkFallback(url) {
+    notice('링크를 자동으로 복사할 수 없어요. 아래 링크를 길게 눌러 공유하세요.');
+    const link = document.createElement('a');
+    link.className = 'lotto-share-fallback-link';
+    link.href = url;
+    link.textContent = url;
+    link.setAttribute('aria-label', '로또 번호 공유 링크');
+    $message.append(link);
+  }
+
   async function fetchJson(url, options = {}) {
     const response = await fetch(url, { credentials: 'same-origin', cache: 'no-store', ...options });
     let data;
@@ -50,6 +60,7 @@
     ball.className = 'lotto-ball lotto-ball-' + colorName(n);
     ball.textContent = String(n);
     ball.setAttribute('aria-label', n + '번');
+    ball.setAttribute('role', 'listitem');
     return ball;
   }
 
@@ -82,6 +93,7 @@
     const numbers = document.createElement('div');
     numbers.className = 'lotto-number-row';
     numbers.setAttribute('aria-label', '로또번호 ' + draw.numbers.join(', '));
+    numbers.setAttribute('role', 'list');
     draw.numbers.forEach((n) => numbers.append(ballNode(n)));
     const footer = document.createElement('div');
     footer.className = 'lotto-card-footer';
@@ -91,11 +103,11 @@
     actions.className = 'lotto-card-actions';
     const shareImage = document.createElement('button');
     shareImage.type = 'button';
-    shareImage.textContent = '↗ 이미지 공유';
+    shareImage.textContent = '이미지 저장';
     shareImage.addEventListener('click', () => exportImage(draw, shareImage));
     const shareLink = document.createElement('button');
     shareLink.type = 'button';
-    shareLink.textContent = '🔗 링크 공유';
+    shareLink.textContent = '링크 공유';
     shareLink.addEventListener('click', () => shareResultLink(draw, shareLink));
     actions.append(shareImage, shareLink);
     article.append(heading, round, numbers, footer, actions);
@@ -259,16 +271,26 @@
       try {
         if (!blob) throw new Error('이미지를 만들 수 없습니다.');
         const name = 'moneyflow-lotto-' + draw.round + '-' + draw.sequence + '.png';
-        const file = new File([blob], name, { type: 'image/png' });
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: '이번 주 로또번호', text: PLAIN_TEXT });
-        } else {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url; link.download = name; link.click();
-          setTimeout(() => URL.revokeObjectURL(url), 3000);
-          notice('이미지를 저장했어요. 카카오톡이나 메시지로 공유할 수 있어요.');
+        const file = typeof File === 'function' ? new File([blob], name, { type: 'image/png' }) : null;
+        let canShareFile = false;
+        try {
+          canShareFile = Boolean(file && navigator.share && navigator.canShare?.({ files: [file] }));
+        } catch (_) {
+          canShareFile = false;
         }
+        if (canShareFile) {
+          try {
+            await navigator.share({ files: [file], title: '이번 주 로또번호', text: PLAIN_TEXT });
+            return;
+          } catch (error) {
+            if (error.name === 'AbortError') return;
+          }
+        }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url; link.download = name; link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        notice('이미지를 저장했어요. 카카오톡이나 메시지로 공유할 수 있어요.');
       } catch (error) {
         if (error.name !== 'AbortError') notice('이미지 공유가 지원되지 않아요. 다시 시도해 주세요.', true);
       } finally {
@@ -290,8 +312,16 @@
         try { await navigator.share({ title: '머니플로우 로또번호', text, url }); return; }
         catch (e) { if (e.name === 'AbortError') return; }
       }
-      await navigator.clipboard.writeText(text + '\n' + url);
-      notice('번호와 공유 링크를 복사했어요.');
+      try {
+        if (typeof navigator.clipboard?.writeText === 'function') {
+          await navigator.clipboard.writeText(text + '\n' + url);
+          notice('번호와 공유 링크를 복사했어요.');
+          return;
+        }
+      } catch (_) {
+        // Keep a selectable link visible when clipboard access is denied.
+      }
+      showShareLinkFallback(url);
     } catch (_) {
       notice('공유 링크를 만들 수 없어요. 잠시 후 다시 시도해 주세요.', true);
     } finally {

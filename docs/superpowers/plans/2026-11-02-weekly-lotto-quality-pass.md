@@ -103,13 +103,13 @@
 - Consumes: current theme tokens, accessible status region, result cards, Web Share API, clipboard, and PNG download fallback.
 - Produces: readable result/status text, keyboard-visible focus, touch-sized actions, and a useful fallback when native sharing or clipboard is unavailable.
 
-- [ ] **Step 1: Add failing UI-flow assertions** for labeled number results, draw progress announcements, visible keyboard focus, and copy/download fallback selection.
-- [ ] **Step 2: Increase undersized supporting text and action hit areas** while preserving the existing 430px mobile shell and 320px layout.
-- [ ] **Step 3: Add explicit accessible labels/live announcements** for the six-number result and draw status without exposing decorative Canvas balls to assistive technology.
-- [ ] **Step 4: Implement copy/download fallback behavior** for unavailable or failed native sharing; keep cancellation from reporting a false failure.
-- [ ] **Step 5: Run `node --test tests/lotto-ui.test.js`**.
+- [x] **Step 1: Add failing UI-flow assertions** for labeled number results, draw progress announcements, visible keyboard focus, and copy/download fallback selection.
+- [x] **Step 2: Increase undersized supporting text and action hit areas** while preserving the existing 430px mobile shell and 320px layout.
+- [x] **Step 3: Add explicit accessible labels/live announcements** for the six-number result and draw status without exposing decorative Canvas balls to assistive technology.
+- [x] **Step 4: Implement copy/download fallback behavior** for unavailable or failed native sharing; keep cancellation from reporting a false failure.
+- [x] **Step 5: Run `node --test tests/lotto-ui.test.js`**.
   - Expected: accessibility and share fallback tests pass without unsupported APIs throwing.
-- [ ] **Step 6: Commit** `feat(lotto): improve accessible sharing and results`.
+- [x] **Step 6: Commit** `feat(lotto): improve accessible sharing and results`.
 
 ### Task 5: Validate limits, concurrency, and regression behavior
 

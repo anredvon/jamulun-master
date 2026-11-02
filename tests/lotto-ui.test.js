@@ -14,18 +14,22 @@ class FakeElement {
     this.handlers = {};
     this.style = { setProperty() {} };
     this.className = '';
-    this.textContent = '';
+    this._textContent = '';
     this.hidden = false;
     this.disabled = false;
+    this.wasClicked = false;
     this.classList = {
       toggle() {}, add() {}, remove() {}
     };
   }
 
   addEventListener(type, handler) { this.handlers[type] = handler; }
+  get textContent() { return this._textContent; }
+  set textContent(value) { this._textContent = String(value); this.children = []; }
   setAttribute(name, value) { this.attributes[name] = value; }
   append(...items) { this.children.push(...items); }
   replaceChildren(...items) { this.children = items; }
+  click() { this.wasClicked = true; }
   scrollIntoView() {}
   querySelectorAll(selector) {
     if (selector === '.lotto-result-card') {
@@ -58,12 +62,14 @@ function boot(fetchHandler, options = {}) {
   ];
   const elements = new Map(ids.map((id) => [id, new FakeElement(id === 'lotto-canvas' ? 'canvas' : 'div')]));
   const canvasContext = {
-    clearRect() {}, beginPath() {}, arc() {}, fill() {}, fillText() {},
+    clearRect() {}, beginPath() {}, arc() {}, fill() {}, fillText() {}, fillRect() {}, strokeRect() {},
+    createLinearGradient() { return { addColorStop() {} }; },
     createRadialGradient() { return { addColorStop() {} }; }
   };
   const frameQueue = [];
   const documentHandlers = {};
   const timerQueue = [];
+  const createdElements = [];
   let intersectionHandler = null;
   let requestedFrames = 0;
   let cancelledFrames = 0;
@@ -74,12 +80,23 @@ function boot(fetchHandler, options = {}) {
     hidden: false,
     body: { style: {} },
     getElementById(id) { return elements.get(id) || null; },
-    createElement(tag) { return new FakeElement(tag); },
+    createElement(tag) {
+      const element = new FakeElement(tag);
+      createdElements.push(element);
+      if (tag === 'canvas') {
+        element.width = 0;
+        element.height = 0;
+        element.getContext = () => canvasContext;
+        element.toBlob = (callback) => callback({ type: 'image/png' });
+      }
+      return element;
+    },
     addEventListener(type, handler) { documentHandlers[type] = handler; }
   };
   const window = {
     matchMedia() { return { matches: options.reducedMotion ?? true }; },
     MoneyFlowHistory: { add() { return true; } },
+    navigator: options.navigator || {},
     IntersectionObserver: class {
       constructor(callback) { this.callback = callback; intersectionHandler = callback; }
       observe() { this.callback([{ isIntersecting: true }]); }
@@ -104,12 +121,14 @@ function boot(fetchHandler, options = {}) {
     clearTimeout() {},
     Intl, Date, Math, Uint8Array, URL,
     location: { origin: 'https://example.test' },
-    navigator: {}, File: class File {}
+    navigator: options.navigator || {}, File: class File {},
+    URL: options.URL || URL
   };
   const sourcePath = path.join(__dirname, '../static/js/lotto.js');
   vm.runInNewContext(fs.readFileSync(sourcePath, 'utf8'), context, { filename: sourcePath });
   return {
     elements,
+    createdElements,
     get requestedFrames() { return requestedFrames; },
     get cancelledFrames() { return cancelledFrames; },
     get pendingTimers() { return timerQueue.length; },
@@ -253,4 +272,81 @@ test('the Canvas loop pauses when offscreen or hidden and resumes when visible',
   while (app.pendingTimers) await app.flushTimer();
   await drawPromise;
   assert.ok(app.cancelledFrames > 1);
+});
+
+test('result numbers are announced as a labeled semantic list', async () => {
+  const app = boot(async () => jsonResponse(status([DRAW])));
+  await settleInitialLoad();
+  const numbers = app.elements.get('lotto-results-list').children[0].children[2];
+
+  assert.equal(numbers.attributes.role, 'list');
+  assert.equal(numbers.attributes['aria-label'], '로또번호 4, 11, 18, 27, 34, 41');
+  assert.ok(numbers.children.every((ball) => ball.attributes.role === 'listitem'));
+
+  const template = fs.readFileSync(path.join(__dirname, '../templates/lotto.html'), 'utf8');
+  assert.match(template, /id="lotto-message"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(template, /aria-label="추첨 중 등장한 번호"[^>]*aria-live="off"/);
+});
+
+test('mobile controls have touch-sized targets and visible keyboard focus', () => {
+  const css = fs.readFileSync(path.join(__dirname, '../static/css/lotto.css'), 'utf8');
+  assert.match(css, /\.lotto-card-actions button\{[^}]*min-height:44px/);
+  assert.match(css, /\.lotto-page :is\(a,button\):focus-visible\{outline:3px solid #5b3cc4/);
+  assert.match(css, /\.lotto-fineprint\{font-size:12px;color:#746b7e/);
+});
+
+test('share link copies when the clipboard API is available', async () => {
+  let copied = '';
+  const app = boot(async (url) => {
+    if (url === '/api/lotto/status') return jsonResponse(status([DRAW]));
+    if (url === '/api/lotto/share') return jsonResponse({ ok: true, url: '/lotto/shared/signed' });
+    throw new Error('Unexpected request: ' + url);
+  }, { navigator: { clipboard: { async writeText(text) { copied = text; } } } });
+  await settleInitialLoad();
+  const shareLinkButton = app.elements.get('lotto-results-list').children[0].children[4].children[1];
+  await shareLinkButton.handlers.click();
+
+  assert.match(copied, /4, 11, 18, 27, 34, 41/);
+  assert.match(copied, /https:\/\/example\.test\/lotto\/shared\/signed/);
+});
+
+test('share link remains available as a visible selectable link when clipboard is unavailable', async () => {
+  const app = boot(async (url) => {
+    if (url === '/api/lotto/status') return jsonResponse(status([DRAW]));
+    if (url === '/api/lotto/share') return jsonResponse({ ok: true, url: '/lotto/shared/signed' });
+    throw new Error('Unexpected request: ' + url);
+  });
+  await settleInitialLoad();
+  const shareLinkButton = app.elements.get('lotto-results-list').children[0].children[4].children[1];
+  await shareLinkButton.handlers.click();
+
+  const message = app.elements.get('lotto-message');
+  assert.equal(message.children[0].tagName, 'A');
+  assert.equal(message.children[0].href, 'https://example.test/lotto/shared/signed');
+});
+
+test('failed native image sharing falls back to downloading the result card', async () => {
+  const mockURL = class extends URL {
+    static createObjectURL() { return 'blob:lotto-result'; }
+    static revokeObjectURL() {}
+  };
+  const app = boot(async (url) => {
+    if (url === '/api/lotto/status') return jsonResponse(status([DRAW]));
+    throw new Error('Unexpected request: ' + url);
+  }, {
+    navigator: {
+      canShare() { return true; },
+      async share() { throw new Error('native share failed'); }
+    },
+    URL: mockURL
+  });
+  await settleInitialLoad();
+  const imageButton = app.elements.get('lotto-results-list').children[0].children[4].children[0];
+  imageButton.handlers.click();
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const download = app.createdElements.find((element) => element.wasClicked && element.download);
+  assert.ok(download);
+  assert.equal(download.href, 'blob:lotto-result');
+  assert.match(download.download, /moneyflow-lotto-1249-1\.png/);
 });

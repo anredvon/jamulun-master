@@ -74,3 +74,19 @@
 @keyframes lotto-spark{to{transform:translate(var(--dx),var(--dy)) scale(.1);opacity:0}}
 @media(max-width:350px){.lotto-ball{width:37px;height:37px;font-size:15px}.lotto-number-row{gap:4px}.lotto-machine{transform:scale(.9);margin-bottom:-22px}.lotto-theater{min-height:325px}}
 @media(prefers-reduced-motion:reduce){.lotto-machine-ring:after,.lotto-glass,.lotto-stage-numbers .lotto-ball,.lotto-sparkle{animation:none!important}.lotto-progress-track i{transition:none!important}}
+
+/* Readability and keyboard access refinements. */
+.lotto-back{min-height:44px;align-items:center;font-size:13px}
+.lotto-heading p{font-size:14px;color:#6e647e}
+.lotto-statusline{font-size:12px;color:#6f5e88}
+.lotto-stage-intro span,.lotto-stage-progress>span{font-size:12px}
+.lotto-results-head>div>span{font-size:10px;color:#765a9d}
+.lotto-card-top{font-size:12px}
+.lotto-card-top span{font-size:10px}
+.lotto-card-round{font-size:13px}
+.lotto-card-actions button{min-height:44px;padding:10px 8px;font-size:12px}
+.lotto-primary{min-height:52px}
+.lotto-fineprint{font-size:12px;color:#746b7e}
+.lotto-share-fallback-link{display:block;max-width:100%;margin-top:6px;overflow-wrap:anywhere;color:#4d3575;text-decoration:underline;text-underline-offset:2px}
+.lotto-page :is(a,button):focus-visible{outline:3px solid #5b3cc4;outline-offset:3px;position:relative;z-index:5}
+.lotto-theater :is(a,button):focus-visible,.lotto-result-card button:focus-visible{outline-color:#ffdf88}
