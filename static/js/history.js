@@ -71,9 +71,6 @@
     const copy = node('span', 'history-item-copy');
     const top = node('span', 'history-item-top');
     top.append(node('span', 'history-item-kind', filterLabels[item.category] || '기록'));
-    const date = node('time', 'history-item-date', item.date || '날짜 정보 없음');
-    if (item.createdAt && Number.isFinite(Date.parse(item.createdAt))) date.dateTime = item.createdAt;
-    top.append(date);
     const title = node('span', 'history-item-title', item.title);
     copy.append(top, title);
     if (item.summary) copy.append(node('span', 'history-item-summary', item.summary));
@@ -119,7 +116,11 @@
       button.classList.toggle('is-active', selected);
       button.setAttribute('aria-pressed', String(selected));
       const badge = button.querySelector('[data-filter-count]');
-      if (badge) badge.textContent = String(view.categoryCounts[button.dataset.historyFilter] || 0);
+      if (badge) {
+        const total = view.categoryCounts[button.dataset.historyFilter] || 0;
+        badge.textContent = String(total);
+        badge.hidden = total === 0 && !selected;
+      }
     });
 
     const noRecords = view.count === 0;
