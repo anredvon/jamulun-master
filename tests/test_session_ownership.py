@@ -368,7 +368,11 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         )
         composer = self.https_get(self.owner_client, f"/share/{self.session_id}")
         self.assertEqual(composer.status_code, 200)
-        self.assertIn("JAEMULUN_SHARE_URL", composer.get_data(as_text=True))
+        composer_html = composer.get_data(as_text=True)
+        self.assertIn("JAEMULUN_SHARE_URL", composer_html)
+        self.assertNotIn("이번 주 +4점", composer_html)
+        self.assertNotIn("상위 28%", composer_html)
+        self.assertIn("선택한 답변을 바탕으로", composer_html)
         with app.app_context():
             test_session = db.session.get(TestSession, self.session_id)
             self.assertEqual(test_session.share_count, 1)
@@ -387,7 +391,8 @@ class SessionOwnershipRouteTest(unittest.TestCase):
         public_response = self.https_get(self.other_client, urlsplit(data["share_url"]).path)
         self.assertEqual(public_response.status_code, 200)
         public_html = public_response.get_data(as_text=True)
-        self.assertIn("MY MONEY FLOW SCORE", public_html)
+        self.assertIn("답변을 바탕으로 한 참고 점수", public_html)
+        self.assertIn("선택한 답변", public_html)
         self.assertIn("오늘의 재물운", public_html)
         self.assertNotIn("상세 AI 인사이트", public_html)
         self.assertNotIn(

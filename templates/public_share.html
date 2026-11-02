@@ -13,10 +13,11 @@
     </section>
     <div class="share-card share-card-v2">
       <div class="share-card-copy">
-        <div class="share-label">MY MONEY FLOW SCORE</div>
+        <div class="share-label">답변을 바탕으로 한 참고 점수</div>
         <div class="share-score-row"><strong>{{ result.score }}</strong><span>/100</span></div>
         <div class="share-result-title">{{ result.title }}</div>
         <div class="tags">{% for tag in result.tags %}<span>{{ tag }}</span>{% endfor %}</div>
+        <small class="share-score-note">선택한 답변을 요약한 오락·생활 점검용 콘텐츠예요. 재물 상태나 미래를 측정하지 않아요.</small>
       </div>
     </div>
     <a href="{{ url_for('home_page') }}" class="share-done-link">나도 무료로 확인하기</a>

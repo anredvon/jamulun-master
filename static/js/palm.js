@@ -3,7 +3,7 @@
   const input = document.getElementById('palm-file-input');
   const comboNode = document.getElementById('palm-combo-data');
   const previewCard = document.getElementById('palm-preview-card');
-  if (!input || !previewCard || !comboNode || !window.MoneyFlowPalmAnalysis || !window.MoneyFlowPalmCombinations) return;
+  if (!input || !previewCard || !comboNode || !window.MoneyFlowPalmAnalysis || !window.MoneyFlowPalmCombinations || !window.MoneyFlowPalmCopy) return;
 
   const $ = (id) => document.getElementById(id);
   const el = {
@@ -16,38 +16,7 @@
   };
   let combinations = [];
   try { combinations = JSON.parse(comboNode.textContent || '[]'); } catch (_) { combinations = []; }
-  const labels = {
-    heart: { h1: '비교적 곧은 감정선', h2: '바깥쪽으로 올라가는 감정선', h3: '아래로 기울어진 감정선', h4: '안쪽으로 휘는 감정선', h5: '둥글게 휘는 감정선' },
-    head: { d1: '비교적 곧은 두뇌선', d2: '손가락 쪽으로 올라가는 두뇌선', d3: '손목 쪽으로 내려가는 두뇌선', d4: '안쪽으로 휘는 두뇌선', d5: '둥글게 휘는 두뇌선' },
-    fate: { f1: '중앙을 곧게 지나는 운명선', f2: '한쪽으로 기운 운명선', f3: '중간에 끊겨 보이는 운명선', f4: '갈라져 보이는 운명선' }
-  };
-  const readings = {
-    heart: {
-      h1: '곧은 감정선은 감정을 차분히 살피고 관계에서 균형을 중시하는 모습으로 풀이해요. 마음을 전할 땐 핵심을 분명히 말해보세요.',
-      h2: '위로 향하는 감정선은 호감과 고마움을 적극적으로 표현하는 모습으로 읽어요. 상대의 속도도 함께 살피면 배려가 더 잘 전해져요.',
-      h3: '아래로 기우는 감정선은 타인의 사정을 깊이 헤아리는 모습으로 풀이해요. 공감만큼 내 감정의 경계도 챙겨보세요.',
-      h4: '안쪽으로 휘는 감정선은 신뢰를 확인한 뒤 깊이 관계 맺는 모습으로 읽어요. 원하는 바를 먼저 표현하면 오해를 줄일 수 있어요.',
-      h5: '둥근 감정선은 친밀감을 따뜻하게 나누는 모습으로 풀이해요. 상대를 배려하듯 내 기분과 필요도 살펴보세요.'
-    },
-    head: {
-      d1: '곧은 두뇌선은 사실과 순서를 중시하는 방식으로 풀이해요. 익숙한 답 외에 선택지 하나를 더 비교해보세요.',
-      d2: '위로 향하는 두뇌선은 목표를 정하고 실행하는 성향으로 읽어요. 큰 결정은 비용과 기간을 적어 점검해보세요.',
-      d3: '아래로 기우는 두뇌선은 상상력과 직관을 활용하는 모습으로 풀이해요. 떠오른 생각을 적고 현실 조건을 확인해보세요.',
-      d4: '완만히 휘는 두뇌선은 여러 상황을 함께 살피는 유연한 판단으로 읽어요. 우선순위와 결정 시점을 정하면 도움이 돼요.',
-      d5: '둥근 두뇌선은 한 주제를 깊이 살피며 직관과 분석을 함께 쓰는 모습으로 풀이해요. 작은 시도로 생각을 확인해보세요.'
-    },
-    fate: {
-      f1: '곧게 이어진 운명선은 한 목표에 꾸준히 힘을 쌓는 흐름으로 풀이해요. 가끔 방향을 점검하면 노력의 초점을 잡기 좋아요.',
-      f2: '기울어진 운명선은 환경과 만남에 따라 방향을 조정하는 모습으로 읽어요. 선택할 때는 내 기준을 먼저 적어보세요.',
-      f3: '중간에 끊겨 보이는 운명선은 변화의 시기를 상징한다고 풀이해요. 불운으로 단정하지 말고 계획을 다시 살펴보세요.',
-      f4: '갈라진 운명선은 여러 관심사나 역할을 함께 살피는 흐름으로 읽어요. 지금 집중할 한두 가지를 정해보세요.'
-    }
-  };
-  const summaryTraits = {
-    heart: { h1: '감정은 차분히 살피고', h2: '호감은 적극 표현하고', h3: '상대 마음을 깊이 헤아리고', h4: '신뢰를 쌓아 마음을 열고', h5: '따뜻하게 마음을 나누고' },
-    head: { d1: '현실 기준으로 결정하고', d2: '목표를 정해 실행하고', d3: '직관으로 가능성을 찾고', d4: '여러 조건을 함께 살피고', d5: '깊이 생각해 답을 찾고' },
-    fate: { f1: '정한 방향을 꾸준히 이어가는 편', f2: '환경에 맞춰 방향을 조정하는 편', f3: '변화에 맞춰 계획을 새로 세우는 편', f4: '여러 관심사를 함께 살피는 편' }
-  };
+  const { labels, readings, summaryTraits, reflectionPrompt, uncertainReading } = window.MoneyFlowPalmCopy;
   let activeUrls = new Set();
   let analysisCanvas = null;
   let candidates = { heart: null, head: null, fate: null };
@@ -62,7 +31,7 @@
     if (!result) return;
 
     el.resultTitle.textContent = `${summaryTraits.heart[lineTypes.heart]} · ${summaryTraits.head[lineTypes.head]} · ${summaryTraits.fate[lineTypes.fate]}`;
-    el.resultOneLine.textContent = '오늘은 지출이나 선택 하나를 정하고, 결정 전에 기준을 한 번 더 확인해보세요.';
+    el.resultOneLine.textContent = reflectionPrompt;
     const uncertainLines = Object.entries(lineTypes).filter(([key]) => !candidates[key]);
     el.resultTypes.textContent = uncertainLines.length
       ? `사진에서 추정한 선 모양 · ${uncertainLines.map(([key]) => ({ heart: '감정선', head: '두뇌선', fate: '운명선' })[key]).join('·')}은 잘 보이지 않아 참고 유형으로 표시했어요`
@@ -76,7 +45,7 @@
       const description = document.createElement('p');
       description.textContent = candidates[key]
         ? readings[key][lineTypes[key]]
-        : '사진에서 선의 형태가 뚜렷하지 않아 대표 유형으로 채웠어요. 이 부분은 다시 촬영하면 달라질 수 있습니다.';
+        : uncertainReading;
       card.append(heading, description);
       el.resultReadings.appendChild(card);
     }

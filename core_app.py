@@ -164,7 +164,9 @@ def share_page(session_id):
     result = TestResult.query.filter_by(session_id=session_id).first()
     test_label = TEST_TYPE_LABELS.get(ts.test_type, ts.test_type)
     result_tags = _result_tags(ts.test_type, result.result_type if result else None)
-    share_data = {"score": result.final_score if result else 0, "delta_text": "이번 주 +4점", "rank": 28, "tags": result_tags}
+    share_data = {"score": result.final_score if result else 0,
+                  "title": result.result_title if result else "체크 결과",
+                  "tags": result_tags}
     return render_template("share.html", ts=ts, result=share_data, test_type=ts.test_type,
                            test_label=test_label, share_url=_issue_share_url(ts))
 
@@ -300,28 +302,25 @@ def _calc_max_score(question_ids: list) -> int:
 
 def _calc_result(score: int, test_type: str) -> tuple:
     result_copy = {
-        "money": {"gold": ("황금빛 돈 자석", "오늘 재물 에너지가 최고조입니다. 작은 기회도 놓치지 말고 적극적으로 행동해보세요."),
-                  "silver": ("은빛 재물의 흐름", "안정적인 돈 감각이 살아 있는 날입니다. 작은 절약과 현명한 지출이 성과로 이어집니다."),
-                  "bronze": ("균형 잡힌 지갑 감각", "무리하지 않으면 무난한 하루입니다. 충동 지출만 조심하면 안정적인 흐름을 유지할 수 있어요."),
-                  "caution": ("지출 점검 모드", "오늘은 큰 지출을 미루고 계획적인 소비를 실천하는 것이 유리합니다.")},
-        "spending": {"gold": ("계획형 소비 마스터", "필요와 욕구를 잘 구분하는 편입니다. 이런 패턴이 장기적으로 자산 형성에 큰 도움이 됩니다."),
-                     "silver": ("안정형 소비 컨트롤러", "대체로 좋은 소비 습관을 유지하고 있습니다. 지출 기록을 더 자주 확인하면 더욱 좋아집니다."),
-                     "bronze": ("감정과 계획 사이", "상황에 따라 소비가 흔들릴 수 있습니다. 월 예산선을 정하는 것만으로도 개선 폭이 큽니다."),
-                     "caution": ("충동 지출 주의형", "세일·기분·분위기의 영향을 받기 쉬운 편입니다. 구매 전 10분 멈춤 습관이 효과적입니다.")},
-        "future": {"gold": ("장기 자산 설계형", "목표와 습관이 잘 연결된 유형입니다. 꾸준히 쌓으면 복리 효과를 극대화할 수 있습니다."),
-                   "silver": ("성장형 자산 준비자", "기초 체력이 좋은 편입니다. 수입 확장이나 투자 공부를 더하면 빠른 속도로 성장합니다."),
-                   "bronze": ("가능성 축적형", "방향은 맞지만 루틴 고정이 필요합니다. 목표 금액과 기간을 글로 적어두면 성과가 빨라집니다."),
-                   "caution": ("기초 체력 보강형", "지금은 큰 수익보다 현금 흐름과 비상금 관리부터 다지는 것이 가장 중요합니다.")}}
+        "money": {"gold": ("지출 전에 한 번 더 살펴보는 편", "고른 답에서는 결제 전에 한 번 생각하는 모습이 보여요. 오늘은 계획한 지출과 예정에 없던 지출을 나눠 적어보세요."),
+                  "silver": ("작은 기준을 잘 챙기는 편", "필요한 것과 원하는 것을 함께 살피는 답이 많았어요. 오늘 쓴 돈 중 기억에 남는 한 건만 기록해보세요."),
+                  "bronze": ("상황에 따라 달라지는 편", "바쁘거나 기분이 달라질 때 소비도 달라질 수 있어요. 다음 결제 전에 이번 주 예산을 한 번 확인해보세요."),
+                  "caution": ("지출 기준을 세워보는 중", "꼭 필요한 지출과 미룰 수 있는 지출을 나눠보면 선택이 쉬워져요. 다음 구매 전 정해둔 예산을 살펴보세요.")},
+        "spending": {"gold": ("계획을 세우고 사는 편", "답변에서 구매 전에 필요와 예산을 함께 보는 모습이 보여요. 이번 주 자주 결제한 항목 하나를 확인해보세요."),
+                     "silver": ("필요와 기분을 함께 살피는 편", "필요를 따지면서도 상황에 따라 마음이 움직일 수 있어요. 장바구니에서 하루 더 생각할 물건 하나를 골라보세요."),
+                     "bronze": ("상황에 따라 소비가 달라지는 편", "세일이나 약속처럼 예상 밖의 일이 소비에 영향을 줄 수 있어요. 한 주 자유 지출의 기준을 정해보세요."),
+                     "caution": ("구매 전 잠깐 멈춰보는 중", "급하게 결제할 때 계획한 예산을 놓치기 쉬워요. 다음 구매 전 10분만 기다렸다가 필요한 이유를 적어보세요.")},
+        "future": {"gold": ("목표를 정해 차근차근 준비하는 편", "답변에서 정한 목표를 꾸준히 챙기는 모습이 보여요. 저축 계획이 지금 생활에 무리 없는지 한 번 확인해보세요."),
+                   "silver": ("기초를 차곡차곡 쌓는 중", "돈을 모으려는 마음은 있지만 계획이 흐려질 때도 있을 수 있어요. 이번 달 목표와 확인할 날짜를 한 줄로 적어보세요."),
+                   "bronze": ("작은 목표부터 정하면 좋아요", "큰 계획보다 이번 달에 이어갈 수 있는 습관부터 정해보세요. 예를 들어 결제일에 잔액을 확인하는 것부터 시작할 수 있어요."),
+                   "caution": ("고정 지출부터 살펴보는 중", "답변을 보면 큰 목표보다 매달 나가는 돈을 먼저 살펴보면 좋겠어요. 이번 달 결제일과 통장 잔액을 확인해보세요.")}}
     key = "gold" if score >= 90 else "silver" if score >= 75 else "bronze" if score >= 55 else "caution"
     return (*result_copy.get(test_type, result_copy["money"])[key],) if False else (key, *result_copy.get(test_type, result_copy["money"])[key])
 
 def _result_tags(test_type: str, result_type: str | None) -> list:
-    tags_map = {"money": ["오늘 운세", "지출 관리", "리스크 점검"], "spending": ["소비 패턴", "예산 감각", "유형 분석"],
-                "future": ["재물 체크", "현재 흐름", "즉시 확인"]}
-    tags = list(tags_map.get(test_type, ["재물운", "테스트 결과", "흐름 확인"]))
-    if result_type == "gold": tags[0] = "상위 흐름"
-    elif result_type == "caution": tags[-1] = "주의 필요"
-    return tags
+    tags_map = {"money": ["오늘 돌아보기", "지출 습관", "가벼운 체크"], "spending": ["소비 습관", "예산 감각", "가벼운 체크"],
+                "future": ["돈 관리 습관", "준비 상태", "가벼운 체크"]}
+    return list(tags_map.get(test_type, ["머니 체크", "답변 요약", "가벼운 참고"]))
 
 if __name__ == "__main__":
     with app.app_context():

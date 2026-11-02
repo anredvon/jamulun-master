@@ -35,15 +35,15 @@
       const first = view.futureTrend[0].score;
       const last = view.futureTrend[view.futureTrend.length - 1].score;
       const change = last - first;
-      delta.textContent = change === 0 ? '흐름 유지 →' : `${change > 0 ? '+' : ''}${change}점 ${change > 0 ? '↗' : '↘'}`;
+      delta.textContent = change === 0 ? '점수 비슷 →' : `${change > 0 ? '+' : ''}${change}점 ${change > 0 ? '↗' : '↘'}`;
       note.textContent = change > 0
-        ? '최근 재물 흐름 체크 점수가 조금씩 좋아지고 있어요.'
+        ? '최근 체크 응답 점수가 달라졌어요. 실제 재물 상태를 나타내는 수치는 아니에요.'
         : change < 0
           ? '점수는 참고로만 보고, 오늘의 작은 습관부터 살펴봐요.'
-          : '최근 재물 흐름 체크 점수가 비슷하게 이어지고 있어요.';
+          : '최근 체크 응답 점수가 비슷해요. 실제 재물 상태를 나타내는 수치는 아니에요.';
     } else {
       delta.textContent = '첫 기록 ✦';
-      note.textContent = '재물 흐름 체크 기록이 더 쌓이면 변화를 보여드릴게요.';
+      note.textContent = '체크 결과가 더 쌓이면 응답 점수의 변화를 볼 수 있어요. 실제 재물 상태를 나타내는 수치는 아니에요.';
     }
   }
 
