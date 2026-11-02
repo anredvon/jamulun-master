@@ -53,4 +53,4 @@
   {% include '_bottom_nav.html' %}
 </div>
 {% endblock %}
-{% block scripts %}<script defer src="{{ url_for('static', filename='js/lotto.js') }}"></script>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script defer src="{{ url_for('static', filename='js/lotto.js') }}"></script>{% endblock %}
