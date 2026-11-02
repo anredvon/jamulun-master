@@ -50,5 +50,11 @@ test('future trend remains empty and latest score is null without numeric future
 });
 
 test('empty input returns an empty history view', () => {
-  assert.deepEqual(buildHistoryView([]), { count: 0, latestFutureScore: null, rows: [], futureTrend: [] });
+  assert.deepEqual(buildHistoryView([]), {
+    count: 0,
+    categoryCounts: { all: 0, tarot: 0, palm: 0, lotto: 0, check: 0, quote: 0 },
+    latestFutureScore: null,
+    rows: [],
+    futureTrend: []
+  });
 });

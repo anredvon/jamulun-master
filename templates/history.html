@@ -14,20 +14,26 @@
       <p>콘텐츠 결과를 종류별로 모아봐요.</p>
     </section>
 
-    <p class="history-storage-note">타로·손금·체크·명언은 이 기기의 브라우저에 저장돼요. 로또 번호는 서비스 기록에 저장돼요. 손 사진은 업로드하거나 보관하지 않아요.</p>
+    <details class="history-storage-details">
+      <summary><span class="history-info-mark" aria-hidden="true">i</span>기록 저장 방식</summary>
+      <div class="history-storage-copy">
+        <p>타로·손금·체크·명언은 이 기기의 브라우저에 저장돼요. 로또 번호는 서비스 기록에 저장돼요.</p>
+        <p>브라우저를 바꾸면 로컬 기록은 이어지지 않을 수 있어요. 손 사진은 업로드하거나 보관하지 않아요.</p>
+      </div>
+    </details>
 
     <div class="history-filters" role="group" aria-label="기록 종류">
-      <button type="button" data-history-filter="all" aria-pressed="true" class="is-active">전체</button>
-      <button type="button" data-history-filter="tarot" aria-pressed="false">타로</button>
-      <button type="button" data-history-filter="palm" aria-pressed="false">손금</button>
-      <button type="button" data-history-filter="lotto" aria-pressed="false">로또</button>
-      <button type="button" data-history-filter="check" aria-pressed="false">체크</button>
-      <button type="button" data-history-filter="quote" aria-pressed="false">명언</button>
+      <button type="button" data-history-filter="all" aria-pressed="true" class="is-active"><span>전체</span><small data-filter-count="all">0</small></button>
+      <button type="button" data-history-filter="tarot" aria-pressed="false"><span>타로</span><small data-filter-count="tarot">0</small></button>
+      <button type="button" data-history-filter="palm" aria-pressed="false"><span>손금</span><small data-filter-count="palm">0</small></button>
+      <button type="button" data-history-filter="lotto" aria-pressed="false"><span>로또</span><small data-filter-count="lotto">0</small></button>
+      <button type="button" data-history-filter="check" aria-pressed="false"><span>체크</span><small data-filter-count="check">0</small></button>
+      <button type="button" data-history-filter="quote" aria-pressed="false"><span>명언</span><small data-filter-count="quote">0</small></button>
     </div>
 
     <div class="history-results-meta"><strong id="history-count">기록을 불러오는 중</strong><span id="history-load-error" role="status" hidden></span></div>
 
-    <section id="history-list" class="history-list" aria-live="polite"></section>
+    <section id="history-list" class="history-list" aria-live="polite" aria-label="날짜별 기록"></section>
 
     <section id="history-empty" class="history-empty is-hidden">
       <div class="history-empty-visual" aria-hidden="true">
@@ -36,10 +42,21 @@
       <h2 id="history-empty-title">아직 쌓인 기록이 없어요</h2>
       <p id="history-empty-copy">둘러본 콘텐츠가 여기에 차곡차곡 모여요.</p>
       <button id="history-empty-reset" type="button" class="history-empty-reset" hidden>전체 기록 보기</button>
-      <a href="{{ url_for('home_page') }}" class="history-empty-home">콘텐츠 둘러보기 <span aria-hidden="true">→</span></a>
+      <a id="history-empty-link" href="{{ url_for('home_page') }}" class="history-empty-home">콘텐츠 둘러보기 <span aria-hidden="true">→</span></a>
     </section>
   </div>
   {% include '_bottom_nav.html' %}
 </div>
+<dialog class="history-detail-dialog" id="history-detail-dialog" aria-labelledby="history-detail-title">
+  <section class="history-detail-panel">
+    <header class="history-detail-header">
+      <div><span id="history-detail-kind" class="history-detail-kind"></span><time id="history-detail-date"></time></div>
+      <button type="button" class="history-detail-close" id="history-detail-close" aria-label="기록 상세 닫기">×</button>
+    </header>
+    <div id="history-detail-content" class="history-detail-content"></div>
+    <footer id="history-detail-actions" class="history-detail-actions"></footer>
+  </section>
+</dialog>
+<script type="application/json" id="history-tarot-data">{{ tarot_cards|tojson }}</script>
 {% endblock %}
-{% block scripts %}<script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/history-view-model.js') }}"></script><script src="{{ url_for('static', filename='js/history.js') }}"></script>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/history-view-model.js') }}"></script><script src="{{ url_for('static', filename='js/palm-copy.js') }}"></script><script src="{{ url_for('static', filename='js/history.js') }}"></script>{% endblock %}

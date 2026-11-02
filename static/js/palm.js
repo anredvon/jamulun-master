@@ -61,7 +61,7 @@
     const drawId = `palm-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     window.MoneyFlowHistory?.add({
       id: drawId, type: 'palm', label: '오늘의 손금', title: el.resultTitle.textContent, summary: el.resultOneLine.textContent,
-      meta: { comboId: result.id, lineTypes }
+      meta: { comboId: result.id, lineTypes, uncertainLines: uncertainLines.map(([key]) => key) }
     });
     window.MoneyFlowPalm.dispose();
   }

@@ -5,8 +5,8 @@
   if (root && root.window === root) root.MoneyFlowHistoryView = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, () => {
   const TYPE_LABELS = {
-    future: '돈 습관 체크', money: '오늘의 재물운', spending: '소비 스타일',
-    tarot: '오늘의 타로', palm: '오늘의 손금', quote: '오늘의 한 줄', lotto: '로또 번호'
+    future: '돈 관리 습관', money: '오늘의 재물운', spending: '소비 스타일',
+    tarot: '오늘의 타로', palm: '오늘의 손금', quote: '오늘의 명언', lotto: '로또 번호'
   };
   const CATEGORY_BY_TYPE = { future: 'check', money: 'check', spending: 'check' };
 
@@ -36,11 +36,12 @@
       id: String(item.id || `${type}-${index}`),
       type,
       category: CATEGORY_BY_TYPE[type] || type,
-      label: item.label || TYPE_LABELS[type] || '머니 기록',
+      label: type === 'quote' ? TYPE_LABELS.quote : (item.label || TYPE_LABELS[type] || '머니 기록'),
       title: item.title || '기록 결과',
       date: item.date || formatDate(createdAt),
       createdAt,
-      summary: item.summary ? String(item.summary) : ''
+      summary: item.summary ? String(item.summary) : '',
+      meta: item.meta && typeof item.meta === 'object' && !Array.isArray(item.meta) ? item.meta : {}
     };
     const score = numericScore(item);
     if (score !== null) row.score = score;
@@ -56,7 +57,10 @@
       title: `제${draw.round}회 ${draw.sequence}번째 추첨`,
       date: formatDate(createdAt),
       createdAt,
-      summary: Array.isArray(draw.numbers) ? draw.numbers.join(' · ') : ''
+      summary: Array.isArray(draw.numbers) ? draw.numbers.join(' · ') : '',
+      round: draw.round,
+      sequence: draw.sequence,
+      numbers: Array.isArray(draw.numbers) ? draw.numbers.map(Number).filter(Number.isFinite) : []
     };
   }
 
@@ -80,8 +84,13 @@
       return right - left;
     });
     const futureRecords = records.filter((item) => item.type === 'future' && numericScore(item) !== null);
+    const categoryCounts = { all: records.length, tarot: 0, palm: 0, lotto: 0, check: 0, quote: 0 };
+    records.forEach((item) => {
+      if (Object.hasOwn(categoryCounts, item.category) && item.category !== 'all') categoryCounts[item.category] += 1;
+    });
     return {
       count: records.length,
+      categoryCounts,
       latestFutureScore: futureRecords.length ? numericScore(futureRecords[0]) : null,
       rows: records.slice(0, 120),
       futureTrend: futureRecords.slice(0, 7).reverse().map((item) => ({
