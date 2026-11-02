@@ -39,9 +39,8 @@
         <div class="lotto-machine-wrap">
           <div class="lotto-machine-halo" aria-hidden="true"></div>
           <div class="lotto-machine" id="lotto-machine" aria-hidden="true">
-            <div class="lotto-machine-ring"></div>
-            <div class="lotto-machine-orb"><canvas id="lotto-canvas" width="600" height="600"></canvas><div class="lotto-glass"></div><img class="lotto-machine-cat" src="{{ url_for('static', filename='images/ui/wealth_check/cat_crystal_ball.png') }}" alt=""></div>
-            <div class="lotto-machine-neck"></div><div class="lotto-machine-base"><span>✿</span></div>
+            <div class="lotto-machine-orb"><canvas id="lotto-canvas" width="600" height="600"></canvas><div class="lotto-glass"></div></div>
+            <div class="lotto-machine-neck"></div><div class="lotto-machine-base"><span aria-hidden="true"></span></div>
           </div>
         </div>
         <div class="lotto-stage-progress" id="lotto-stage-progress" hidden aria-live="polite">
@@ -64,7 +63,7 @@
         </div>
         <div id="lotto-message" class="lotto-notice" role="status" aria-live="polite">회차 정보를 불러오는 중입니다.</div>
         <div id="lotto-results-list" class="lotto-result-list" aria-live="polite"></div>
-        <a class="lotto-history-link" href="{{ url_for('lotto.history_page') }}"><span aria-hidden="true">◷</span> 내 로또 기록 모두 보기 <span aria-hidden="true">›</span></a>
+        <a class="lotto-history-link" href="{{ url_for('lotto.history_page') }}"><svg class="lotto-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 7.5v4.8l3.2 1.9"/></svg><span>내 로또 기록 모두 보기</span><svg class="lotto-icon lotto-chevron" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></a>
         <button id="lotto-result-draw-button" class="lotto-primary lotto-redraw-button" type="button">다시 추첨하기</button>
         <p class="lotto-fineprint">이 서비스는 오락용 로또 6/45 번호를 무작위 생성합니다. 당첨 가능성을 높이거나 당첨을 예측·보장하지 않습니다. 실제 복권 판매 서비스가 아닙니다.</p>
       </section>

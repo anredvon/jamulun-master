@@ -26,6 +26,14 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const colorName = (n) => BALL_CLASSES[Math.min(4, Math.floor((n - 1) / 10))];
+  const actionIcon = (name) => {
+    const paths = {
+      share: '<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/>',
+      download: '<path d="M12 3.5v11m0 0 4-4m-4 4-4-4M4.5 17v3h15v-3"/>',
+      history: '<circle cx="12" cy="12" r="8.25"/><path d="M12 7.5v4.8l3.2 1.9"/>'
+    };
+    return '<svg class="lotto-icon" aria-hidden="true" viewBox="0 0 24 24">' + paths[name] + '</svg>';
+  };
   const formatDrawDate = (s) => s ? new Intl.DateTimeFormat('ko-KR', {
     timeZone: 'Asia/Seoul', year: 'numeric', month: 'long', day: 'numeric'
   }).format(new Date(s + 'T12:00:00+09:00')) : '';
@@ -116,13 +124,13 @@
     shareImage.addEventListener('click', () => exportImage(draw, shareImage));
     const shareLink = document.createElement('button');
     shareLink.type = 'button';
-    shareLink.innerHTML = '<span aria-hidden="true">↗</span><span>공유하기</span>';
+    shareLink.innerHTML = actionIcon('share') + '<span>공유하기</span>';
     shareLink.addEventListener('click', () => shareResultLink(draw, shareLink));
-    shareImage.innerHTML = '<span aria-hidden="true">⇩</span><span>이미지 저장</span>';
+    shareImage.innerHTML = actionIcon('download') + '<span>이미지 저장</span>';
     const history = document.createElement('a');
     history.className = 'lotto-action-link';
     history.href = '/lotto/history';
-    history.innerHTML = '<span aria-hidden="true">◷</span><span>내 기록</span>';
+    history.innerHTML = actionIcon('history') + '<span>내 기록</span>';
     actions.append(shareImage, shareLink, history);
     article.append(heading, round, numbers, footer, actions);
     return article;
@@ -405,15 +413,18 @@
     const W = canvas.width, mid = W / 2;
     const balls = Array.from({ length: 45 }, (_, i) => {
       const angle = i * 2.39996;
-      const radius = Math.sqrt((i+.5)/45) * 164;
-      return { n: i+1, angle, radius, speed: (i%2 ? -1 : 1) * (0.45 + (i%6)*.09), depth: i/45 };
+      const radius = Math.sqrt((i+.5)/45) * 220;
+      return { n: i+1, angle, radius, speed: 0.9 + (i%7)*.035, depth: i/45, size: 24 + (i%4)*1.4 };
     });
     let last = 0;
     let frameId = null;
     let active = false;
-    let stageVisible = true;
     const fills = ['#F9D064','#88C5EF','#F08A9F','#C8CFDC','#A5D997'];
-    const isVisible = () => !document.hidden && stageVisible;
+    const isVisible = () => {
+      const rect = $('lotto-machine').getBoundingClientRect();
+      return !document.hidden && rect.width > 0 && rect.height > 0
+        && rect.bottom > 0 && rect.top < window.innerHeight;
+    };
     const canAnimate = () => active && !reducedMotion && isVisible();
     const cancelFrame = () => {
       if (frameId !== null) {
@@ -436,28 +447,40 @@
       ctx.clearRect(0, 0, W, W);
       const speed = state.speed;
       const projected = balls.map((b) => {
-        const a = b.angle + t * b.speed * (0.00025 + speed*0.0009);
-        const z = Math.sin(a * 1.3 + b.depth*11);
-        return { ...b, x:mid + Math.cos(a)*b.radius, y:mid + Math.sin(a)*b.radius*.76, z };
+        const a = b.angle + t * b.speed * (0.00042 + speed*0.00118);
+        const z = Math.sin(a * 1.15 + b.depth*5.7);
+        return { ...b, x:mid + Math.cos(a)*b.radius, y:mid + Math.sin(a)*b.radius*.84, z };
       }).sort((a, b) => a.z - b.z);
       projected.forEach((b) => {
-        const r = 15 + (b.z + 1) * 3;
+        const r = b.size * (0.82 + (b.z + 1) * 0.12);
         const fill = fills[Math.min(4, Math.floor((b.n-1)/10))];
-        const g = ctx.createRadialGradient(b.x-r*.35,b.y-r*.4,2,b.x,b.y,r);
-        g.addColorStop(0,'#FFFFFF');g.addColorStop(.45,fill);g.addColorStop(1,'#66507D');
+        const light = t * 0.00075 + b.depth * Math.PI * 2;
+        const hx = b.x - Math.cos(light) * r * 0.34;
+        const hy = b.y - r * 0.38 - Math.sin(light) * r * 0.16;
+        ctx.save();
+        ctx.globalAlpha = 0.25 + (b.z + 1) * 0.17;
+        ctx.fillStyle = '#080411';
+        ctx.beginPath();ctx.ellipse(b.x+r*.12,b.y+r*.67,r*.82,r*.29,0,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+        const g = ctx.createRadialGradient(hx,hy,r*.03,b.x+r*.08,b.y+r*.13,r*1.18);
+        g.addColorStop(0,'#FFFFFF');g.addColorStop(.14,'#FFFFFF');g.addColorStop(.34,fill);g.addColorStop(.76,fill);g.addColorStop(1,'#282238');
+        ctx.save();
+        ctx.shadowColor = '#090513';ctx.shadowBlur = 10;ctx.shadowOffsetY = 4;
         ctx.beginPath();ctx.arc(b.x,b.y,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-        ctx.fillStyle='#342B42';ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.font='bold ' + Math.round(r*.82) + 'px system-ui';
+        ctx.shadowColor = 'transparent';ctx.shadowBlur = 0;ctx.shadowOffsetY = 0;
+        ctx.lineWidth = 1.3;ctx.strokeStyle = '#fff9';ctx.stroke();
+        ctx.beginPath();ctx.ellipse(hx,hy,r*.34,r*.16,light*.12,0,Math.PI*2);ctx.fillStyle = '#ffffffa8';ctx.fill();
+        ctx.fillStyle='#292235';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.font='700 ' + Math.round(r*.78) + 'px system-ui';
+        ctx.shadowColor = '#fff9';ctx.shadowBlur = 2;
         ctx.fillText(String(b.n), b.x, b.y+1);
+        ctx.restore();
       });
       scheduleFrame();
     }
     document.addEventListener('visibilitychange', sync);
     if (typeof window.IntersectionObserver === 'function') {
-      const observer = new window.IntersectionObserver((entries) => {
-        stageVisible = entries.some((entry) => entry.isIntersecting);
-        sync();
-      });
+      const observer = new window.IntersectionObserver(sync);
       observer.observe($('lotto-machine'));
     }
     return {
