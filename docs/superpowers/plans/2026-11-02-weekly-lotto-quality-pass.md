@@ -77,20 +77,19 @@
 
 **Files:**
 - Modify: `static/js/lotto.js`
-- Modify: `static/css/lotto.css`
 - Test: `tests/lotto-ui.test.js`
 
 **Interfaces:**
 - Consumes: existing Canvas scene, draw state, `prefers-reduced-motion`, document visibility, and result animation.
 - Produces: a start/stop-controlled Canvas animation that runs only while visible and needed; a static final-state result when motion is reduced.
 
-- [ ] **Step 1: Add a failing animation lifecycle test** asserting no perpetual frame scheduling while idle and no frame loop while the document is hidden or the stage is offscreen.
-- [ ] **Step 2: Add a failing reduced-motion test** asserting the result numbers become readable without waiting for the full animation sequence.
-- [ ] **Step 3: Implement bounded animation lifecycle controls** using existing browser APIs (`requestAnimationFrame`, Page Visibility, IntersectionObserver where supported) with a safe fallback.
-- [ ] **Step 4: Implement a reduced-motion CSS and JS path** that removes decorative looping effects and presents committed numbers immediately.
-- [ ] **Step 5: Run `node --test tests/lotto-ui.test.js`**.
+- [x] **Step 1: Add a failing animation lifecycle test** asserting no perpetual frame scheduling while idle and no frame loop while the document is hidden or the stage is offscreen.
+- [x] **Step 2: Add a failing reduced-motion test** asserting the result numbers become readable without waiting for the full animation sequence.
+- [x] **Step 3: Implement bounded animation lifecycle controls** using existing browser APIs (`requestAnimationFrame`, Page Visibility, IntersectionObserver where supported) with a safe fallback.
+- [x] **Step 4: Implement a reduced-motion JS path** that stops Canvas and presents committed numbers immediately. Existing CSS already disables keyframe motion and transition effects under reduced motion.
+- [x] **Step 5: Run `node --test tests/lotto-ui.test.js`**.
   - Expected: lifecycle tests show no idle loop and confirm stop/start across draw, hide, show, completion, and reduced motion.
-- [ ] **Step 6: Commit** `perf(lotto): bound draw animation lifecycle`.
+- [x] **Step 6: Commit** `perf(lotto): bound draw animation lifecycle`.
 
 ### Task 4: Refine mobile readability, focus, and sharing fallback
 

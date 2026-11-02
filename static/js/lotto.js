@@ -156,14 +156,19 @@
     $progressFill.style.width = '0%';
 
     if (!reducedMotion) {
-      await sleep(1250);
-      for (let i = 0; i < draw.numbers.length; i += 1) {
-        $stageNumbers.append(ballNode(draw.numbers[i]));
-        $progressFill.style.width = ((i + 1) / 6 * 92) + '%';
-        await sleep(410);
+      canvasAnimation.start();
+      try {
+        await sleep(1250);
+        for (let i = 0; i < draw.numbers.length; i += 1) {
+          $stageNumbers.append(ballNode(draw.numbers[i]));
+          $progressFill.style.width = ((i + 1) / 6 * 92) + '%';
+          await sleep(410);
+        }
+        popStars();
+        await sleep(900);
+      } finally {
+        canvasAnimation.stop();
       }
-      popStars();
-      await sleep(900);
     } else {
       draw.numbers.forEach((n) => $stageNumbers.append(ballNode(n)));
       await sleep(160);
@@ -294,11 +299,11 @@
     }
   }
 
-  function startCanvas() {
+  function createCanvasAnimation() {
     const canvas = $('lotto-canvas');
-    if (!canvas || !canvas.getContext) return;
+    if (!canvas || !canvas.getContext) return { start() {}, stop() {} };
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) return { start() {}, stop() {} };
     const W = canvas.width, mid = W / 2;
     const balls = Array.from({ length: 45 }, (_, i) => {
       const angle = i * 2.39996;
@@ -306,10 +311,28 @@
       return { n: i+1, angle, radius, speed: (i%2 ? -1 : 1) * (0.45 + (i%6)*.09), depth: i/45 };
     });
     let last = 0;
+    let frameId = null;
+    let active = false;
+    let stageVisible = true;
     const fills = ['#F9D064','#88C5EF','#F08A9F','#C8CFDC','#A5D997'];
+    const canAnimate = () => active && !reducedMotion && !document.hidden && stageVisible;
+    const cancelFrame = () => {
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+        frameId = null;
+      }
+    };
+    const scheduleFrame = () => {
+      if (canAnimate() && frameId === null) frameId = requestAnimationFrame(frame);
+    };
+    function sync() {
+      if (canAnimate()) scheduleFrame();
+      else cancelFrame();
+    }
     function frame(t) {
-      if (document.hidden) { requestAnimationFrame(frame); return; }
-      if (t - last < 30) { requestAnimationFrame(frame); return; }
+      frameId = null;
+      if (!canAnimate()) return;
+      if (t - last < 30) { scheduleFrame(); return; }
       last = t;
       ctx.clearRect(0, 0, W, W);
       const speed = state.speed;
@@ -328,13 +351,24 @@
         ctx.font='bold ' + Math.round(r*.82) + 'px system-ui';
         ctx.fillText(String(b.n), b.x, b.y+1);
       });
-      requestAnimationFrame(frame);
+      scheduleFrame();
     }
-    requestAnimationFrame(frame);
+    document.addEventListener('visibilitychange', sync);
+    if (typeof window.IntersectionObserver === 'function') {
+      const observer = new window.IntersectionObserver((entries) => {
+        stageVisible = entries.some((entry) => entry.isIntersecting);
+        sync();
+      });
+      observer.observe($('lotto-machine'));
+    }
+    return {
+      start() { active = true; sync(); },
+      stop() { active = false; sync(); }
+    };
   }
 
+  const canvasAnimation = createCanvasAnimation();
   $draw.addEventListener('click', () => performDraw());
-  startCanvas();
   refresh().catch((error) => {
     notice('현재 로또 서비스를 불러올 수 없어요. 새로고침 후 다시 시도해 주세요.', true);
     $draw.disabled = true;
