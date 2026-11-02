@@ -3,6 +3,7 @@
 {% block body_class %}has-app-chrome{% endblock %}
 {% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">{% endblock %}
 {% block body %}
+{% from '_content_icon.html' import content_icon %}
 <div class="page-shell history-page">
   <div class="shell history-shell">
     {% set active_tab = 'history' %}
@@ -44,6 +45,13 @@
     </section>
   </div>
   {% include '_bottom_nav.html' %}
+</div>
+<div hidden aria-hidden="true">
+  <template id="history-icon-tarot">{{ content_icon('tarot') }}</template>
+  <template id="history-icon-palm">{{ content_icon('palm') }}</template>
+  <template id="history-icon-lotto">{{ content_icon('lotto') }}</template>
+  <template id="history-icon-check">{{ content_icon('check') }}</template>
+  <template id="history-icon-quote">{{ content_icon('quote') }}</template>
 </div>
 <dialog class="history-detail-dialog" id="history-detail-dialog" aria-labelledby="history-detail-title">
   <section class="history-detail-panel">
