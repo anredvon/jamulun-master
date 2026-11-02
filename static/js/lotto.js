@@ -230,7 +230,7 @@
 
     $progressFill.style.width = '100%';
     state.speed = 0.2;
-    $progress.hidden = false;
+    $progress.hidden = true;
     $stage.hidden = false;
     $stage.innerHTML = '<strong>행운 번호가<br>도착했어요!</strong><span>당신의 이번 주 숫자를 확인해보세요 ✨</span>';
     await sleep(reducedMotion ? 0 : 320);
