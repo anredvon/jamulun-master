@@ -28,13 +28,9 @@
     check: ['/check', '머니 체크 시작하기'],
     quote: ['/today', '오늘의 명언 보기']
   };
-  const icons = {
-    tarot: '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6M9 12h6M12 15v3M10.5 16.5h3"/></svg>',
-    palm: '<svg viewBox="0 0 24 24"><path d="M8 12V6a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-5a1.5 1.5 0 0 1 3 0v7l1-2a1.5 1.5 0 0 1 2.8 1l-1.3 5.2A6 6 0 0 1 13.7 22h-.9a6 6 0 0 1-4.5-2l-3-3.4A1.8 1.8 0 0 1 8 14l1.5 1"/></svg>',
-    lotto: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 8.5h6M9 12h6M9 15.5h6"/><circle cx="8" cy="8.5" r=".5"/><circle cx="16" cy="15.5" r=".5"/></svg>',
-    check: '<svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h2l1.2 1.5L15 12M9 17h6"/></svg>',
-    quote: '<svg viewBox="0 0 24 24"><path d="M5 11h6V6H7a2 2 0 0 0-2 2v3Zm8 0h6V6h-4a2 2 0 0 0-2 2v3ZM5 11v2a4 4 0 0 1-2 3m10-5v2a4 4 0 0 1-2 3"/></svg>'
-  };
+  const iconTemplates = Object.fromEntries(['tarot', 'palm', 'lotto', 'check', 'quote'].map((name) => {
+    return [name, document.getElementById(`history-icon-${name}`)];
+  }));
   let lottoDraws = [];
   let activeFilter = new URLSearchParams(window.location.search).get('filter') || 'all';
   if (!Object.hasOwn(filterLabels, activeFilter)) activeFilter = 'all';
@@ -66,7 +62,8 @@
 
     const icon = node('span', 'history-item-icon');
     icon.setAttribute('aria-hidden', 'true');
-    icon.innerHTML = icons[item.category] || icons.check;
+    const iconTemplate = iconTemplates[item.category] || iconTemplates.check;
+    if (iconTemplate?.content.firstElementChild) icon.append(iconTemplate.content.firstElementChild.cloneNode(true));
 
     const copy = node('span', 'history-item-copy');
     const top = node('span', 'history-item-top');
