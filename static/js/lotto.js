@@ -419,12 +419,10 @@
     let last = 0;
     let frameId = null;
     let active = false;
+    let stageVisible = true;
+    let visibilityObserved = false;
     const fills = ['#F9D064','#88C5EF','#F08A9F','#C8CFDC','#A5D997'];
-    const isVisible = () => {
-      const rect = $('lotto-machine').getBoundingClientRect();
-      return !document.hidden && rect.width > 0 && rect.height > 0
-        && rect.bottom > 0 && rect.top < window.innerHeight;
-    };
+    const isVisible = () => !document.hidden && (!visibilityObserved || stageVisible);
     const canAnimate = () => active && !reducedMotion && isVisible();
     const cancelFrame = () => {
       if (frameId !== null) {
@@ -480,7 +478,14 @@
     }
     document.addEventListener('visibilitychange', sync);
     if (typeof window.IntersectionObserver === 'function') {
-      const observer = new window.IntersectionObserver(sync);
+      const observer = new window.IntersectionObserver((entries) => {
+        // The machine is mounted inside a hidden section; ignore that initial offscreen report.
+        if (state.view === 'drawing') {
+          visibilityObserved = true;
+          stageVisible = entries.some((entry) => entry.isIntersecting);
+        }
+        sync();
+      });
       observer.observe($('lotto-machine'));
     }
     return {
