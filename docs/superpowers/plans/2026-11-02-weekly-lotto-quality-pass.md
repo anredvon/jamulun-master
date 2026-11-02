@@ -58,7 +58,6 @@
 **Files:**
 - Modify: `static/js/lotto.js`
 - Modify: `templates/lotto.html`
-- Modify: `tests/test_lotto.py`
 - Test: `tests/lotto-ui.test.js`
 - Modify: `.github/workflows/jaemulun-ci.yml`
 
@@ -66,13 +65,13 @@
 - Consumes: `/api/lotto/status`, `/api/lotto/draw`, existing UUID idempotency key, result card rendering, and `MoneyFlowHistory`.
 - Produces: first draw only from a user action; `refresh()` restores persisted results; retry after a lost response re-queries status before permitting another draw.
 
-- [ ] **Step 1: Add a failing client-flow test** that loads a visitor with zero draws and asserts no POST occurs until the draw button is activated.
-- [ ] **Step 2: Add a failing client-flow test** that loads one or more saved results and asserts the cards render without issuing a draw POST.
-- [ ] **Step 3: Add a failing recovery test** that simulates a committed draw with a lost response and verifies a status refresh restores the same result and remaining count.
-- [ ] **Step 4: Implement the explicit-click flow** and update initial/remaining draw button text; retain request locking and server-provided results.
-- [ ] **Step 5: Run `node --test tests/lotto-ui.test.js`**.
+- [x] **Step 1: Add a failing client-flow test** that loads a visitor with zero draws and asserts no POST occurs until the draw button is activated.
+- [x] **Step 2: Add a failing client-flow test** that loads one or more saved results and asserts the cards render without issuing a draw POST.
+- [x] **Step 3: Add a failing recovery test** that simulates a committed draw with a lost response and verifies a status refresh restores the same result and remaining count.
+- [x] **Step 4: Implement the explicit-click flow** and update initial/remaining draw button text; retain request locking and server-provided results.
+- [x] **Step 5: Run `node --test tests/lotto-ui.test.js`**.
   - Expected: first-visit, revisit, and lost-response recovery flow tests pass.
-- [ ] **Step 6: Commit** `fix(lotto): require explicit draw action`.
+- [x] **Step 6: Commit** `fix(lotto): require explicit draw action`.
 
 ### Task 3: Bound animation work and support reduced motion
 

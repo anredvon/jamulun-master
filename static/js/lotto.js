@@ -114,11 +114,13 @@
     $draw.disabled = state.busy || state.remaining <= 0;
     $draw.textContent = state.busy ? '추첨하고 있어요…'
       : state.remaining <= 0 ? '이번 회차 추첨 3회 완료'
-      : '✦ 다시 추첨하기 (' + state.remaining + '회 남음)';
+      : state.draws.length
+        ? '✦ 다시 추첨하기 (' + state.remaining + '회 남음)'
+        : '✦ 이번 주 번호 뽑기 (' + state.remaining + '회 남음)';
     if (!state.busy) notice(state.remaining <= 0
       ? '이번 회차의 세 번호 조합을 모두 받았어요. 다음 회차에 다시 만나요!'
       : state.draws.length ? '번호가 자동 저장됐어요. 다시 추첨하거나 친구와 공유해보세요.'
-      : '이번 주 첫 추첨을 시작합니다.');
+      : '추첨 버튼을 눌러 이번 주 번호를 받아보세요. 번호는 무작위로 생성돼요.');
   }
 
   async function refresh() {
@@ -176,11 +178,11 @@
   }
 
   // Draw result is committed on the server *before* visual animation.
-  async function performDraw(automatic = false) {
+  async function performDraw() {
     if (state.busy || state.remaining <= 0) return;
     state.busy = true;
     render();
-    notice(automatic ? '이번 주 첫 번째 로또번호를 추첨해요!' : '새로운 번호를 추첨하고 있어요.');
+    notice(state.draws.length ? '새로운 번호를 추첨하고 있어요.' : '이번 주 첫 번째 로또번호를 추첨해요!');
     // Reuse this UUID if a fetch is retried in the same running request.
     const key = crypto.randomUUID ? crypto.randomUUID() : fallbackUuid();
     try {
@@ -331,11 +333,9 @@
     requestAnimationFrame(frame);
   }
 
-  $draw.addEventListener('click', () => performDraw(false));
+  $draw.addEventListener('click', () => performDraw());
   startCanvas();
-  refresh().then((data) => {
-    if (data.used === 0) performDraw(true);
-  }).catch((error) => {
+  refresh().catch((error) => {
     notice('현재 로또 서비스를 불러올 수 없어요. 새로고침 후 다시 시도해 주세요.', true);
     $draw.disabled = true;
     $draw.textContent = '연결 상태 확인 필요';
