@@ -126,7 +126,6 @@
     const noFilteredRecords = !noRecords && rows.length === 0;
     empty.classList.toggle('is-hidden', !noRecords && !noFilteredRecords);
     reset.hidden = !noFilteredRecords;
-    emptyLink.hidden = noFilteredRecords;
     if (noRecords) {
       emptyTitle.textContent = '아직 저장된 기록이 없어요';
       emptyCopy.textContent = '둘러본 결과가 이곳에 차곡차곡 모여요.';
