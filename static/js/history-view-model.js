@@ -5,14 +5,10 @@
   if (root && root.window === root) root.MoneyFlowHistoryView = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, () => {
   const TYPE_LABELS = {
-    future: '재물 흐름 체크',
-    money: '오늘의 재물운',
-    spending: '소비 스타일',
-    tarot: '오늘의 타로',
-    palm: '오늘의 손금',
-    quote: '투자 한 줄',
-    lotto: '이번 주 로또번호'
+    future: '돈 습관 체크', money: '오늘의 재물운', spending: '소비 스타일',
+    tarot: '오늘의 타로', palm: '오늘의 손금', quote: '오늘의 한 줄', lotto: '로또 번호'
   };
+  const CATEGORY_BY_TYPE = { future: 'check', money: 'check', spending: 'check' };
 
   function numericScore(item) {
     if (item.score == null || item.score === '') return null;
@@ -20,31 +16,76 @@
     return Number.isFinite(score) ? score : null;
   }
 
-  function buildHistoryView(items) {
-    const records = Array.isArray(items) ? items.filter((item) => item && typeof item === 'object') : [];
-    const futureRecords = records.filter((item) => item.type === 'future' && numericScore(item) !== null);
-    const rows = records.slice(0, 30).map((item) => {
-      const row = {
-        id: item.id,
-        type: item.type || 'unknown',
-        label: item.label || TYPE_LABELS[item.type] || '머니 기록',
-        title: item.title || '기록 결과',
-        date: item.date || ''
-      };
-      const score = numericScore(item);
-      if (score !== null) row.score = score;
-      if (item.summary) row.summary = String(item.summary);
-      return row;
-    });
+  function parseTimestamp(value) {
+    const timestamp = value ? Date.parse(value) : NaN;
+    return Number.isFinite(timestamp) ? timestamp : null;
+  }
 
+  function formatDate(value) {
+    const timestamp = parseTimestamp(value);
+    if (timestamp === null) return '';
+    return new Intl.DateTimeFormat('ko-KR', {
+      timeZone: 'Asia/Seoul', month: 'long', day: 'numeric'
+    }).format(new Date(timestamp));
+  }
+
+  function normalizeLocal(item, index) {
+    const type = item.type || 'unknown';
+    const createdAt = item.createdAt || item.created_at || '';
+    const row = {
+      id: String(item.id || `${type}-${index}`),
+      type,
+      category: CATEGORY_BY_TYPE[type] || type,
+      label: item.label || TYPE_LABELS[type] || '머니 기록',
+      title: item.title || '기록 결과',
+      date: item.date || formatDate(createdAt),
+      createdAt,
+      summary: item.summary ? String(item.summary) : ''
+    };
+    const score = numericScore(item);
+    if (score !== null) row.score = score;
+    return row;
+  }
+
+  function normalizeLotto(draw) {
+    const resultId = String(draw.result_id || draw.id || '');
+    const createdAt = draw.created_at || draw.createdAt || '';
+    return {
+      id: `lotto-${resultId}`, resultId, type: 'lotto', category: 'lotto',
+      label: '로또 번호',
+      title: `제${draw.round}회 ${draw.sequence}번째 추첨`,
+      date: formatDate(createdAt),
+      createdAt,
+      summary: Array.isArray(draw.numbers) ? draw.numbers.join(' · ') : ''
+    };
+  }
+
+  function buildHistoryView(items, lottoDraws = []) {
+    const localRecords = Array.isArray(items) ? items
+      .filter((item) => item && typeof item === 'object' && !Array.isArray(item))
+      .map(normalizeLocal) : [];
+    const serverLottoRecords = Array.isArray(lottoDraws) ? lottoDraws
+      .filter((draw) => draw && typeof draw === 'object' && (draw.result_id || draw.id))
+      .map(normalizeLotto) : [];
+    const serverLottoIds = new Set(serverLottoRecords.map((row) => row.resultId));
+    const uniqueLocalRecords = localRecords.filter((row) => row.type !== 'lotto'
+      || !serverLottoIds.has(row.id.replace(/^lotto-/, '')));
+    const records = [...uniqueLocalRecords, ...serverLottoRecords];
+    records.sort((a, b) => {
+      const left = parseTimestamp(a.createdAt);
+      const right = parseTimestamp(b.createdAt);
+      if (left === null && right === null) return 0;
+      if (left === null) return 1;
+      if (right === null) return -1;
+      return right - left;
+    });
+    const futureRecords = records.filter((item) => item.type === 'future' && numericScore(item) !== null);
     return {
       count: records.length,
       latestFutureScore: futureRecords.length ? numericScore(futureRecords[0]) : null,
-      rows,
+      rows: records.slice(0, 120),
       futureTrend: futureRecords.slice(0, 7).reverse().map((item) => ({
-        id: item.id,
-        date: item.date || '',
-        score: numericScore(item)
+        id: item.id, date: item.date || '', score: numericScore(item)
       }))
     };
   }
