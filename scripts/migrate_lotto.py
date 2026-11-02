@@ -9,9 +9,14 @@ from lotto_models import LottoDraw
 from models import db
 
 
+def ensure_lotto_table(engine):
+    """Create the additive Lotto table on the supplied database engine."""
+    LottoDraw.__table__.create(bind=engine, checkfirst=True)
+
+
 def main():
     with app.app_context():
-        LottoDraw.__table__.create(bind=db.engine, checkfirst=True)
+        ensure_lotto_table(db.engine)
         print("OK: lotto_draws table ready (existing data preserved)")
 
 

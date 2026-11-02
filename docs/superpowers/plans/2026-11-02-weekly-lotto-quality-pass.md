@@ -121,18 +121,18 @@
 - Consumes: existing `LottoDraw` unique constraints, lottery API routes, existing app smoke tests, and the CI workflow.
 - Produces: repeatable coverage of range, uniqueness, 3-draw cap, idempotency, concurrency, ownership, migration safety, and existing route regressions.
 
-- [ ] **Step 1: Add a failing concurrent-request test** with separate clients for one owner; assert no more than three records exist and all accepted results have unique sequence slots.
-- [ ] **Step 2: Add a failing migration safety check** that confirms the additive lottery table creation leaves existing tables/data intact.
-- [ ] **Step 3: Run the focused suite** with `python -m unittest discover -s tests -p 'test_lotto.py' -v`.
+- [x] **Step 1: Add a failing concurrent-request test** with separate clients for one owner; assert no more than three records exist and all accepted results have unique sequence slots.
+- [x] **Step 2: Add a failing migration safety check** that confirms the additive lottery table creation leaves existing tables/data intact.
+- [x] **Step 3: Run the focused suite** with `python -m unittest discover -s tests -p 'test_lotto.py' -v`.
   - Expected: all Lotto backend tests pass, including concurrency and migration-safety coverage.
-- [ ] **Step 4: Run the full Python suite** with `python -m unittest discover -s tests -p 'test_*.py' -v`.
+- [x] **Step 4: Run the full Python suite** with `python -m unittest discover -s tests -p 'test_*.py' -v`.
   - Expected: all existing and Lotto Python tests pass.
-- [ ] **Step 5: Run the JavaScript suite** with `node --test tests/history-store.test.js tests/history-view-model.test.js tests/palm-analysis.test.js tests/lotto-ui.test.js`.
+- [x] **Step 5: Run the JavaScript suite** with `node --test tests/history-store.test.js tests/history-view-model.test.js tests/palm-analysis.test.js tests/lotto-ui.test.js`.
   - Expected: all existing history/palm tests and new Lotto UI tests pass.
-- [ ] **Step 6: Run the route smoke check** using `flask --app app routes` under the test environment.
+- [x] **Step 6: Run the route smoke check** using `flask --app app routes` under the test environment.
   - Expected: `/lotto`, `/api/lotto/status`, `/api/lotto/draw`, `/api/lotto/share`, and `/lotto/shared/<token>` appear in the route table.
-- [ ] **Step 7: Perform browser visual checks** at 320px, 375px, 430px, and desktop widths; inspect draw, refresh restore, reduced motion, native share, and fallback behavior. Record unavailable physical-device checks without claiming them as passed.
-- [ ] **Step 8: Commit** `test(lotto): verify quota and mobile behavior`.
+- [x] **Step 7: Perform browser visual checks** at 320px, 375px, 430px, and desktop widths; inspect draw, refresh restore, reduced motion, native share, and fallback behavior. Record unavailable physical-device checks without claiming them as passed. Local browser draw and refresh restore were visually exercised at the available viewport; reduced motion/share fallback were covered by Node tests. Per-width viewport emulation, native share UI, and physical devices were unavailable and remain unverified.
+- [x] **Step 8: Commit** `test(lotto): verify quota and mobile behavior`.
 
 ### Task 6: Review and update the existing Draft PR
 
