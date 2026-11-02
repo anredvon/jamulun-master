@@ -35,21 +35,26 @@
 
       <section class="lotto-theater" id="lotto-theater" aria-label="로또 추첨 애니메이션" hidden>
         <div class="lotto-theater-top"><span class="lotto-kicker">✦ MONEY FLOW · LOTTO 6/45 ✦</span><span id="lotto-stage-round">행운을 준비하고 있어요</span></div>
-        <div class="lotto-stage-heading" id="lotto-stage-intro"><strong>행운의 번호를<br>추첨하고 있어요!</strong><span>잠시만 기다려주세요 ✨</span></div>
+        <div class="lotto-stage-heading" id="lotto-stage-intro"><strong>행운의 번호를<br>추첨하고 있어요!</strong><span>공이 충분히 섞일 때까지 기다려주세요</span></div>
         <div class="lotto-machine-wrap">
           <div class="lotto-machine-halo" aria-hidden="true"></div>
           <div class="lotto-machine" id="lotto-machine" aria-hidden="true">
-            <div class="lotto-machine-orb"><canvas id="lotto-canvas" width="600" height="600"></canvas><div class="lotto-glass"></div></div>
-            <div class="lotto-machine-neck"></div><div class="lotto-machine-base"><span aria-hidden="true"></span></div>
+            <div class="lotto-machine-orb">
+              <canvas id="lotto-canvas" width="600" height="600"></canvas>
+              <div class="lotto-glass" aria-hidden="true"><i></i><b></b></div>
+            </div>
+            <div class="lotto-machine-neck" aria-hidden="true"><i></i></div>
+            <div class="lotto-machine-base" aria-hidden="true"><span></span><i></i></div>
+            <div class="lotto-machine-plinth" aria-hidden="true"></div>
           </div>
         </div>
         <div class="lotto-stage-progress" id="lotto-stage-progress" hidden aria-live="polite">
-          <span>행운의 번호를 하나씩 만나보세요</span>
+          <span>공을 섞고 있어요 <i aria-hidden="true"></i></span>
           <div class="lotto-progress-track"><i id="lotto-progress-fill"></i></div>
           <div class="lotto-stage-numbers" id="lotto-stage-numbers" role="list" aria-label="추첨 중 등장한 번호" aria-live="off"></div>
         </div>
         <div class="lotto-stage-stars" id="lotto-stage-stars" aria-hidden="true"></div>
-        <div class="lotto-stage-foot"><span class="lotto-live-dot" aria-hidden="true"></span> 행운의 조합을 찾는 중</div>
+        <div class="lotto-stage-foot"><span class="lotto-live-dot" aria-hidden="true"></span> 무작위 추첨 진행 중</div>
       </section>
 
       <section class="lotto-result-area" id="lotto-result-area" aria-labelledby="lotto-results-title" hidden>

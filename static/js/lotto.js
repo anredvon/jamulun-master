@@ -189,13 +189,13 @@
   function popStars() {
     if (reducedMotion) return;
     $stars.replaceChildren();
-    for (let i = 0; i < 18; i += 1) {
+    for (let i = 0; i < 9; i += 1) {
       const spark = document.createElement('span');
       spark.className = 'lotto-sparkle';
-      spark.style.left = (25 + Math.random() * 50) + '%';
-      spark.style.top = (30 + Math.random() * 45) + '%';
-      spark.style.setProperty('--dx', (Math.random() * 180 - 90) + 'px');
-      spark.style.setProperty('--dy', (Math.random() * 180 - 90) + 'px');
+      spark.style.left = (32 + Math.random() * 36) + '%';
+      spark.style.top = (30 + Math.random() * 35) + '%';
+      spark.style.setProperty('--dx', (Math.random() * 100 - 50) + 'px');
+      spark.style.setProperty('--dy', (Math.random() * 100 - 50) + 'px');
       $stars.append(spark);
     }
     setTimeout(() => $stars.replaceChildren(), 950);
@@ -215,6 +215,7 @@
         continueReveal = await sleepWhileVisible(1250);
         for (let i = 0; i < draw.numbers.length; i += 1) {
           if (!continueReveal || !canvasAnimation.isVisible()) break;
+          state.speed = Math.max(0.46, 0.94 - i * 0.095);
           $stageNumbers.append(ballNode(draw.numbers[i]));
           $progressFill.style.width = ((i + 1) / 6 * 92) + '%';
           continueReveal = await sleepWhileVisible(410);
@@ -240,7 +241,7 @@
     state.speed = 0.2;
     $progress.hidden = true;
     $stage.hidden = false;
-    $stage.innerHTML = '<strong>행운 번호가<br>도착했어요!</strong><span>당신의 이번 주 숫자를 확인해보세요 ✨</span>';
+    $stage.innerHTML = '<strong>행운 번호가<br>도착했어요!</strong><span>당신의 이번 주 숫자를 확인해보세요</span>';
     await sleep(reducedMotion ? 0 : 320);
     state.busy = false;
     state.view = 'result';
@@ -413,15 +414,15 @@
     const W = canvas.width, mid = W / 2;
     const balls = Array.from({ length: 45 }, (_, i) => {
       const angle = i * 2.39996;
-      const radius = Math.sqrt((i+.5)/45) * 220;
-      return { n: i+1, angle, radius, speed: 0.9 + (i%7)*.035, depth: i/45, size: 24 + (i%4)*1.4 };
+      const radius = Math.sqrt((i+.5)/45) * 218;
+      return { n: i+1, angle, radius, speed: 0.82 + (i%9)*.04, depth: i/45, size: 29 + (i%5)*1.15 };
     });
     let last = 0;
     let frameId = null;
     let active = false;
     let stageVisible = true;
     let visibilityObserved = false;
-    const fills = ['#F9D064','#88C5EF','#F08A9F','#C8CFDC','#A5D997'];
+    const fills = ['#DDB542','#5D9FC7','#D36A7E','#AEB8C4','#77A974'];
     const isVisible = () => !document.hidden && (!visibilityObserved || stageVisible);
     const canAnimate = () => active && !reducedMotion && isVisible();
     const cancelFrame = () => {
@@ -445,9 +446,16 @@
       ctx.clearRect(0, 0, W, W);
       const speed = state.speed;
       const projected = balls.map((b) => {
-        const a = b.angle + t * b.speed * (0.00042 + speed*0.00118);
-        const z = Math.sin(a * 1.15 + b.depth*5.7);
-        return { ...b, x:mid + Math.cos(a)*b.radius, y:mid + Math.sin(a)*b.radius*.84, z };
+        const phase = b.depth * Math.PI * 2;
+        const flow = t * b.speed * (0.0007 + speed * 0.00165);
+        const a = b.angle + flow + Math.sin(t * 0.00092 + phase * 3.1) * 0.42;
+        const radial = b.radius + Math.sin(t * 0.00135 * b.speed + phase * 4.7) * 27
+          + Math.cos(t * 0.00076 + phase * 7.3) * 14;
+        const driftX = Math.sin(t * 0.00112 + phase * 8.1) * 13;
+        const driftY = Math.sin(t * 0.00185 * b.speed + phase * 5.3) * 25
+          + Math.cos(t * 0.00063 + phase * 11.2) * 12;
+        const z = Math.sin(a * 1.18 + phase * 2.8 + t * 0.00072 * b.speed);
+        return { ...b, x:mid + Math.cos(a) * radial + driftX, y:mid + Math.sin(a) * radial * .8 + driftY, z };
       }).sort((a, b) => a.z - b.z);
       const hasSphereEffects = typeof ctx.save === 'function'
         && typeof ctx.restore === 'function' && typeof ctx.ellipse === 'function';
@@ -464,15 +472,15 @@
           ctx.beginPath();ctx.ellipse(b.x+r*.12,b.y+r*.67,r*.82,r*.29,0,0,Math.PI*2);ctx.fill();
           ctx.restore();
         }
-        const g = ctx.createRadialGradient(hx,hy,r*.03,b.x+r*.08,b.y+r*.13,r*1.18);
-        g.addColorStop(0,'#FFFFFF');g.addColorStop(.14,'#FFFFFF');g.addColorStop(.34,fill);g.addColorStop(.76,fill);g.addColorStop(1,'#282238');
+        const g = ctx.createRadialGradient(hx,hy,r*.02,b.x+r*.18,b.y+r*.22,r*1.27);
+        g.addColorStop(0,'#FFFDF5');g.addColorStop(.1,'#FFF6E0');g.addColorStop(.3,fill);g.addColorStop(.68,fill);g.addColorStop(.91,'#5B4B62');g.addColorStop(1,'#211B2B');
         if (hasSphereEffects) ctx.save();
-        if (hasSphereEffects) { ctx.shadowColor = '#090513';ctx.shadowBlur = 10;ctx.shadowOffsetY = 4; }
+        if (hasSphereEffects) { ctx.shadowColor = '#08050d';ctx.shadowBlur = 12;ctx.shadowOffsetY = 3; }
         ctx.beginPath();ctx.arc(b.x,b.y,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
         if (hasSphereEffects && typeof ctx.stroke === 'function') {
           ctx.shadowColor = 'transparent';ctx.shadowBlur = 0;ctx.shadowOffsetY = 0;
-          ctx.lineWidth = 1.3;ctx.strokeStyle = '#fff9';ctx.stroke();
-          ctx.beginPath();ctx.ellipse(hx,hy,r*.34,r*.16,light*.12,0,Math.PI*2);ctx.fillStyle = '#ffffffa8';ctx.fill();
+          ctx.lineWidth = 1;ctx.strokeStyle = '#ffffffa6';ctx.stroke();
+          ctx.beginPath();ctx.ellipse(hx,hy,r*.23,r*.105,light*.12,0,Math.PI*2);ctx.fillStyle = '#ffffffb0';ctx.fill();
         }
         ctx.fillStyle='#292235';ctx.textAlign='center';ctx.textBaseline='middle';
         ctx.font='700 ' + Math.round(r*.78) + 'px system-ui';
