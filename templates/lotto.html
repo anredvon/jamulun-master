@@ -33,7 +33,7 @@
       <div class="lotto-stage-progress" id="lotto-stage-progress" hidden aria-live="polite">
         <span>행운의 번호를 추첨하고 있어요</span>
         <div class="lotto-progress-track"><i id="lotto-progress-fill"></i></div>
-        <div class="lotto-stage-numbers" id="lotto-stage-numbers" aria-label="추첨 중 등장한 번호" aria-live="off"></div>
+        <div class="lotto-stage-numbers" id="lotto-stage-numbers" role="list" aria-label="추첨 중 등장한 번호" aria-live="off"></div>
       </div>
       <div class="lotto-stage-stars" id="lotto-stage-stars" aria-hidden="true"></div>
     </section>
@@ -43,6 +43,7 @@
         <div><span>YOUR LUCKY NUMBERS</span><h2 id="lotto-results-title">내 로또번호</h2></div>
         <span id="lotto-draw-date">추첨일 확인 중…</span>
       </div>
+      <p class="lotto-schedule-note">회차와 추첨일은 동행복권의 정기 일정 기준이며, 비정기 변경은 반영이 늦을 수 있어요.</p>
       <div id="lotto-message" class="lotto-notice" role="status" aria-live="polite">회차 정보를 불러오는 중입니다.</div>
       <div id="lotto-results-list" class="lotto-result-list" aria-live="polite"></div>
       <button id="lotto-draw-button" class="lotto-primary" type="button" disabled>추첨 정보를 확인하고 있어요…</button>

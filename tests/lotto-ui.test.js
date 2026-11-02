@@ -237,6 +237,29 @@ test('reduced motion reveals the committed result without starting Canvas animat
 
   assert.equal(app.requestedFrames, 0);
   assert.equal(app.elements.get('lotto-stage-numbers').children.length, 6);
+  assert.equal(app.elements.get('lotto-stage-numbers').attributes.role, 'list');
+});
+
+test('hiding the page or scrolling away finishes the staged reveal immediately', async () => {
+  for (const makeUnavailable of [
+    (app) => app.setHidden(true),
+    (app) => app.setStageVisible(false)
+  ]) {
+    const app = boot(async (url) => {
+      if (url === '/api/lotto/status') return jsonResponse(status());
+      if (url === '/api/lotto/draw') return jsonResponse({ ok: true, ...DRAW });
+      throw new Error('Unexpected request: ' + url);
+    }, { reducedMotion: false, manualTimers: true });
+    await settleInitialLoad();
+    const drawPromise = app.elements.get('lotto-draw-button').handlers.click();
+    await settleInitialLoad();
+    makeUnavailable(app);
+    await app.flushTimer();
+
+    assert.equal(app.elements.get('lotto-stage-numbers').children.length, 6);
+    while (app.pendingTimers) await app.flushTimer();
+    await drawPromise;
+  }
 });
 
 test('the Canvas loop pauses when offscreen or hidden and resumes when visible', async () => {
@@ -286,6 +309,12 @@ test('result numbers are announced as a labeled semantic list', async () => {
   const template = fs.readFileSync(path.join(__dirname, '../templates/lotto.html'), 'utf8');
   assert.match(template, /id="lotto-message"[^>]*role="status"[^>]*aria-live="polite"/);
   assert.match(template, /aria-label="추첨 중 등장한 번호"[^>]*aria-live="off"/);
+});
+
+test('schedule labels disclose that the date follows the regular schedule', () => {
+  const template = fs.readFileSync(path.join(__dirname, '../templates/lotto.html'), 'utf8');
+  assert.match(template, /정기 일정 기준/);
+  assert.match(template, /비정기 변경은 반영이 늦을 수/);
 });
 
 test('mobile controls have touch-sized targets and visible keyboard focus', () => {

@@ -10,6 +10,7 @@
   const $stage = $('lotto-stage-intro');
   const $progress = $('lotto-stage-progress');
   const $stageNumbers = $('lotto-stage-numbers');
+  $stageNumbers.setAttribute('role', 'list');
   const $progressFill = $('lotto-progress-fill');
   const $stars = $('lotto-stage-stars');
   const state = { draws: [], round: null, date: null, remaining: 3, busy: false, speed: 0.2 };
@@ -167,19 +168,28 @@
     $stageNumbers.replaceChildren();
     $progressFill.style.width = '0%';
 
-    if (!reducedMotion) {
+    if (!reducedMotion && canvasAnimation.isVisible()) {
       canvasAnimation.start();
+      let continueReveal = true;
       try {
-        await sleep(1250);
+        continueReveal = await sleepWhileVisible(1250);
         for (let i = 0; i < draw.numbers.length; i += 1) {
+          if (!continueReveal || !canvasAnimation.isVisible()) break;
           $stageNumbers.append(ballNode(draw.numbers[i]));
           $progressFill.style.width = ((i + 1) / 6 * 92) + '%';
-          await sleep(410);
+          continueReveal = await sleepWhileVisible(410);
         }
-        popStars();
-        await sleep(900);
+        if (continueReveal && canvasAnimation.isVisible()) {
+          popStars();
+          continueReveal = await sleepWhileVisible(900);
+        }
       } finally {
         canvasAnimation.stop();
+      }
+      if (!continueReveal || !canvasAnimation.isVisible()) {
+        $stars.replaceChildren();
+        draw.numbers.slice($stageNumbers.children.length)
+          .forEach((n) => $stageNumbers.append(ballNode(n)));
       }
     } else {
       draw.numbers.forEach((n) => $stageNumbers.append(ballNode(n)));
@@ -192,6 +202,15 @@
     $stage.hidden = false;
     const card = [...$list.querySelectorAll('.lotto-result-card')].at(-1);
     if (card) card.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'center' });
+  }
+
+  async function sleepWhileVisible(ms) {
+    const end = Date.now() + ms;
+    while (Date.now() < end) {
+      if (!canvasAnimation.isVisible()) return false;
+      await sleep(Math.min(50, end - Date.now()));
+    }
+    return canvasAnimation.isVisible();
   }
 
   // Draw result is committed on the server *before* visual animation.
@@ -345,7 +364,8 @@
     let active = false;
     let stageVisible = true;
     const fills = ['#F9D064','#88C5EF','#F08A9F','#C8CFDC','#A5D997'];
-    const canAnimate = () => active && !reducedMotion && !document.hidden && stageVisible;
+    const isVisible = () => !document.hidden && stageVisible;
+    const canAnimate = () => active && !reducedMotion && isVisible();
     const cancelFrame = () => {
       if (frameId !== null) {
         cancelAnimationFrame(frameId);
@@ -393,7 +413,8 @@
     }
     return {
       start() { active = true; sync(); },
-      stop() { active = false; sync(); }
+      stop() { active = false; sync(); },
+      isVisible
     };
   }
 
