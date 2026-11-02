@@ -350,9 +350,9 @@
 
   function createCanvasAnimation() {
     const canvas = $('lotto-canvas');
-    if (!canvas || !canvas.getContext) return { start() {}, stop() {} };
+    if (!canvas || !canvas.getContext) return { start() {}, stop() {}, isVisible() { return false; } };
     const ctx = canvas.getContext('2d');
-    if (!ctx) return { start() {}, stop() {} };
+    if (!ctx) return { start() {}, stop() {}, isVisible() { return false; } };
     const W = canvas.width, mid = W / 2;
     const balls = Array.from({ length: 45 }, (_, i) => {
       const angle = i * 2.39996;

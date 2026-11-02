@@ -75,7 +75,7 @@ function boot(fetchHandler, options = {}) {
   let cancelledFrames = 0;
   elements.get('lotto-canvas').width = 600;
   elements.get('lotto-canvas').height = 600;
-  elements.get('lotto-canvas').getContext = () => canvasContext;
+  elements.get('lotto-canvas').getContext = options.noCanvasContext ? null : () => canvasContext;
   const document = {
     hidden: false,
     body: { style: {} },
@@ -260,6 +260,20 @@ test('hiding the page or scrolling away finishes the staged reveal immediately',
     while (app.pendingTimers) await app.flushTimer();
     await drawPromise;
   }
+});
+
+test('missing Canvas context reveals the committed result without leaving progress active', async () => {
+  const app = boot(async (url) => {
+    if (url === '/api/lotto/status') return jsonResponse(status());
+    if (url === '/api/lotto/draw') return jsonResponse({ ok: true, ...DRAW });
+    throw new Error('Unexpected request: ' + url);
+  }, { reducedMotion: false, noCanvasContext: true });
+  await settleInitialLoad();
+  await app.elements.get('lotto-draw-button').handlers.click();
+
+  assert.equal(app.elements.get('lotto-stage-numbers').children.length, 6);
+  assert.equal(app.elements.get('lotto-stage-progress').hidden, true);
+  assert.equal(app.elements.get('lotto-stage-intro').hidden, false);
 });
 
 test('the Canvas loop pauses when offscreen or hidden and resumes when visible', async () => {
