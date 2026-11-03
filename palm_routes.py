@@ -1,15 +1,22 @@
 """Routes for the on-device palm entertainment flow."""
 
-import json
-from pathlib import Path
+from flask import Blueprint, current_app, render_template
+from sqlalchemy.exc import SQLAlchemyError
 
-from flask import Blueprint, render_template
+from models import PalmReadingRule
 
 
 palm_bp = Blueprint("palm", __name__)
-PALM_COMBINATIONS = json.loads((Path(__file__).parent / "static/data/palm-combinations.json").read_text(encoding="utf-8"))
 
 
 @palm_bp.route("/palm")
 def palm_page():
-    return render_template("palm.html", palm_combinations=PALM_COMBINATIONS)
+    rules = []
+    try:
+        rules = [rule.to_dict() for rule in PalmReadingRule.query.join(PalmReadingRule.source)
+                 .filter(PalmReadingRule.is_active.is_(True), PalmReadingRule.review_status == "approved")
+                 .order_by(PalmReadingRule.line_type, PalmReadingRule.rule_key).all()]
+    except SQLAlchemyError:
+        # New content tables may not yet be present on an existing local install.
+        current_app.logger.info("Palm reading tables are not initialized; serving with no active reading rules.")
+    return render_template("palm.html", palm_reading_rules=rules)

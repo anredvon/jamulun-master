@@ -1,0 +1,36 @@
+[
+  {
+    "source_key": "key-to-palmistry-1902",
+    "title": "Key to Palmistry",
+    "author": "Louis Williams",
+    "publication_year": 1902,
+    "language": "en",
+    "source_url": "https://www.gutenberg.org/files/79203/79203-h/79203-h.htm",
+    "catalog_url": "https://www.loc.gov/item/02009990/",
+    "rights_status": "Library of Congress marks its digitized copy public domain; Project Gutenberg marks its text public domain in the USA. Verify Korean and other target-market law before commercial reuse.",
+    "tradition": "early twentieth-century English-language popular palmistry",
+    "editorial_note": "Historical source. Do not present claims about health, lifespan, illness, death, or guaranteed character/future outcomes as factual. Use only paraphrased tradition notes and observable line descriptions."
+  },
+  {
+    "source_key": "indian-palmistry-1895",
+    "title": "Indian Palmistry",
+    "author": "J. B. Dale",
+    "publication_year": 1895,
+    "language": "en",
+    "source_url": "https://www.gutenberg.org/ebooks/52523",
+    "rights_status": "Project Gutenberg marks this text public domain in the USA and asks users elsewhere to check local law. Verify Korean and other target-market law before commercial reuse.",
+    "tradition": "late Victorian British publication presented as Indian palmistry; not treated as representative of all Indian traditions",
+    "editorial_note": "Historical text with fatalistic and medical claims. Use only for comparing terminology and line placement; exclude medical, lifespan, poverty, death, and certain-future claims."
+  },
+  {
+    "source_key": "palmistry-for-all-1916",
+    "title": "Palmistry for All",
+    "author": "Cheiro (William John Warner)",
+    "publication_year": 1916,
+    "language": "en",
+    "source_url": "https://www.gutenberg.org/ebooks/20480",
+    "rights_status": "Project Gutenberg marks this text public domain in the USA and directs users outside the USA to check local law. Verify Korean and other target-market law before commercial reuse.",
+    "tradition": "early twentieth-century English-language popular palmistry",
+    "editorial_note": "Historical source. Exclude health, illness, lifespan, death, criminality, relationship certainty, and guaranteed career/wealth predictions."
+  }
+]

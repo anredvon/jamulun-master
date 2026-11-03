@@ -186,3 +186,72 @@ class TestResult(db.Model):
             "result_title": self.result_title,
             "result_desc":  self.result_desc,
         }
+
+
+class PalmSource(db.Model):
+    """Bibliographic, rights, and editorial metadata for palmistry references."""
+
+    __tablename__ = "palm_sources"
+
+    id = db.Column(db.Integer, primary_key=True)
+    source_key = db.Column(db.String(100), nullable=False, unique=True, index=True)
+    title = db.Column(db.String(255), nullable=False)
+    author = db.Column(db.String(255), nullable=False)
+    publication_year = db.Column(db.Integer, nullable=True)
+    language = db.Column(db.String(12), nullable=False, default="en")
+    source_url = db.Column(db.String(1024), nullable=False)
+    catalog_url = db.Column(db.String(1024), nullable=True)
+    rights_status = db.Column(db.Text, nullable=False)
+    tradition = db.Column(db.String(255), nullable=False)
+    editorial_note = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    rules = db.relationship("PalmReadingRule", backref="source", lazy=True)
+
+
+class PalmReadingRule(db.Model):
+    """A paraphrased, source-located traditional interpretation rule."""
+
+    __tablename__ = "palm_reading_rules"
+
+    id = db.Column(db.Integer, primary_key=True)
+    rule_key = db.Column(db.String(120), nullable=False, unique=True, index=True)
+    line_type = db.Column(db.String(24), nullable=False, index=True)
+    feature_code = db.Column(db.String(48), nullable=False, index=True)
+    tradition = db.Column(db.String(255), nullable=False)
+    reading_title = db.Column(db.String(160), nullable=False)
+    reading_text = db.Column(db.Text, nullable=False)
+    reflection_prompt = db.Column(db.Text, nullable=False)
+    source_id = db.Column(db.Integer, db.ForeignKey("palm_sources.id"), nullable=False, index=True)
+    source_locator = db.Column(db.String(255), nullable=False)
+    source_note = db.Column(db.Text, nullable=False)
+    review_status = db.Column(db.String(24), nullable=False, default="draft", index=True)
+    version = db.Column(db.Integer, nullable=False, default=1)
+    is_active = db.Column(db.Boolean, nullable=False, default=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        db.Index("ix_palm_rule_line_feature_active", "line_type", "feature_code", "is_active"),
+    )
+
+    def to_dict(self):
+        return {
+            "rule_key": self.rule_key,
+            "line_type": self.line_type,
+            "feature_code": self.feature_code,
+            "tradition": self.tradition,
+            "reading_title": self.reading_title,
+            "reading_text": self.reading_text,
+            "reflection_prompt": self.reflection_prompt,
+            "source": {
+                "title": self.source.title,
+                "author": self.source.author,
+                "publication_year": self.source.publication_year,
+                "url": self.source.source_url,
+                "locator": self.source_locator,
+                "rights_status": self.source.rights_status,
+            },
+            "version": self.version,
+        }

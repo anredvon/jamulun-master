@@ -211,8 +211,9 @@ class SmokeTest(unittest.TestCase):
 
         self.assertIn(".palm-preview-card.is-analysis-complete .palm-scan-line", css)
         self.assertRegex(css, r"\.palm-preview-card\.is-analysis-complete \.palm-scan-line\s*\{[^}]*animation:\s*none")
-        self.assertIn("function finishPreviewScan()", js)
-        self.assertIn("previewCard.classList.remove('is-analysis-complete')", js)
+        self.assertIn("previewCard.classList.add('is-analysis-complete')", js)
+        self.assertIn("previewCard.classList.remove('is-hidden', 'is-analysis-complete')", js)
+        self.assertIn("previewCard.classList.remove('is-scanning', 'is-analysis-complete')", js)
 
     def test_investment_quote_page_is_reachable(self):
         response = self.client.get("/investment-quotes")
