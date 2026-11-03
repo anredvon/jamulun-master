@@ -1,6 +1,6 @@
 # Jaemulun Tarot Final Manifest
 
-24 production cards + 1 card back. Production PNG: 1024×1280 RGBA.
+24 production cards + 1 card back. Production PNGs use a unified 1024×1280 portrait canvas (RGB or RGBA as required by the source artwork).
 
 - 01_temperance: **절제 / TEMPERANCE** — source `4148B2CA-C070-4E69-8AB1-FEC74794B626.jpeg` (selected original)
 - 02_expense: **지출 / EXPENSE** — source `B056E391-8E43-4353-B12A-68D8A891F9DE(1).jpeg` (selected original)
@@ -24,5 +24,5 @@
 - 20_focus: **집중 / FOCUS** — source `47C6E9B6-6CB5-4E52-BD50-E9A5D784477E.jpeg` (selected original)
 - 21_luck: **행운 / LUCK** — source `23D633D1-3B71-4936-9F5A-163FE5FF58E0.jpeg` (selected original)
 - 22_timing: **타이밍 / TIMING** — source `별빛_시계방의_타이밍_카드.png` (selected original)
-- 23_saving: **저축 / SAVING** — source `generated deck sheet` (new)
-- 24_growth: **성장 / GROWTH** — source `generated deck sheet` (new)
+- 23_saving: **저축 / SAVING** — source `generated deck sheet`; refreshed with detailed antique-gold framing and painterly illustration to align with the existing deck.
+- 24_growth: **성장 / GROWTH** — source `generated deck sheet`; refreshed with detailed antique-gold framing and painterly illustration to align with the existing deck.
