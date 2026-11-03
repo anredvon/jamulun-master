@@ -25,7 +25,7 @@
 .quote-attribution{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:9px;border-top:1px solid #eee9f6;color:#64567a;font-size:12px;line-height:1.4;font-weight:500;}
 .quote-attribution a{display:inline-flex;align-items:center;gap:4px;min-height:34px;color:#7051ca;font-size:11px;line-height:1.4;font-weight:500;text-decoration:none;white-space:nowrap;}
 .quote-source-title{display:block;margin-top:0;color:#9690a0;font-size:10px;line-height:1.35;font-weight:400;}
-.horoscope-card{padding:17px 18px 15px;border-color:#ebe4fa;background:linear-gradient(145deg,#f8f5ff,#fff 76%);box-shadow:0 7px 20px rgba(68,45,131,.05);}
+.horoscope-card{padding:22px 20px 19px;border-color:#ebe4fa;background:linear-gradient(145deg,#f8f5ff,#fff 76%);box-shadow:0 7px 20px rgba(68,45,131,.05);}
 .horoscope-heading-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .horoscope-mark svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round;}
 .zodiac-select-trigger{display:inline-flex;align-items:center;gap:6px;min-height:42px;max-width:150px;padding:5px 10px;border:1px solid #e8e0fb;border-radius:14px;background:#f7f3ff;color:#573eae;font-family:inherit;font-size:12px;font-weight:500;line-height:1.2;white-space:nowrap;cursor:pointer;}
@@ -33,8 +33,8 @@
 .selected-zodiac-icon{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;color:#7254cb;}
 .selected-zodiac-icon svg{width:100%;height:100%;overflow:visible;fill:#fff;stroke:currentColor;stroke-width:1.35;stroke-linecap:round;}
 .select-chevron{width:16px;height:16px;flex:0 0 16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.horoscope-copy{min-height:50px;margin:13px 0 8px;color:#352c45;font-size:15px;line-height:1.58;font-weight:400;letter-spacing:-.025em;}
-.horoscope-source{margin:0;padding-top:9px;border-top:1px solid #eee9f6;color:#958da0;font-size:10px;line-height:1.4;font-weight:400;}
+.horoscope-copy{min-height:64px;margin:16px 0 12px;color:#352c45;font-size:15px;line-height:1.62;font-weight:400;letter-spacing:-.025em;}
+.horoscope-source{margin:0;padding-top:12px;border-top:1px solid #eee9f6;color:#958da0;font-size:10px;line-height:1.4;font-weight:400;}
 .horoscope-source span{padding:0 3px;color:#b7aec6;}
 
 .zodiac-sheet{position:fixed;inset:0;z-index:1400;display:flex;align-items:flex-end;justify-content:center;padding:12px 10px calc(10px + env(safe-area-inset-bottom));}
@@ -56,6 +56,6 @@
 .zodiac-option-dates{color:#9b93a7;font-size:9px;line-height:1.25;font-weight:400;}
 body.zodiac-sheet-open{overflow:hidden;}
 @keyframes zodiac-sheet-rise{from{transform:translateY(18px);opacity:.75}to{transform:translateY(0);opacity:1}}
-@media(max-height:740px){.today-shell{padding-top:calc(6px + env(safe-area-inset-top));}.today-shell .app-header{padding-bottom:8px;}.today-intro{margin-top:12px}.today-intro-kicker{margin-bottom:7px;padding:6px 12px}.today-intro h1{font-size:23px}.today-intro-copy{margin-top:5px;font-size:12px}.today-content{gap:9px;margin-top:12px}.quote-card{padding:16px 18px 14px;}.horoscope-card{padding-top:13px;padding-bottom:11px;}.quote-card blockquote{margin:12px 0 11px;font-size:18px;line-height:1.5}.horoscope-copy{min-height:42px;margin-top:9px;font-size:14px;}}
+@media(max-height:740px){.today-shell{padding-top:calc(6px + env(safe-area-inset-top));}.today-shell .app-header{padding-bottom:8px;}.today-intro{margin-top:12px}.today-intro-kicker{margin-bottom:7px;padding:6px 12px}.today-intro h1{font-size:23px}.today-intro-copy{margin-top:5px;font-size:12px}.today-content{gap:9px;margin-top:12px}.quote-card{padding:16px 18px 14px;}.horoscope-card{padding-top:16px;padding-bottom:14px;}.quote-card blockquote{margin:12px 0 11px;font-size:18px;line-height:1.5}.horoscope-copy{min-height:48px;margin:11px 0 10px;font-size:14px;}.horoscope-source{padding-top:10px;}}
 @media(max-width:360px){.quote-card,.horoscope-card{padding-left:14px;padding-right:14px;}.today-heading-copy h1,.today-heading-copy h2{font-size:15px}.zodiac-select-trigger{max-width:132px;padding:4px 7px;font-size:11px}.horoscope-copy{font-size:14px}.zodiac-sheet-panel{padding-left:13px;padding-right:13px}.zodiac-option{min-height:88px}}
 @media(prefers-reduced-motion:reduce){.zodiac-sheet-panel,.zodiac-option{animation:none;transition:none}}
