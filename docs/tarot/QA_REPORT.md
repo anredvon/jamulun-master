@@ -10,5 +10,5 @@ Overall automated QA: PASS
 
 Visual preflight notes:
 - 22 selected originals preserve the complete card composition; no destructive center-crop was used.
-- Saving and Growth were refreshed with detailed antique-gold frames and painterly illustrations; the title text and 4:5 portrait canvas were visually reviewed. The card back remains a newly produced asset.
+- Saving and Growth were refreshed to match the deck's complete layout: detailed upper illustration, title ribbon, meaning, and daily-advice panels. The Korean copy, title text, and 4:5 portrait canvas were visually reviewed. The card back remains a newly produced asset.
 - The legacy cards intentionally retain their original illustration/text detail, so illustration density varies somewhat across the 24-card set.

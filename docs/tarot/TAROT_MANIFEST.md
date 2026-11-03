@@ -24,5 +24,5 @@
 - 20_focus: **집중 / FOCUS** — source `47C6E9B6-6CB5-4E52-BD50-E9A5D784477E.jpeg` (selected original)
 - 21_luck: **행운 / LUCK** — source `23D633D1-3B71-4936-9F5A-163FE5FF58E0.jpeg` (selected original)
 - 22_timing: **타이밍 / TIMING** — source `별빛_시계방의_타이밍_카드.png` (selected original)
-- 23_saving: **저축 / SAVING** — source `generated deck sheet`; refreshed with detailed antique-gold framing and painterly illustration to align with the existing deck.
-- 24_growth: **성장 / GROWTH** — source `generated deck sheet`; refreshed with detailed antique-gold framing and painterly illustration to align with the existing deck.
+- 23_saving: **저축 / SAVING** — refreshed to match the complete deck layout, including the meaning and daily-advice panels.
+- 24_growth: **성장 / GROWTH** — refreshed to match the complete deck layout, including the meaning and daily-advice panels.
