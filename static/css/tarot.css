@@ -30,3 +30,16 @@
 .collection-detail-frame.art-frame--narrow{aspect-ratio:5/8}
 .collection-detail-frame.art-frame--wide{aspect-ratio:3/4}
 .collection-detail-frame img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* The source files include different amounts of paper around the printed card.
+   Crop that baked-in canvas inside the existing rounded frame, without editing art. */
+.tarot-card-back img{transform:scaleX(1.18)}
+.tarot-art-image,
+.collection-card-frame img,
+.collection-detail-frame img{transform:scaleX(1.16)}
+.tarot-reveal-card.art-frame--narrow .tarot-art-image,
+.tarot-reveal-card.art-frame--wide .tarot-art-image,
+.collection-card-frame.art-frame--narrow img,
+.collection-card-frame.art-frame--wide img,
+.collection-detail-frame.art-frame--narrow img,
+.collection-detail-frame.art-frame--wide img{transform:none}
