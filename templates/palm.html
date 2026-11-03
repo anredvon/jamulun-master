@@ -8,11 +8,18 @@
   <header class="palm-hero">
     <span class="hero-badge"><span class="dot"></span>PALM FLOW · FOR FUN</span>
     <h1>내 손바닥 선을<br><span class="grad">전통 풀이로 살펴봐요</span></h1>
-    <p>사진에서 보이는 감정선·두뇌선·운명선을<br>일상 속 모습에 빗대어 가볍게 풀어봐요.</p>
+    <p>사진에서 보이는 감정선·두뇌선·생명선·운명선을<br>전통 손금 자료를 바탕으로 가볍게 살펴봐요.</p>
   </header>
 
   <section class="palm-step-card" id="palm-capture">
-    <div class="palm-step-heading"><span>01</span><div><strong>손바닥 사진을 준비해요</strong><p>손바닥을 펴고 손목까지 화면 안에 담아주세요.</p></div></div>
+    <div class="palm-step-heading"><span>01</span><div><strong>왼손과 오른손을 따로 살펴봐요</strong><p>손바닥을 펴고 손가락 끝부터 손목까지 담아주세요.</p></div></div>
+    <div class="palm-selectors palm-capture-selectors">
+      <label for="palm-side">지금 찍을 손</label>
+      <select id="palm-side"><option value="left">왼손</option><option value="right">오른손</option></select>
+      <label for="palm-dominant">주로 쓰는 손</label>
+      <select id="palm-dominant"><option value="right">오른손</option><option value="left">왼손</option></select>
+    </div>
+    <div class="palm-capture-state" id="palm-capture-state" aria-live="polite">왼손 사진을 아직 살펴보지 않았어요.</div>
     <input class="palm-file-input" id="palm-file-input" type="file" accept="image/*" capture="environment" aria-label="손바닥 사진 찍기 또는 선택">
     <div class="palm-actions">
       <button type="button" class="cta cta-primary" id="palm-camera-button">손 사진 찍기</button>
@@ -24,27 +31,20 @@
   <section class="palm-preview-card is-hidden" id="palm-preview-card" aria-live="polite">
     <div class="palm-step-heading palm-scan-heading"><span>02</span><div><strong id="palm-status">손바닥 선을 살펴보고 있어요</strong><p>잠시만 기다려주세요.</p></div></div>
     <div class="palm-photo-frame"><img id="palm-preview" alt="선택한 손바닥 사진 미리보기"><canvas id="palm-overlay" aria-hidden="true"></canvas><span class="palm-scan-line" aria-hidden="true"></span>
-      <div class="palm-scan-center" id="palm-scan-center" role="status"><span class="palm-scan-orbit" aria-hidden="true">✦</span><strong>손바닥 선을 읽고 있어요</strong><small>사진은 이 기기에서만 처리해요</small></div>
+      <div class="palm-scan-center" id="palm-scan-center" role="status"><span class="palm-scan-orbit" aria-hidden="true">✦</span><strong>손 모양과 사진 상태를 확인해요</strong><small>사진은 이 기기에서만 처리해요</small></div>
       <button type="button" class="palm-complete-notice is-hidden" id="palm-complete-notice"><span class="palm-complete-icon" aria-hidden="true">✓</span><span><strong>분석이 끝났어요</strong><small>눌러서 손금풀이 보기</small></span><span class="palm-complete-arrow" aria-hidden="true">›</span></button>
     </div>
     <div class="palm-actions"><button type="button" class="cta cta-secondary" id="palm-retake-button">다른 사진 선택</button></div>
   </section>
 
   <section class="palm-result-card is-hidden" id="palm-result" aria-live="polite" tabindex="-1">
-    <div class="palm-result-kicker">내 손금 한눈에 보기</div>
-    <h2 class="palm-result-heading" id="palm-result-heading">오늘의 손금 풀이</h2>
+    <div class="palm-result-kicker">전통 손금 자료를 바탕으로</div>
+    <h2 class="palm-result-heading" id="palm-result-heading">왼손과 오른손 풀이</h2>
     <p class="palm-result-disclaimer" id="palm-result-disclaimer">사진에서 선 모양을 간단히 살펴본 전통 손금 이야기예요. 과학적 진단이나 재물·투자 예측이 아니니 가볍게 참고해주세요.</p>
-    <div class="palm-result-copy is-hidden" id="palm-result-copy">
-      <span class="palm-result-types" id="palm-result-types"></span>
-      <h3 id="palm-result-title"></h3>
-      <p class="palm-result-intro">사진에서 보이는 세 선을 전통 풀이에 따라 일상 속 모습으로 풀어봤어요.</p>
-      <div class="palm-line-readings" id="palm-line-readings"></div>
-      <div class="palm-today-tip"><strong>오늘의 작은 생각</strong><p id="palm-result-one-line"></p></div>
-      <p class="palm-scope-note">손금 풀이는 전통 이야기로, 가볍게 참고해요. 재물선 등 다른 선은 판별하지 않아요.</p>
-    </div>
+    <div class="palm-result-copy is-hidden" id="palm-result-copy"></div>
     <button type="button" class="cta cta-secondary" id="palm-again-button">다시 보기</button>
     <a href="{{ url_for('home_page') }}" class="cta cta-primary">홈으로</a>
   </section>
 </main>{% include '_bottom_nav.html' %}</div>
 {% endblock %}
-{% block scripts %}<script type="application/json" id="palm-combo-data">{{ palm_combinations | tojson }}</script><script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/palm-analysis.js') }}"></script><script src="{{ url_for('static', filename='js/palm-combinations.js') }}"></script><script src="{{ url_for('static', filename='js/palm-copy.js') }}"></script><script src="{{ url_for('static', filename='js/palm.js') }}"></script>{% endblock %}
+{% block scripts %}<script type="application/json" id="palm-reading-rules">{{ palm_reading_rules | tojson }}</script><script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/palm-analysis.js', v='20261103d') }}"></script><script src="{{ url_for('static', filename='js/palm-hand-detector.js') }}"></script><script src="{{ url_for('static', filename='js/palm.js', v='20261103d') }}"></script>{% endblock %}
