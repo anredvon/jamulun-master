@@ -253,6 +253,31 @@ class SmokeTest(unittest.TestCase):
         html = self.client.get("/intro/future").get_data(as_text=True)
         self.assertIn("재미와 생활 점검을 위한", html)
 
+    def test_lotto_result_card_uses_soft_light_without_pinpoint_stars(self):
+        css = (Path(__file__).resolve().parents[1] / "static" / "css" / "lotto.css").read_text()
+        result_background = re.search(r"\.lotto-result-card:before\{([^{}]*)\}", css)
+
+        self.assertIsNotNone(result_background)
+        self.assertNotRegex(result_background.group(1), r"radial-gradient\(\s*1(?:\.5)?px")
+        self.assertIn(".lotto-entry:before,.lotto-theater:before{", css)
+
+    def test_result_score_is_answer_reference_and_leads_with_result_type(self):
+        with app.test_request_context():
+            html = render_template(
+                "result.html",
+                ts=SimpleNamespace(id=18),
+                result=SimpleNamespace(final_score=84, result_title="기초를 차곡차곡 쌓는 중", result_desc="이번 달 목표를 한 줄로 적어보세요."),
+                result_tags=[],
+                test_type="future",
+                test_label="돈 관리 습관",
+            )
+
+        self.assertIn('aria-label="답변 참고 점수"', html)
+        self.assertIn("<strong>84</strong><span>점</span>", html)
+        self.assertNotIn("<span>/100</span>", html)
+        self.assertLess(html.index("money-score-type"), html.index("money-score-value"))
+        self.assertIn("선택한 답변을 100점 기준으로 환산한 참고 결과예요.", html)
+
     def test_root_stays_the_intro_page_and_home_is_the_activity_page(self):
         root_html = self.client.get("/").get_data(as_text=True)
         home_html = self.client.get("/home").get_data(as_text=True)
