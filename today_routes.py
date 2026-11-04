@@ -122,6 +122,27 @@ ZODIAC_SIGNS = [
     ]},
 ]
 
+# Short, practical prompts distinguish the sign cards from generic predictions.
+ZODIAC_ACTIONS = {
+    "aries": "장바구니에 담아둔 물건 하나를 저녁에 다시 살펴보세요.",
+    "taurus": "자주 쓰는 물건과 이미 가진 것을 먼저 확인해보세요.",
+    "gemini": "관심 있는 선택지 두 개만 가격과 조건을 비교해보세요.",
+    "cancer": "가까운 사람과의 약속에 쓸 금액을 미리 정해두세요.",
+    "leo": "오늘의 작은 보상에 쓸 수 있는 한도를 먼저 정해보세요.",
+    "virgo": "이번 주 자동 결제 내역을 확인하고 하나만 정리해보세요.",
+    "libra": "함께 쓰는 비용과 각자 부담할 금액을 먼저 맞춰보세요.",
+    "scorpio": "미뤄둔 결제나 청구서 한 건을 확인해보세요.",
+    "sagittarius": "이번 달 여유 금액을 확인한 뒤 경험 하나를 골라보세요.",
+    "capricorn": "이번 주 고정 지출을 살펴보고 조정할 항목을 하나 골라보세요.",
+    "aquarius": "새로운 서비스는 무료 기능부터 써보고 결정해보세요.",
+    "pisces": "결제 전 잠깐 쉬면서 지금 꼭 필요한 지출인지 살펴보세요.",
+}
+
+LUCKY_ITEMS = [
+    "보라색 메모지", "텀블러", "작은 파우치", "체크리스트", "장바구니 목록", "책갈피",
+    "정리용 봉투", "연필", "달력", "동전 지갑", "물병", "영수증 보관함",
+]
+
 
 @today_bp.route("/today")
 def today_page():
@@ -134,9 +155,18 @@ def today_page():
     day_index = today.isoweekday() - 1
     horoscope_data = {
         "date": today.isoformat(),
+        "date_label": f"{today.month}월 {today.day}일",
         "signs": [
-            {"id": sign["id"], "name": sign["name"], "english": sign["english"], "dates": sign["dates"], "fortune": sign["fortunes"][day_index]}
-            for sign in ZODIAC_SIGNS
+            {
+                "id": sign["id"],
+                "name": sign["name"],
+                "english": sign["english"],
+                "dates": sign["dates"],
+                "fortune": sign["fortunes"][day_index],
+                "action": ZODIAC_ACTIONS[sign["id"]],
+                "lucky_item": LUCKY_ITEMS[(today.toordinal() + index) % len(LUCKY_ITEMS)],
+            }
+            for index, sign in enumerate(ZODIAC_SIGNS)
         ],
     }
     return render_template(

@@ -7,6 +7,11 @@
   const icon = document.getElementById('selected-zodiac-icon');
   const copy = document.getElementById('horoscope-copy');
   if (!payloadNode || !trigger || !sheet || !grid || !label || !icon || !copy) return;
+  const action = document.getElementById('horoscope-action');
+  const luckyItem = document.getElementById('horoscope-lucky-item');
+  const overviewTrigger = document.getElementById('zodiac-overview-trigger');
+  const overview = document.getElementById('zodiac-overview');
+  const overviewList = document.getElementById('zodiac-overview-list');
 
   const STORAGE_KEY = 'moneyflow.today.zodiac.v1';
   const starPatterns = {
@@ -29,6 +34,7 @@
   const signs = Array.isArray(data.signs) ? data.signs : [];
   const byId = new Map(signs.map((sign) => [sign.id, sign]));
   let previouslyFocused = null;
+  let overviewPreviouslyFocused = null;
 
   function makePattern(signId) {
     const pattern = starPatterns[signId];
@@ -60,7 +66,9 @@
     label.textContent = sign.name;
     icon.replaceChildren(makePattern(sign.id));
     copy.textContent = sign.fortune;
-    grid.querySelectorAll('[data-sign-id]').forEach((button) => {
+    if (action) action.textContent = sign.action || '오늘의 소비와 지출을 한 번 가볍게 살펴보세요.';
+    if (luckyItem) luckyItem.textContent = sign.lucky_item || '오늘의 작은 메모';
+    document.querySelectorAll('[data-sign-id]').forEach((button) => {
       const selected = button.dataset.signId === sign.id;
       button.setAttribute('aria-pressed', String(selected));
       button.classList.toggle('is-selected', selected);
@@ -69,6 +77,10 @@
       try { window.localStorage.setItem(STORAGE_KEY, sign.id); } catch (_) { /* Private browsing may disable storage. */ }
     }
     closeSheet();
+    if (overview && !overview.classList.contains('is-hidden')) {
+      closeOverview(false);
+      trigger.focus();
+    }
   }
 
   signs.forEach((sign) => {
@@ -89,6 +101,40 @@
     button.append(patternWrap, name, dates);
     button.addEventListener('click', () => selectSign(sign.id));
     grid.append(button);
+
+    if (overviewList) {
+      const row = document.createElement('article');
+      row.className = 'zodiac-overview-item';
+      row.setAttribute('role', 'listitem');
+      const select = document.createElement('button');
+      select.className = 'zodiac-overview-select';
+      select.type = 'button';
+      select.dataset.signId = sign.id;
+      select.setAttribute('aria-pressed', 'false');
+      const patternWrap = document.createElement('span');
+      patternWrap.className = 'zodiac-overview-pattern';
+      patternWrap.append(makePattern(sign.id));
+      const details = document.createElement('span');
+      details.className = 'zodiac-overview-copy';
+      const identity = document.createElement('span');
+      identity.className = 'zodiac-overview-identity';
+      const name = document.createElement('strong');
+      name.textContent = sign.name;
+      const dates = document.createElement('small');
+      dates.textContent = sign.dates;
+      identity.append(name, dates);
+      const fortune = document.createElement('span');
+      fortune.className = 'zodiac-overview-fortune';
+      fortune.textContent = sign.fortune || '오늘의 흐름을 차분히 살펴보세요.';
+      const item = document.createElement('span');
+      item.className = 'zodiac-overview-lucky';
+      item.textContent = `행운 아이템 · ${sign.lucky_item || '오늘의 작은 메모'}`;
+      details.append(identity, fortune, item);
+      select.append(patternWrap, details);
+      select.addEventListener('click', () => selectSign(sign.id));
+      row.append(select);
+      overviewList.append(row);
+    }
   });
 
   function openSheet() {
@@ -105,13 +151,39 @@
     sheet.classList.add('is-hidden');
     sheet.setAttribute('aria-hidden', 'true');
     trigger.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('zodiac-sheet-open');
+    if (!overview || overview.classList.contains('is-hidden')) document.body.classList.remove('zodiac-sheet-open');
     previouslyFocused?.focus();
+  }
+
+  function openOverview() {
+    if (!overview || !overviewTrigger) return;
+    overviewPreviouslyFocused = document.activeElement;
+    overview.classList.remove('is-hidden');
+    overview.setAttribute('aria-hidden', 'false');
+    overviewTrigger.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('zodiac-sheet-open');
+    overviewList?.querySelector('.zodiac-overview-select')?.focus();
+  }
+
+  function closeOverview(restoreFocus = true) {
+    if (!overview || overview.classList.contains('is-hidden')) return;
+    overview.classList.add('is-hidden');
+    overview.setAttribute('aria-hidden', 'true');
+    overviewTrigger?.setAttribute('aria-expanded', 'false');
+    if (sheet.classList.contains('is-hidden')) document.body.classList.remove('zodiac-sheet-open');
+    if (restoreFocus) overviewPreviouslyFocused?.focus();
   }
 
   trigger.addEventListener('click', openSheet);
   sheet.querySelectorAll('[data-close-zodiac]').forEach((button) => button.addEventListener('click', closeSheet));
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSheet(); });
+  overviewTrigger?.addEventListener('click', openOverview);
+  overview?.querySelectorAll('[data-close-overview]').forEach((button) => button.addEventListener('click', () => closeOverview()));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeSheet();
+      closeOverview();
+    }
+  });
 
   let storedSign = '';
   try { storedSign = window.localStorage.getItem(STORAGE_KEY) || ''; } catch (_) { /* Use the unselected state. */ }
