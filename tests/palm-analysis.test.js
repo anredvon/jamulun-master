@@ -55,8 +55,8 @@ test('a hand with clear palm creases is accepted and returns only detected featu
   const photo = fixture();
   const result = inspectPalmPhoto(photo, photo.width, photo.height, photo.landmarks);
   assert.equal(result.status, 'usable');
-  assert.equal(result.lines.heart, 'clear_continuous');
-  assert.equal(result.lines.head, 'defined_continuous');
+  assert.match(result.lines.heart, /^h[1-4]$/);
+  assert.match(result.lines.head, /^d[1-4]$/);
   assert.equal(result.lines.fate, 'central_vertical_visible');
   assert.equal(typeof result.confidenceByLine.heart, 'number');
 });
@@ -65,7 +65,7 @@ test('a faint or absent line remains unknown when another palm crease is visible
   const photo = fixture(320, 320, { heart: true, head: false, fate: false });
   const result = inspectPalmPhoto(photo, photo.width, photo.height, photo.landmarks);
   assert.equal(result.status, 'usable');
-  assert.equal(result.lines.heart, 'clear_continuous');
+  assert.match(result.lines.heart, /^h[1-4]$/);
   assert.equal(result.lines.head, null);
   assert.equal(result.lines.fate, null);
 });
@@ -113,4 +113,14 @@ test('the result catalog has one complete record for every valid combination', (
 test('invalid line IDs are rejected instead of creating a fallback result', () => {
   assert.throws(() => comboId('h0', 'd1', 'f1'), /invalid/);
   assert.throws(() => comboId('h1', 'd1', null), /invalid/);
+});
+
+test('clear heart and head creases retain their measured shape classes for interpretation', () => {
+  const photo = fixture();
+  const result = inspectPalmPhoto(photo, photo.width, photo.height, photo.landmarks);
+
+  assert.match(result.lines.heart, /^h[1-4]$/);
+  assert.match(result.lines.head, /^d[1-4]$/);
+  assert.notEqual(result.lines.heart, 'clear_continuous');
+  assert.notEqual(result.lines.head, 'defined_continuous');
 });

@@ -153,8 +153,10 @@
     const life = pathContrast(data, width, height, map, (t) => [0.08 + 0.25 * Math.sin(Math.PI * t * 0.78), 0.79 - 0.64 * t]);
     const fate = searchVertical(data, width, height, map, 0.14, 0.83);
     const lines = {
-      heart: classifyHorizontal(heart, 'h') ? 'clear_continuous' : null,
-      head: classifyHorizontal(head, 'd') ? 'defined_continuous' : null,
+      // Keep the measured geometry class so the reading can describe the actual
+      // detected shape instead of giving every visible crease the same copy.
+      heart: classifyHorizontal(heart, 'h'),
+      head: classifyHorizontal(head, 'd'),
       life: life.coverage >= 0.34 && life.meanContrast >= 2.3 ? 'thumb_base_arc' : null,
       fate: fate.coverage >= 0.38 && fate.meanContrast >= 2.4 ? 'central_vertical_visible' : null
     };

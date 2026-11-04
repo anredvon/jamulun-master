@@ -23,6 +23,13 @@
 
   const sideName = (side) => side === 'left' ? '왼손' : '오른손';
   const lineNames = { heart: '감정선', head: '두뇌선', life: '생명선', fate: '운명선' };
+  const featureNames = {
+    h1: '비교적 곧고 완만한 감정선', h2: '한쪽으로 기운 감정선 · 유형 2',
+    h3: '한쪽으로 기운 감정선 · 유형 3', h4: '가운데가 휘어 보이는 감정선',
+    d1: '비교적 곧게 이어진 두뇌선', d2: '한쪽으로 기운 두뇌선 · 유형 2',
+    d3: '한쪽으로 기운 두뇌선 · 유형 3', d4: '가운데가 휘어 보이는 두뇌선',
+    thumb_base_arc: '엄지 밑을 감싸는 선', central_vertical_visible: '손바닥 가운데 세로선'
+  };
   const sourceReading = (lineType, feature) => rules.find((item) => item.line_type === lineType && item.feature_code === feature);
 
   function renderResults() {
@@ -55,6 +62,10 @@
           card.appendChild(uncertain);
         } else {
           const rule = sourceReading(lineType, feature);
+          const observed = document.createElement('p');
+          observed.className = 'palm-observed-feature';
+          observed.textContent = `사진에서 읽힌 모양 · ${featureNames[feature] || '선이 보임'}`;
+          card.appendChild(observed);
           if (rule) {
             const name = document.createElement('strong'); name.className = 'palm-rule-title'; name.textContent = rule.reading_title;
             const body = document.createElement('p'); body.textContent = rule.reading_text;
