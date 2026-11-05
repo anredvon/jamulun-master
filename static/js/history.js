@@ -28,7 +28,7 @@
     check: ['/check', '머니 체크 시작하기'],
     quote: ['/today', '오늘의 명언 보기']
   };
-  const iconTemplates = Object.fromEntries(['tarot', 'palm', 'lotto', 'check', 'quote'].map((name) => {
+  const iconTemplates = Object.fromEntries(['tarot', 'palm', 'lotto', 'future', 'spending', 'money', 'check', 'quote'].map((name) => {
     return [name, document.getElementById(`history-icon-${name}`)];
   }));
   let lottoDraws = [];
@@ -62,7 +62,7 @@
 
     const icon = node('span', 'history-item-icon');
     icon.setAttribute('aria-hidden', 'true');
-    const iconTemplate = iconTemplates[item.category] || iconTemplates.check;
+    const iconTemplate = iconTemplates[item.iconType] || iconTemplates[item.category] || iconTemplates.check;
     if (iconTemplate?.content.firstElementChild) icon.append(iconTemplate.content.firstElementChild.cloneNode(true));
 
     const copy = node('span', 'history-item-copy');

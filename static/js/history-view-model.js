@@ -36,6 +36,7 @@
       id: String(item.id || `${type}-${index}`),
       type,
       category: CATEGORY_BY_TYPE[type] || type,
+      iconType: type,
       label: type === 'quote' ? TYPE_LABELS.quote : (item.label || TYPE_LABELS[type] || '머니 기록'),
       title: item.title || '기록 결과',
       date: item.date || formatDate(createdAt),
@@ -53,6 +54,7 @@
     const createdAt = draw.created_at || draw.createdAt || '';
     return {
       id: `lotto-${resultId}`, resultId, type: 'lotto', category: 'lotto',
+      iconType: 'lotto',
       label: '로또 번호',
       title: `제${draw.round}회 ${draw.sequence}번째 추첨`,
       date: formatDate(createdAt),
