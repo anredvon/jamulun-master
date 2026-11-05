@@ -350,6 +350,15 @@ class SmokeTest(unittest.TestCase):
             r"\.feature-illustration--check\s*\{\s*background-position:\s*0\s+50%\s*;",
         )
 
+    def test_bottom_navigation_divider_tracks_the_menu_grid_inset(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        chrome_css = (repo_root / "static/css/app-chrome.css").read_text()
+
+        self.assertRegex(chrome_css, r"--nav-inline-inset:\s*10px")
+        self.assertRegex(chrome_css, r"\.app-bottom-nav::before\s*\{[^}]*left:\s*var\(--nav-inline-inset\)")
+        self.assertRegex(chrome_css, r"\.app-bottom-nav::before\s*\{[^}]*right:\s*var\(--nav-inline-inset\)")
+        self.assertRegex(chrome_css, r"@media\s*\(max-width:\s*380px\)[\s\S]*--nav-inline-inset:\s*6px")
+
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():
             html = render_template(
