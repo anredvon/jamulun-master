@@ -2,6 +2,8 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const { buildHistoryView, resolveTarotPreview } = require('../static/js/history-view-model.js');
 
 test('Tarot History resolves the exact saved card for its record preview', () => {
@@ -37,7 +39,32 @@ test('view includes every supported record and keeps score optional', () => {
   assert.deepEqual(view.rows.map((row) => row.type), ['quote', 'palm', 'tarot', 'future']);
   assert.equal(Object.hasOwn(view.rows[0], 'score'), false);
   assert.equal(Object.hasOwn(view.rows[1], 'score'), false);
-  assert.equal(view.rows[2].score, 71);
+  assert.equal(Object.hasOwn(view.rows[2], 'score'), false);
+  assert.equal(view.rows[3].score, 68);
+});
+
+test('legacy Tarot History hides stored scores and predictive summaries without mutating storage data', () => {
+  const legacy = {
+    id: 'old-tarot', type: 'tarot', label: '오늘의 타로', title: '수익', score: 84,
+    summary: '좋은 기회가 들어옵니다. 수익을 기대해보세요.', meta: { cardId: 'income' }
+  };
+
+  const view = buildHistoryView([legacy]);
+
+  assert.equal(Object.hasOwn(view.rows[0], 'score'), false);
+  assert.equal(view.rows[0].summary, '재미와 자기 성찰을 위한 기록');
+  assert.equal(legacy.score, 84);
+  assert.match(legacy.summary, /수익/);
+});
+
+test('Tarot detail no longer renders a score while check result score rendering remains', () => {
+  const historySource = fs.readFileSync(path.join(__dirname, '../static/js/history.js'), 'utf8');
+  const tarotDetail = historySource.match(/function renderTarot\(item\) \{([\s\S]*?)\n  \}\n\n  function renderPalm/);
+  const checkDetail = historySource.match(/else \{\n      addScore\(item\);([\s\S]*?)\n    \}/);
+
+  assert.ok(tarotDetail, 'Tarot detail renderer should remain available');
+  assert.doesNotMatch(tarotDetail[1], /addScore/);
+  assert.ok(checkDetail, 'Check detail should continue rendering its score');
 });
 
 test('check history records retain their own feature icon types while sharing one filter category', () => {

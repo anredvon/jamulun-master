@@ -17,6 +17,7 @@ os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
 from app import app
 from models import db
+from tarot_cards import TAROT_CARDS
 
 
 class SmokeTest(unittest.TestCase):
@@ -155,6 +156,29 @@ class SmokeTest(unittest.TestCase):
 
     def test_home(self):
         self.assertEqual(self.client.get("/").status_code, 200)
+
+    def test_tarot_draw_is_explicitly_random_and_framed_as_reflection(self):
+        response = self.client.get("/tarot")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("무작위", html)
+        self.assertIn("재미와 자기 성찰", html)
+        self.assertNotIn("한 장 골라보세요", html)
+        self.assertNotIn('class="tarot-score-pill"', html)
+
+    def test_tarot_card_copy_uses_reflection_questions_not_financial_predictions(self):
+        self.assertEqual(len(TAROT_CARDS), 24)
+        prediction_terms = (
+            "좋아집니다", "유리합니다", "기대해볼", "수익", "손실", "수입", "재물운",
+            "기회가", "타이밍", "가능성이 있습니다", "결제", "지출", "예산", "재정적",
+        )
+        for card in TAROT_CARDS:
+            with self.subTest(card=card["id"]):
+                self.assertTrue(card["flow"].endswith("?"), card["flow"])
+                self.assertTrue(card["caution"].endswith("?"), card["caution"])
+                self.assertTrue(card["line"].endswith("?"), card["line"])
+                copy = " ".join((card["status"], card["flow"], card["caution"], card["line"]))
+                self.assertFalse(any(term in copy for term in prediction_terms), copy)
 
     def test_home_links_money_quizzes_to_the_check_hub(self):
         response = self.client.get("/home")

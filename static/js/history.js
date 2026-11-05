@@ -193,16 +193,15 @@
       image.src = `/static/${String(card.image || '').replace(/^\/+/, '')}`;
       image.alt = `${card.title} 타로카드`;
       detailContent.append(image);
-      const status = node('p', 'history-detail-status', card.status);
+      const status = node('p', 'history-detail-status', `카드 키워드 · ${card.status}`);
       detailContent.append(status);
-      addScore({ ...item, score: Number(card.score) });
-      addTextSection(detailContent, '돈의 흐름', card.flow);
-      addTextSection(detailContent, '오늘 살펴볼 점', card.caution);
-      addTextSection(detailContent, '한마디', card.line);
+      addTextSection(detailContent, '생각해볼 거리', card.flow);
+      addTextSection(detailContent, '오늘 나에게 던져볼 질문', card.caution);
+      addTextSection(detailContent, '고양이의 질문', card.line);
     } else {
       addTextSection(detailContent, '저장된 내용', item.summary || item.title);
     }
-    detailContent.append(node('p', 'history-detail-disclaimer', '타로 카드는 재미와 자기 성찰을 위한 콘텐츠예요.'));
+    detailContent.append(node('p', 'history-detail-disclaimer', '타로는 재미와 자기 성찰을 위한 콘텐츠예요. 재정 상태나 미래를 예측하지 않아요.'));
   }
 
   function renderPalm(item) {

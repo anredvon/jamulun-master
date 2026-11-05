@@ -49,11 +49,13 @@
       title: item.title || '기록 결과',
       date: item.date || formatDate(createdAt),
       createdAt,
-      summary: item.summary ? String(item.summary) : '',
+      summary: type === 'tarot'
+        ? '재미와 자기 성찰을 위한 기록'
+        : (item.summary ? String(item.summary) : ''),
       meta: item.meta && typeof item.meta === 'object' && !Array.isArray(item.meta) ? item.meta : {}
     };
     const score = numericScore(item);
-    if (score !== null) row.score = score;
+    if (score !== null && type !== 'tarot') row.score = score;
     return row;
   }
 
