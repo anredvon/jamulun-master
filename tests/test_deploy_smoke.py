@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
-from flask import render_template
+from flask import render_template, render_template_string
 
 os.environ["SECRET_KEY"] = "ci-test-secret-key-0123456789abcdef0123456789abcdef"
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
@@ -284,6 +284,48 @@ class SmokeTest(unittest.TestCase):
         self.assertIn("오늘의 돈 흐름", root_html)
         self.assertNotIn("home-actions", root_html)
         self.assertIn("home-actions", home_html)
+
+    def test_feature_and_bottom_navigation_icons_use_shared_raster_assets(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        home_html = self.client.get("/home").get_data(as_text=True)
+        check_html = self.client.get("/check").get_data(as_text=True)
+        history_html = self.client.get("/history").get_data(as_text=True)
+
+        for name in ("tarot", "palm", "lotto", "check"):
+            self.assertIn(f"feature-illustration--{name}", home_html)
+        for name in ("future", "spending", "money"):
+            self.assertIn(f"feature-illustration--{name}", check_html)
+        for name in ("tarot", "palm", "lotto", "future", "spending", "money", "check", "quote"):
+            self.assertIn(f"feature-illustration--{name}", history_html)
+
+        for name in ("today", "tarot", "check", "history"):
+            self.assertIn(f"nav-illustration--{name}", home_html)
+        for html in (home_html, check_html, history_html):
+            self.assertIn("/static/css/feature-icons.css", html)
+        nav_markup = re.search(r'<nav class="app-bottom-nav".*?</nav>', home_html, re.DOTALL)
+        self.assertIsNotNone(nav_markup)
+        self.assertNotIn("<svg", nav_markup.group(0))
+
+        with app.test_request_context():
+            unknown_icon = render_template_string(
+                "{% from '_content_icon.html' import content_icon %}{{ content_icon('unknown') }}"
+            )
+        self.assertIn("feature-illustration--history", unknown_icon)
+
+        for relative in (
+            "static/css/feature-icons.css",
+            "static/images/ui/icons/feature-mascots.png",
+            "static/images/ui/icons/bottom-nav-mascots.png",
+        ):
+            self.assertTrue((repo_root / relative).is_file(), f"missing raster icon asset: {relative}")
+
+        feature_css = (repo_root / "static/css/feature-icons.css").read_text()
+        for name in ("tarot", "palm", "lotto", "check", "future", "spending", "money", "quote", "today", "history"):
+            self.assertRegex(feature_css, rf"\.feature-illustration--{name}\s*\{{\s*background-position:")
+        self.assertRegex(
+            feature_css,
+            r"\.feature-illustration--check\s*\{\s*background-position:\s*0\s+50%\s*;",
+        )
 
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():

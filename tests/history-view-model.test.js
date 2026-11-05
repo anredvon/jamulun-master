@@ -19,6 +19,17 @@ test('view includes every supported record and keeps score optional', () => {
   assert.equal(view.rows[2].score, 71);
 });
 
+test('check history records retain their own feature icon types while sharing one filter category', () => {
+  const view = buildHistoryView([
+    { id: 'future', type: 'future' },
+    { id: 'spending', type: 'spending' },
+    { id: 'money', type: 'money' }
+  ]);
+
+  assert.deepEqual(view.rows.map((row) => row.category), ['check', 'check', 'check']);
+  assert.deepEqual(view.rows.map((row) => row.iconType), ['future', 'spending', 'money']);
+});
+
 test('latest score is the newest numeric future result, not another activity', () => {
   const view = buildHistoryView([
     { id: 'q', type: 'quote', score: 99 },

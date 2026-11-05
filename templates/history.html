@@ -36,7 +36,7 @@
 
     <section id="history-empty" class="history-empty is-hidden">
       <div class="history-empty-visual" aria-hidden="true">
-        <svg viewBox="0 0 48 48"><path d="M13 9h17l7 7v22H13z"/><path d="M30 9v8h7M19 24h12M19 29h12M19 34h7"/><circle cx="12" cy="18" r="7"/></svg>
+        {{ content_icon('history') }}
       </div>
       <h2 id="history-empty-title">아직 쌓인 기록이 없어요</h2>
       <p id="history-empty-copy">둘러본 콘텐츠가 여기에 차곡차곡 모여요.</p>
@@ -50,6 +50,9 @@
   <template id="history-icon-tarot">{{ content_icon('tarot') }}</template>
   <template id="history-icon-palm">{{ content_icon('palm') }}</template>
   <template id="history-icon-lotto">{{ content_icon('lotto') }}</template>
+  <template id="history-icon-future">{{ content_icon('future') }}</template>
+  <template id="history-icon-spending">{{ content_icon('spending') }}</template>
+  <template id="history-icon-money">{{ content_icon('money') }}</template>
   <template id="history-icon-check">{{ content_icon('check') }}</template>
   <template id="history-icon-quote">{{ content_icon('quote') }}</template>
 </div>

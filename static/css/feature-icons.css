@@ -1,0 +1,35 @@
+/* Shared feature sprites: one canonical illustration follows a feature into History. */
+.feature-illustration{
+  display:block;
+  flex:none;
+  width:44px;
+  height:29.33px;
+  background-image:url("../images/ui/icons/feature-mascots.png");
+  background-repeat:no-repeat;
+  background-size:300% 300%;
+}
+.feature-illustration--tarot{background-position:0 0;}
+.feature-illustration--palm{background-position:50% 0;}
+.feature-illustration--lotto{background-position:100% 0;}
+.feature-illustration--check{background-position:0 50%;}
+.feature-illustration--future{background-position:0 50%;}
+.feature-illustration--spending{background-position:50% 50%;}
+.feature-illustration--money{background-position:100% 50%;}
+.feature-illustration--quote{background-position:0 100%;}
+.feature-illustration--today{background-position:50% 100%;}
+.feature-illustration--history{background-position:100% 100%;}
+
+/* Dedicated B-direction mini illustrations for the fixed bottom tabs. */
+.nav-illustration{
+  display:block;
+  flex:none;
+  width:40px;
+  height:26.67px;
+  background-image:url("../images/ui/icons/bottom-nav-mascots.png");
+  background-repeat:no-repeat;
+  background-size:200% 200%;
+}
+.nav-illustration--today{background-position:0 0;}
+.nav-illustration--tarot{background-position:100% 0;}
+.nav-illustration--check{background-position:0 100%;}
+.nav-illustration--history{background-position:100% 100%;}
