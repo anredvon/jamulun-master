@@ -2,7 +2,28 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildHistoryView } = require('../static/js/history-view-model.js');
+const { buildHistoryView, resolveTarotPreview } = require('../static/js/history-view-model.js');
+
+test('Tarot History resolves the exact saved card for its record preview', () => {
+  const cards = [
+    { id: 1, title: '균형', image: 'images/tarot/app_cards/one.png' },
+    { id: 2, title: '기회', image: 'images/tarot/app_cards/two.png' }
+  ];
+
+  assert.deepEqual(resolveTarotPreview({ type: 'tarot', category: 'tarot', meta: { cardId: '2' } }, cards), cards[1]);
+});
+
+test('Tarot History falls back when the record has no usable card image', () => {
+  const cards = [
+    { id: 1, title: 'no image', image: '' },
+    { id: 2, title: 'valid image', image: 'images/tarot/app_cards/two.png' }
+  ];
+
+  assert.equal(resolveTarotPreview({ type: 'tarot', category: 'tarot', meta: { cardId: 1 } }, cards), null);
+  assert.equal(resolveTarotPreview({ type: 'tarot', category: 'tarot', meta: {} }, cards), null);
+  assert.equal(resolveTarotPreview({ type: 'tarot', category: 'tarot', meta: { cardId: 9 } }, cards), null);
+  assert.equal(resolveTarotPreview({ type: 'quote', category: 'quote', meta: { cardId: 2 } }, cards), null);
+});
 
 test('view includes every supported record and keeps score optional', () => {
   const view = buildHistoryView([

@@ -17,7 +17,7 @@
 .today-card-heading{display:flex;align-items:center;gap:10px;min-width:0;}
 .today-card-mark{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:13px;background:#eee8ff;color:#7051d0;}
 .quote-card .today-card-mark{flex-basis:42px;width:42px;height:42px;border-radius:15px;background:#eee8ff;}
-.quote-mark{padding-top:8px;font-family:Georgia,serif;font-size:40px;line-height:1;font-weight:400;}
+.today-card-mark .feature-illustration{width:100%;height:auto;aspect-ratio:3/2;}
 .today-heading-copy{display:flex;flex-direction:column;gap:2px;min-width:0;}
 .today-heading-copy h1,.today-heading-copy h2{margin:0;color:#6649c5;font-size:16px;line-height:1.35;font-weight:700;letter-spacing:-.035em;}
 .today-heading-copy time{color:#948ba2;font-size:11px;line-height:1.35;font-weight:400;}
@@ -37,7 +37,6 @@
 .horoscope-lucky{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:0 0 11px;padding:6px 10px;border:1px solid #eee6ff;border-radius:999px;background:#f5f0ff;color:#786993;font-size:11px;line-height:1.35;font-weight:400;}
 .horoscope-lucky>span{color:#7954d0;font-size:15px;}
 .horoscope-lucky strong{color:#6546bc;font-size:11px;font-weight:600;}
-.horoscope-mark svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round;}
 .zodiac-select-trigger{display:inline-flex;align-items:center;gap:6px;min-height:42px;max-width:150px;padding:5px 10px;border:1px solid #e8e0fb;border-radius:14px;background:#f7f3ff;color:#573eae;font-family:inherit;font-size:12px;font-weight:500;line-height:1.2;white-space:nowrap;cursor:pointer;}
 .zodiac-select-trigger:active{background:#eee8ff;}
 .selected-zodiac-icon{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;color:#7254cb;}

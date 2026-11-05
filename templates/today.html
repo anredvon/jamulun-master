@@ -16,7 +16,7 @@
     <section class="today-content" aria-label="오늘의 콘텐츠">
       <article class="today-card quote-card" aria-labelledby="daily-quote-title">
         <div class="today-card-heading">
-          <span class="today-card-mark quote-mark" aria-hidden="true">“</span>
+          <span class="today-card-mark" aria-hidden="true"><span class="feature-illustration feature-illustration--quote"></span></span>
           <div class="today-heading-copy">
             <h1 id="daily-quote-title">오늘의 명언</h1>
             <time datetime="{{ today_iso }}">{{ today_label }}</time>
@@ -37,9 +37,7 @@
       <article class="today-card horoscope-card" aria-labelledby="horoscope-title">
         <div class="horoscope-heading-row">
           <div class="today-card-heading">
-            <span class="today-card-mark horoscope-mark" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="m12 2 1.6 6.4L20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6L12 2Z"/><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z"/></svg>
-            </span>
+            <span class="today-card-mark" aria-hidden="true"><span class="feature-illustration feature-illustration--today"></span></span>
             <div class="today-heading-copy">
               <h2 id="horoscope-title">오늘의 별자리 운세</h2>
               <time datetime="{{ today_iso }}">{{ today_label }}</time>

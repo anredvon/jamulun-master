@@ -16,6 +16,14 @@
     return Number.isFinite(score) ? score : null;
   }
 
+  function resolveTarotPreview(item, tarotCards) {
+    if (!item || item.type !== 'tarot' || !Array.isArray(tarotCards)) return null;
+    const cardId = item.meta && item.meta.cardId;
+    if (cardId == null || String(cardId).trim() === '') return null;
+    return tarotCards.find((card) => card && String(card.id) === String(cardId)
+      && typeof card.image === 'string' && card.image.trim()) || null;
+  }
+
   function parseTimestamp(value) {
     const timestamp = value ? Date.parse(value) : NaN;
     return Number.isFinite(timestamp) ? timestamp : null;
@@ -101,5 +109,5 @@
     };
   }
 
-  return { buildHistoryView };
+  return { buildHistoryView, resolveTarotPreview };
 });

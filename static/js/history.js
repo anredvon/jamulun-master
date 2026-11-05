@@ -20,6 +20,8 @@
   const detailActions = document.getElementById('history-detail-actions');
   const detailClose = document.getElementById('history-detail-close');
   const localItems = window.MoneyFlowHistory?.read() || [];
+  let tarotCards = [];
+  try { tarotCards = JSON.parse(document.getElementById('history-tarot-data')?.textContent || '[]'); } catch (_) { tarotCards = []; }
   const filterLabels = { all: '전체', tarot: '타로', palm: '손금', lotto: '로또', check: '체크', quote: '명언' };
   const emptyDestinations = {
     tarot: ['/tarot', '타로 한 장 만나보기'],
@@ -63,7 +65,22 @@
     const icon = node('span', 'history-item-icon');
     icon.setAttribute('aria-hidden', 'true');
     const iconTemplate = iconTemplates[item.iconType] || iconTemplates[item.category] || iconTemplates.check;
-    if (iconTemplate?.content.firstElementChild) icon.append(iconTemplate.content.firstElementChild.cloneNode(true));
+    const tarotPreview = viewModel.resolveTarotPreview(item, tarotCards);
+    if (tarotPreview) {
+      icon.classList.add('history-item-icon--tarot-preview');
+      const image = node('img', 'history-tarot-card-preview');
+      image.src = `/static/${String(tarotPreview.image).replace(/^\/+/, '')}`;
+      image.alt = '';
+      image.draggable = false;
+      icon.append(image);
+      const categoryMark = node('span', 'history-tarot-category-mark');
+      if (iconTemplates.tarot?.content.firstElementChild) {
+        categoryMark.append(iconTemplates.tarot.content.firstElementChild.cloneNode(true));
+      }
+      icon.append(categoryMark);
+    } else if (iconTemplate?.content.firstElementChild) {
+      icon.append(iconTemplate.content.firstElementChild.cloneNode(true));
+    }
 
     const copy = node('span', 'history-item-copy');
     const top = node('span', 'history-item-top');
@@ -170,9 +187,7 @@
   }
 
   function renderTarot(item) {
-    let cards = [];
-    try { cards = JSON.parse(document.getElementById('history-tarot-data')?.textContent || '[]'); } catch (_) { cards = []; }
-    const card = cards.find((entry) => String(entry.id) === String(item.meta?.cardId));
+    const card = viewModel.resolveTarotPreview(item, tarotCards);
     if (card) {
       const image = node('img', 'history-detail-tarot-image');
       image.src = `/static/${String(card.image || '').replace(/^\/+/, '')}`;

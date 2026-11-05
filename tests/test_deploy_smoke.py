@@ -191,6 +191,29 @@ class SmokeTest(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(self.client.get(path).status_code, 200)
 
+    def test_history_script_has_valid_javascript_syntax(self):
+        script = Path(__file__).resolve().parents[1] / "static" / "js" / "history.js"
+        result = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_header_uses_raster_brand_and_home_assets(self):
+        for path in ("/home", "/history", "/today"):
+            with self.subTest(path=path):
+                html = self.client.get(path).get_data(as_text=True)
+                self.assertIn('src="/static/images/ui/wealth_check/cat_icon.png"', html)
+                self.assertIn('class="app-header-home', html)
+                self.assertIn('src="/static/images/ui/icons/home-mascot.png"', html)
+                self.assertIn('aria-label="홈"', html)
+                self.assertNotIn('<svg viewBox="0 0 24 24"', html)
+
+    def test_today_uses_canonical_quote_and_today_raster_icons(self):
+        html = self.client.get("/today").get_data(as_text=True)
+        self.assertIn('class="feature-illustration feature-illustration--quote"', html)
+        self.assertIn('class="feature-illustration feature-illustration--today"', html)
+        self.assertIn('id="selected-zodiac-icon"', html)
+        self.assertNotIn('class="today-card-mark quote-mark"', html)
+        self.assertNotIn('class="today-card-mark horoscope-mark"', html)
+
     def test_palm_page_keeps_the_photo_on_device(self):
         response = self.client.get("/palm")
         self.assertEqual(response.status_code, 200)
