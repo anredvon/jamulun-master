@@ -1,12 +1,12 @@
 <header class="app-header" aria-label="머니플로우 상단바">
   <a href="{{ url_for('home_page') }}" class="app-brand" aria-label="머니플로우 홈">
-    <span class="app-brand-mark" aria-hidden="true"><span></span></span>
+    <span class="app-brand-mark" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_icon.png') }}" alt=""></span>
     <span class="app-brand-copy">
       <strong>머니플로우</strong>
       <small>오늘의 돈 흐름을 가볍게 발견해보세요</small>
     </span>
   </a>
   <a class="app-header-home{% if active_tab == 'home' %} is-active{% endif %}" href="{{ url_for('home_page') }}" aria-label="홈" title="홈으로">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.7 12 3.8l8.5 6.9v8.1a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7z"/><path d="M9.2 20.5v-6.1h5.6v6.1"/></svg>
+    <img src="{{ url_for('static', filename='images/ui/icons/home-mascot.png') }}" alt="" aria-hidden="true">
   </a>
 </header>

@@ -35,12 +35,13 @@
 - Modify: `static/js/history.js`
 - Modify: `static/css/history.css`
 - Modify: `tests/history-view-model.test.js`
+- Modify: `tests/test_deploy_smoke.py` (browser script syntax regression guard)
 - Verify: `templates/history.html` card catalogue JSON remains available
 
-- [ ] Add `resolveTarotPreview(item, tarotCards)` tests: a valid saved `meta.cardId` returns the matching card including its image path; missing ID, unknown ID, non-Tarot item, and card with no usable image return `null`.
-- [ ] Run the focused Node test and confirm it fails because no row preview resolver exists.
-- [ ] Implement `resolveTarotPreview(item, tarotCards)` in `static/js/history-view-model.js`; make `history.js` use it to show the selected card as a compact portrait preview and retain the canonical Tarot mascot as a small category marker. Avoid generating or storing new draw state.
-- [ ] Run the focused Node and Python tests; inspect a seeded Tarot History row at 360, 390, and 430 CSS px, plus a missing-card fallback.
+- [x] Add `resolveTarotPreview(item, tarotCards)` tests: a valid saved `meta.cardId` returns the matching card including its image path; missing ID, unknown ID, non-Tarot item, and card with no usable image return `null`.
+- [x] Run the focused Node test and confirm it fails because no row preview resolver exists.
+- [x] Implement `resolveTarotPreview(item, tarotCards)` in `static/js/history-view-model.js`; make `history.js` use it to show the selected card as a compact portrait preview and retain the canonical Tarot mascot as a small category marker. Avoid generating or storing new draw state.
+- [x] Run the focused Node and Python tests; inspect a real locally generated Tarot History row at 360, 390, and 430 CSS px. The missing-card fallback is covered in unit tests; the browser capture uses the normal UI-generated valid record.
 
 ### Task 2: Raster Home and Today icon alignment
 
@@ -52,11 +53,11 @@
 - Modify: `static/css/today.css`
 - Modify: `tests/test_deploy_smoke.py`
 
-- [ ] Add `test_header_uses_raster_brand_and_home_assets` and `test_today_uses_canonical_quote_and_today_raster_icons`: assert rendered Home/History/Today pages use the raster brand and Home `<img>`, Today heading classes are the canonical Quote/Today feature sprites, and the selected-zodiac control remains.
-- [ ] Run focused Python tests and confirm they fail on the current CSS-ring/inline-SVG/glyph markup.
-- [ ] Generate and inspect the transparent Home raster; copy it into the project assets directory without overwriting existing assets.
-- [ ] Wire the existing `cat_icon.png` as the shared brand mark, use the new Home raster inside the unchanged 44px control, and reuse the Quote/Today feature classes in their headings.
-- [ ] Run focused Python tests; verify PNG alpha, network loads, accessible labels, control sizes, and unchanged safe-area/nav layout at 360, 390, and 430 CSS px.
+- [x] Add `test_header_uses_raster_brand_and_home_assets` and `test_today_uses_canonical_quote_and_today_raster_icons`: assert rendered Home/History/Today pages use the raster brand and Home `<img>`, Today heading classes are the canonical Quote/Today feature sprites, and the selected-zodiac control remains.
+- [x] Run focused Python tests and confirm they fail on the current CSS-ring/inline-SVG/glyph markup.
+- [x] Generate and inspect the transparent Home raster; copy it into the project assets directory without overwriting existing assets.
+- [x] Wire the existing `cat_icon.png` as the shared brand mark, use the new Home raster inside the unchanged 44px control, and reuse the Quote/Today feature classes in their headings.
+- [x] Run focused Python tests; verify RGBA PNG, successful local image loads, accessible labels, 44px Home control, and no horizontal overflow at 360/390/430 CSS px. Bottom-nav and route assertions remained green.
 
 ### Task 3: Full verification and production release
 
