@@ -85,7 +85,8 @@
 
 **Files:**
 - Verify: all files above and existing test suites.
+- Modify: `.github/workflows/jaemulun-ci.yml` so the new dialog-focus test runs in CI.
 
 - [x] Run the full Python unittest suite and all Node test files.
-- [x] Inspect the diff to confirm only Tarot UI/copy/history presentation and dialog focus changed; confirm draw and redraw code, APIs, DB, and deployment files are untouched.
+- [x] Inspect the diff to confirm only Tarot UI/copy/history presentation, dialog focus, and its CI test registration changed; confirm draw and redraw code, APIs, DB, and deployment settings are untouched.
 - [x] Record test totals, any existing warnings, and deployment status (not deployed).
