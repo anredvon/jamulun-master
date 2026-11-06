@@ -17,7 +17,7 @@
 .today-card-heading{display:flex;align-items:center;gap:10px;min-width:0;}
 .today-card-mark{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:13px;background:#eee8ff;color:#7051d0;}
 .quote-card .today-card-mark{flex-basis:42px;width:42px;height:42px;border-radius:15px;background:#eee8ff;}
-.today-card-mark .feature-illustration{width:100%;height:auto;aspect-ratio:3/2;}
+.today-card-mark .feature-illustration{width:28px;height:28px;}
 .today-heading-copy{display:flex;flex-direction:column;gap:2px;min-width:0;}
 .today-heading-copy h1,.today-heading-copy h2{margin:0;color:#6649c5;font-size:16px;line-height:1.35;font-weight:700;letter-spacing:-.035em;}
 .today-heading-copy time{color:#948ba2;font-size:11px;line-height:1.35;font-weight:400;}
@@ -44,8 +44,9 @@
 .horoscope-detail{display:grid;gap:11px;margin:15px 0 12px;}
 .horoscope-detail-block{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:start;gap:9px;}
 .horoscope-detail-block>div{min-width:0;}
-.horoscope-detail-icon{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:#f0eaff;color:#7954d0;font-size:17px;line-height:1;}
-.horoscope-detail-icon.action-icon{background:#eef8f2;color:#4d9c70;font-size:17px;font-weight:600;}
+.horoscope-detail-icon{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:#f0eaff;color:#7954d0;}
+.horoscope-detail-icon.action-icon{background:#eef8f2;color:#4d9c70;font-weight:600;}
+.horoscope-detail-icon .feature-illustration{width:23px;height:23px;}
 .horoscope-detail-block h3{margin:0 0 3px;color:#694bc5;font-size:12px;line-height:1.3;font-weight:600;letter-spacing:-.02em;}
 .horoscope-copy,.horoscope-action{margin:0;color:#393247;font-size:13px;line-height:1.5;font-weight:400;letter-spacing:-.02em;}
 .horoscope-lucky{display:block;max-width:100%;margin:0 0 11px;padding:8px 10px;border:1px solid #eee6ff;border-radius:13px;background:#f7f3ff;color:#786993;font-size:11px;line-height:1.5;font-weight:400;}

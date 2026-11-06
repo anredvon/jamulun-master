@@ -46,6 +46,7 @@
 | `test/test_target.png` | Test 목표 아이콘 |
 | `test/test_think.png` | Test 생각 구름 |
 | `icons/bottom-nav-outline.png` | 오늘·타로·체크·기록 공통 2×2 단색 선 아이콘 스프라이트 |
+| `icons/feature-outline.png` | 로또 이외 기능·상단바 공통 무채색 PNG 선 아이콘 4×3 스프라이트; tarot/palm/check/future/spending/money/quote/today/history/home/MoneyFlow |
 | `luck/color-atlas.png` | 오늘 행운 색 7종 스프라이트 |
 | `luck/dice-atlas.png` | 주사위 눈 1–6 스프라이트 |
 | `luck/compass-atlas.png` | 8방위 나침반 스프라이트 |

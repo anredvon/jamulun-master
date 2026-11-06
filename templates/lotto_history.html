@@ -6,6 +6,7 @@
 <div class="page-shell lotto-page lotto-history-page">
   <div class="shell lotto-shell">
     {% set active_tab = 'history' %}
+    {% set preserve_existing_header_art = true %}
     {% include '_app_header.html' %}
     <a class="lotto-back" href="{{ url_for('lotto.page') }}"><span aria-hidden="true">‹</span> 로또번호 받기</a>
     <main class="lotto-history-screen" id="lotto-history-screen">

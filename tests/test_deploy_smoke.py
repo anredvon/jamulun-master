@@ -224,11 +224,17 @@ class SmokeTest(unittest.TestCase):
         for path in ("/home", "/history", "/today"):
             with self.subTest(path=path):
                 html = self.client.get(path).get_data(as_text=True)
-                self.assertIn('src="/static/images/ui/wealth_check/cat_icon.png"', html)
+                self.assertIn('feature-illustration--moneyflow', html)
                 self.assertIn('class="app-header-home', html)
-                self.assertIn('src="/static/images/ui/icons/home-mascot.png"', html)
+                self.assertIn('feature-illustration--home', html)
                 self.assertIn('aria-label="홈"', html)
                 self.assertNotIn('<svg viewBox="0 0 24 24"', html)
+
+        lotto_html = self.client.get("/lotto").get_data(as_text=True)
+        self.assertIn('src="/static/images/ui/wealth_check/cat_icon.png"', lotto_html)
+        self.assertIn('src="/static/images/ui/icons/home-mascot.png"', lotto_html)
+        self.assertIn('class="lotto-back lotto-back--icon"', lotto_html)
+        self.assertIn('aria-label="뒤로가기"', lotto_html)
 
     def test_today_uses_canonical_quote_and_today_raster_icons(self):
         html = self.client.get("/today").get_data(as_text=True)
@@ -361,18 +367,46 @@ class SmokeTest(unittest.TestCase):
 
         for relative in (
             "static/css/feature-icons.css",
+            "static/images/ui/icons/feature-outline.png",
             "static/images/ui/icons/feature-mascots.png",
-            "static/images/ui/icons/bottom-nav-mascots.png",
+            "static/images/ui/icons/bottom-nav-outline.png",
         ):
             self.assertTrue((repo_root / relative).is_file(), f"missing raster icon asset: {relative}")
 
         feature_css = (repo_root / "static/css/feature-icons.css").read_text()
-        for name in ("tarot", "palm", "lotto", "check", "future", "spending", "money", "quote", "today", "history"):
-            self.assertRegex(feature_css, rf"\.feature-illustration--{name}\s*\{{\s*background-position:")
         self.assertRegex(
             feature_css,
-            r"\.feature-illustration--check\s*\{\s*background-position:\s*0\s+50%\s*;",
+            r"\.feature-illustration\s*\{[^}]*background-image:url\(\"\.\./images/ui/icons/feature-outline\.png\"\);",
         )
+        self.assertRegex(feature_css, r"\.feature-illustration\s*\{[^}]*background-size:400% 300%;")
+        mappings = {
+            "tarot": "0 0",
+            "palm": "33.3333% 0",
+            "check": "100% 0",
+            "future": "0 50%",
+            "spending": "33.3333% 50%",
+            "money": "66.6667% 50%",
+            "quote": "100% 50%",
+            "today": "0 100%",
+            "history": "33.3333% 100%",
+            "home": "66.6667% 100%",
+            "moneyflow": "100% 100%",
+        }
+        for name, position in mappings.items():
+            with self.subTest(icon=name):
+                self.assertRegex(
+                    feature_css,
+                    rf"\.feature-illustration--{name}\s*\{{[^}}]*background-position:\s*{re.escape(position)}\s*;",
+                )
+        self.assertRegex(feature_css, r"\.feature-illustration--lotto\s*\{[^}]*background-position:\s*100% 0;")
+        self.assertRegex(feature_css, r"\.feature-illustration--lotto\s*\{[^}]*background-image:url\(\"\.\./images/ui/icons/feature-mascots\.png\"\);")
+        self.assertRegex(feature_css, r"\.feature-illustration--lotto\s*\{[^}]*background-size:300% 300%;")
+
+        lotto_css = (repo_root / "static/css/lotto.css").read_text()
+        history_css = (repo_root / "static/css/history.css").read_text()
+        self.assertRegex(lotto_css, r"\.home-action-icon-lotto \.feature-illustration\s*\{[^}]*width:38px;height:25\.33px")
+        self.assertRegex(lotto_css, r"@media\(max-width:380px\)[^}]*\.home-action-icon-lotto \.feature-illustration\{width:36px;height:24px\}")
+        self.assertRegex(history_css, r"\.history-item\[data-category=\"lotto\"\] \.history-item-icon \.feature-illustration\s*\{width:40px;height:26\.67px;\}")
 
     def test_bottom_navigation_divider_tracks_the_menu_grid_inset(self):
         repo_root = Path(__file__).resolve().parents[1]
