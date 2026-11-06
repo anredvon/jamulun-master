@@ -29,6 +29,7 @@
 .history-item:hover{border-color:#d6c9f5;box-shadow:0 7px 18px rgba(45,32,78,.08);}
 .history-item-icon{display:grid;width:42px;height:42px;place-items:center;flex:0 0 42px;border-radius:14px;background:#eef8f1;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);}
 .history-item-icon .feature-illustration{width:34px;height:34px;}
+.history-item[data-category="lotto"] .history-item-icon .feature-illustration{width:40px;height:26.67px;}
 .history-item-icon--tarot-preview{position:relative;overflow:visible;background:#eef8f1;}
 .history-tarot-card-preview{position:absolute;left:5px;top:2px;width:26px;height:37px;object-fit:cover;border:1px solid #d9c995;border-radius:5px;box-shadow:0 2px 4px rgba(45,32,78,.16);}
 .history-tarot-category-mark{position:absolute;right:-1px;bottom:-1px;display:grid;width:24px;height:18px;place-items:center;border:1px solid rgba(255,255,255,.86);border-radius:8px;background:#f5f0ff;box-shadow:0 1px 3px rgba(45,32,78,.12);}
