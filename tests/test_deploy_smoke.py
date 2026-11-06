@@ -234,8 +234,8 @@ class SmokeTest(unittest.TestCase):
         self.assertNotIn("elements.en.textContent", script)
 
         styles = (Path(__file__).resolve().parents[1] / "static" / "css" / "tarot.css").read_text()
-        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*border:\s*2px solid")
-        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*box-shadow:\s*0 12px 24px rgba\(45, 31, 87, \.20\)")
+        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*border:\s*1px solid")
+        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*box-shadow:\s*0 8px 18px rgba\(45, 31, 87, \.14\)")
 
     def test_home_links_money_quizzes_to_the_check_hub(self):
         response = self.client.get("/home")
@@ -277,21 +277,21 @@ class SmokeTest(unittest.TestCase):
         result = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True, check=False)
         self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_header_uses_raster_brand_and_home_assets(self):
-        for path in ("/home", "/history", "/today"):
+    def test_header_uses_consistent_raster_brand_and_home_assets(self):
+        for path in ("/home", "/history", "/today", "/tarot", "/check", "/lotto", "/palm"):
             with self.subTest(path=path):
                 html = self.client.get(path).get_data(as_text=True)
-                self.assertIn('feature-illustration--moneyflow', html)
+                self.assertIn('src="/static/images/ui/wealth_check/cat_icon.png"', html)
                 self.assertIn('class="app-header-home', html)
-                self.assertIn('feature-illustration--home', html)
+                self.assertIn('src="/static/images/ui/icons/home-mascot.png"', html)
                 self.assertIn('aria-label="홈"', html)
-                self.assertNotIn('<svg viewBox="0 0 24 24"', html)
+                self.assertIn('class="app-brand"', html)
 
         lotto_html = self.client.get("/lotto").get_data(as_text=True)
         self.assertIn('src="/static/images/ui/wealth_check/cat_icon.png"', lotto_html)
         self.assertIn('src="/static/images/ui/icons/home-mascot.png"', lotto_html)
-        self.assertIn('class="lotto-back lotto-back--icon"', lotto_html)
-        self.assertIn('aria-label="뒤로가기"', lotto_html)
+        self.assertIn('class="app-header-back"', lotto_html)
+        self.assertIn('← 홈', lotto_html)
 
     def test_today_uses_canonical_quote_and_today_raster_icons(self):
         html = self.client.get("/today").get_data(as_text=True)
@@ -433,21 +433,20 @@ class SmokeTest(unittest.TestCase):
         feature_css = (repo_root / "static/css/feature-icons.css").read_text()
         self.assertRegex(
             feature_css,
-            r"\.feature-illustration\s*\{[^}]*background-image:url\(\"\.\./images/ui/icons/feature-outline\.png\"\);",
+            r"\.feature-illustration\s*\{[^}]*background-image:url\(\"\.\./images/ui/icons/feature-mascots\.png\"\);",
         )
-        self.assertRegex(feature_css, r"\.feature-illustration\s*\{[^}]*background-size:400% 300%;")
+        self.assertRegex(feature_css, r"\.feature-illustration\s*\{[^}]*background-size:300% 300%;")
         mappings = {
             "tarot": "0 0",
-            "palm": "33.3333% 0",
-            "check": "100% 0",
+            "palm": "50% 0",
+            "lotto": "100% 0",
+            "check": "0 50%",
             "future": "0 50%",
-            "spending": "33.3333% 50%",
-            "money": "66.6667% 50%",
-            "quote": "100% 50%",
-            "today": "0 100%",
-            "history": "33.3333% 100%",
-            "home": "66.6667% 100%",
-            "moneyflow": "100% 100%",
+            "spending": "50% 50%",
+            "money": "100% 50%",
+            "quote": "0 100%",
+            "today": "50% 100%",
+            "history": "100% 100%",
         }
         for name, position in mappings.items():
             with self.subTest(icon=name):
@@ -456,8 +455,7 @@ class SmokeTest(unittest.TestCase):
                     rf"\.feature-illustration--{name}\s*\{{[^}}]*background-position:\s*{re.escape(position)}\s*;",
                 )
         self.assertRegex(feature_css, r"\.feature-illustration--lotto\s*\{[^}]*background-position:\s*100% 0;")
-        self.assertRegex(feature_css, r"\.feature-illustration--lotto\s*\{[^}]*background-image:url\(\"\.\./images/ui/icons/feature-mascots\.png\"\);")
-        self.assertRegex(feature_css, r"\.feature-illustration--lotto\s*\{[^}]*background-size:300% 300%;")
+        self.assertIn('background-image:url("../images/ui/icons/bottom-nav-outline.png")', feature_css)
 
         lotto_css = (repo_root / "static/css/lotto.css").read_text()
         history_css = (repo_root / "static/css/history.css").read_text()
@@ -477,35 +475,39 @@ class SmokeTest(unittest.TestCase):
     def test_route_aware_page_transitions_keep_app_chrome_steady_and_respect_reduced_motion(self):
         repo_root = Path(__file__).resolve().parents[1]
         chrome_css = (repo_root / "static/css/app-chrome.css").read_text()
+        history_css = (repo_root / "static/css/history.css").read_text()
         base_template = (repo_root / "templates/base.html").read_text()
 
-        self.assertRegex(chrome_css, r"@view-transition\s*\{\s*navigation:\s*auto;")
-        for transition in ("home-up", "forward", "back"):
-            with self.subTest(transition=transition):
-                self.assertIn(f":active-view-transition-type({transition})", chrome_css)
-        self.assertRegex(chrome_css, r"\.app-header\s*\{[^}]*view-transition-name:\s*app-header")
-        self.assertRegex(chrome_css, r"\.app-bottom-nav\s*\{[^}]*view-transition-name:\s*app-bottom-nav")
-        self.assertRegex(chrome_css, r"\.has-app-chrome \.page-shell\s*\{[^}]*view-transition-name:page-shell")
+        self.assertNotIn("view-transition-name:app-header", chrome_css)
+        self.assertNotIn("view-transition-name:app-bottom-nav", chrome_css)
+        self.assertNotIn("@view-transition", chrome_css)
         self.assertIn("@media(prefers-reduced-motion:reduce)", chrome_css)
+        self.assertNotRegex(chrome_css, r"@keyframes page-(?:home|forward|back)-(?:out|in)\s*\{[^}]*opacity:")
+        for transition in ("home-up", "forward", "back"):
+            self.assertIn(f'data-transition-exit="{transition}"', chrome_css)
+            self.assertIn(f'data-transition-enter="{transition}"', chrome_css)
+        self.assertRegex(history_css, r"\.history-page\s*\{[^}]*background:\s*(?:#|rgb|linear-gradient)")
+        self.assertRegex(chrome_css, r"\.app-header\s*\{[^}]*grid-template-columns:\s*56px minmax\(0,1fr\) 44px")
         self.assertIn('data-home-url="{{ url_for(\'home_page\') }}"', base_template)
         self.assertIn('filename=\'js/page-transitions.js\'', base_template)
+        transition_js = (repo_root / "static/js/page-transitions.js").read_text()
+        self.assertIn("moneyflow-page-transition", transition_js)
+        self.assertIn("performance?.getEntriesByType", transition_js)
+        self.assertIn("pageshow", transition_js)
 
-    def test_feature_pages_offer_a_history_back_arrow_with_home_fallback(self):
-        for path in ("/tarot", "/check"):
+    def test_all_non_home_pages_offer_a_visible_home_back_control(self):
+        for path in ("/today", "/history", "/tarot", "/check", "/palm", "/lotto", "/history?filter=lotto"):
             with self.subTest(path=path):
                 html = self.client.get(path).get_data(as_text=True)
                 self.assertIn('class="app-header-back"', html)
-                self.assertIn('data-history-back', html)
+                self.assertIn('← 홈', html)
                 self.assertIn('href="/home"', html)
 
         lotto_html = self.client.get("/lotto").get_data(as_text=True)
-        self.assertIn('class="lotto-back lotto-back--icon"', lotto_html)
-        self.assertIn('class="lotto-back lotto-back--icon" href="/home" data-history-back', lotto_html)
+        self.assertNotIn('class="lotto-back lotto-back--icon"', lotto_html)
 
-        for path in ("/home", "/today", "/history"):
-            with self.subTest(path=path):
-                html = self.client.get(path).get_data(as_text=True)
-                self.assertNotIn('class="app-header-back"', html)
+        home_html = self.client.get("/home").get_data(as_text=True)
+        self.assertNotIn('class="app-header-back"', home_html)
 
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():

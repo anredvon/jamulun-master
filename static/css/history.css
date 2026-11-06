@@ -1,3 +1,4 @@
+.history-page{background:#f7f6fb;}
 .history-shell{box-sizing:border-box;min-height:100dvh;padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:calc(112px + env(safe-area-inset-bottom));}
 .history-hero{text-align:center;padding:8px 4px 14px;}
 .history-hero h1{margin:0;font-size:25px;line-height:1.2;font-weight:800;letter-spacing:-.055em;color:#2e273d;}

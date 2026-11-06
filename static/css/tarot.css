@@ -9,7 +9,7 @@
 .tarot-choice.is-muted { opacity: .2; filter: blur(.4px) saturate(.65); pointer-events: none; }
 .tarot-choice.is-picked { transform: translateY(-20px) scale(1.075); filter: drop-shadow(0 18px 22px rgba(102, 71, 191, .24)); }
 .tarot-card { display: block; position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 18px; background: #4f3aa5; box-shadow: 0 14px 30px rgba(63, 48, 112, .14); }
-.tarot-card-back { border: 2px solid #b5a7e6; box-shadow: 0 12px 24px rgba(45, 31, 87, .20); }
+.tarot-card-back { border: 1px solid #cfc5f7; box-shadow: 0 8px 18px rgba(45, 31, 87, .14); }
 .tarot-card-back img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .tarot-hint { max-width: 330px; margin: 22px auto 0; color: #8a8397; font-size: 12px; line-height: 1.6; text-align: center; }
 .tarot-picker.is-shuffling { pointer-events: none; }

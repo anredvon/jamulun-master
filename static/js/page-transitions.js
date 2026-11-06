@@ -29,47 +29,41 @@
   function installPageTransitions(window) {
     const document = window.document;
     const homePath = document.documentElement.dataset.homeUrl;
-    let pendingIntent = null;
-    let pendingDestination = null;
+    const fallbackTransitionKey = 'moneyflow-page-transition';
+    let fallbackNavigationPending = false;
 
-    function addTransitionType(event, phase) {
-      const activation = event.activation || window.navigation?.activation;
-      const destination = phase === 'swap' ? activation?.entry?.url || pendingDestination : activation?.entry?.url;
-      let destinationIsHome = false;
-      try {
-        destinationIsHome = Boolean(destination && new URL(destination, window.location.href).pathname === homePath);
-      } catch (_) {
-        destinationIsHome = false;
-      }
-
-      const navigationType = activation?.navigationType;
-      let pendingMatchesDestination = false;
-      try {
-        pendingMatchesDestination = Boolean(pendingIntent && destination && pendingDestination &&
-          new URL(destination, window.location.href).href === new URL(pendingDestination, window.location.href).href);
-      } catch (_) {
-        pendingMatchesDestination = false;
-      }
-      const intent = (pendingMatchesDestination ? pendingIntent : null) ||
-        (navigationType === 'traverse' ? 'traverse' : navigationType === 'push' ? 'push' : null);
-      const type = classifyTransition({
-        intent,
-        fromIndex: activation?.from?.index,
-        toIndex: activation?.entry?.index,
-        destinationIsHome,
-      });
-      if (type && event.viewTransition?.types?.add) {
-        try {
-          event.viewTransition.types.add(type);
-        } catch (_) {
-          // Unsupported or cancelled view transitions should never block navigation.
-        }
-      }
-      if (phase === 'swap') {
-        pendingIntent = null;
-        pendingDestination = null;
-      }
+    function playFallbackEntry(type) {
+      if (!type || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+      document.documentElement.dataset.transitionEnter = type;
+      window.setTimeout(() => {
+        delete document.documentElement.dataset.transitionEnter;
+      }, 320);
     }
+
+    function restoreFallbackEntry() {
+      let storedIntent = null;
+      try {
+        storedIntent = window.sessionStorage?.getItem(fallbackTransitionKey) || null;
+        window.sessionStorage?.removeItem(fallbackTransitionKey);
+      } catch (_) {
+        // Storage can be unavailable in private or embedded browser contexts.
+      }
+      if (storedIntent) {
+        playFallbackEntry(classifyTransition({
+          intent: storedIntent,
+          destinationIsHome: window.location.pathname === homePath,
+        }));
+        return;
+      }
+
+      const navigationType = window.performance?.getEntriesByType?.('navigation')?.[0]?.type;
+      if (navigationType === 'back_forward') playFallbackEntry('back');
+    }
+
+    restoreFallbackEntry();
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) playFallbackEntry('back');
+    });
 
     document.addEventListener('click', (event) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -92,29 +86,29 @@
         download: link.hasAttribute('download'),
         external: link.relList.contains('external'),
         sameDocument: destination.pathname === window.location.pathname && destination.search === window.location.search,
-        explicitBack: link.matches('.app-header-back, .lotto-back'),
+        explicitBack: link.matches('.lotto-back'),
         destinationIsHome: destination.pathname === homePath,
       });
       if (!intent) return;
 
-      pendingIntent = intent;
-      pendingDestination = destination.href;
-      if (intent === 'back' && link.hasAttribute('data-history-back') && window.history.length > 1) {
+      if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+        event.preventDefault();
+        if (fallbackNavigationPending) return;
+        fallbackNavigationPending = true;
+        const transitionType = classifyTransition({
+          intent,
+          destinationIsHome: destination.pathname === homePath,
+        });
         try {
-          const referrer = new URL(document.referrer);
-          if (referrer.origin === window.location.origin && referrer.href !== window.location.href) {
-            pendingDestination = referrer.href;
-            event.preventDefault();
-            window.history.back();
-          }
+          window.sessionStorage?.setItem(fallbackTransitionKey, transitionType || 'forward');
         } catch (_) {
-          // Empty or non-URL referrers use the link's Home fallback.
+          // Navigation remains functional even when transition state cannot be stored.
         }
+        if (transitionType) document.documentElement.dataset.transitionExit = transitionType;
+        window.setTimeout(() => window.location.assign(destination.href), transitionType === 'home-up' ? 150 : 140);
       }
     }, true);
 
-    window.addEventListener('pageswap', (event) => addTransitionType(event, 'swap'));
-    window.addEventListener('pagereveal', (event) => addTransitionType(event, 'reveal'));
   }
 
   const pageTransitions = { classifyLinkIntent, classifyTransition };
