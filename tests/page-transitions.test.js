@@ -5,44 +5,48 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { classifyLinkIntent, classifyTransition } = require('../static/js/page-transitions.js');
 
-function loadTransitionsInBrowserMock() {
+function loadTransitionsInBrowserMock({ referrer = '', historyLength = 1 } = {}) {
   const documentListeners = new Map();
   const windowListeners = new Map();
+  let historyBackCount = 0;
   class Element {}
   const window = {
     document: {
       documentElement: { dataset: { homeUrl: '/home' } },
+      referrer,
       addEventListener: (name, listener) => documentListeners.set(name, listener),
     },
     Element,
     URL,
     location: { href: 'https://moneyflow.example/tarot', origin: 'https://moneyflow.example' },
+    history: { length: historyLength, back: () => historyBackCount++ },
     addEventListener: (name, listener) => windowListeners.set(name, listener),
   };
   const source = fs.readFileSync(path.join(__dirname, '../static/js/page-transitions.js'), 'utf8');
   vm.runInNewContext(source, { window, URL, module: undefined });
-  return { window, documentListeners, windowListeners, Element };
+  return { window, documentListeners, windowListeners, Element, historyBackCount: () => historyBackCount };
 }
 
-function simulateLinkNavigation({ href, activationHref = href, explicitBack = false }) {
-  const browser = loadTransitionsInBrowserMock();
+function simulateLinkNavigation({ href, activationHref = href, explicitBack = false, historyBack = false, referrer = '' }) {
+  const browser = loadTransitionsInBrowserMock({ referrer, historyLength: historyBack ? 3 : 1 });
   const link = {
     href,
     target: '',
-    hasAttribute: () => false,
+    hasAttribute: (name) => historyBack && name === 'data-history-back',
     relList: { contains: () => false },
     matches: (selector) => explicitBack && selector === '.app-header-back, .lotto-back',
   };
   const target = new browser.Element();
   target.closest = (selector) => selector === 'a[href]' ? link : null;
-  const click = { target, button: 0, defaultPrevented: false, metaKey: false, ctrlKey: false, shiftKey: false, altKey: false };
+  const click = { target, button: 0, defaultPrevented: false, metaKey: false, ctrlKey: false, shiftKey: false, altKey: false,
+    preventDefault() { this.defaultPrevented = true; } };
   browser.documentListeners.get('click')(click);
   const types = new Set();
   browser.windowListeners.get('pageswap')({
     activation: { navigationType: 'push', from: { index: 0 }, entry: { index: 1, url: activationHref } },
     viewTransition: { types: { add: (type) => types.add(type) } },
   });
-  return { browser, types };
+  return { browser, types, click };
 }
 
 test('same-origin Home links receive explicit Home intent', () => {
@@ -75,6 +79,19 @@ test('a stale click intent cannot label a different navigation destination', () 
 
 test('delegated explicit back clicks set the back type when returning Home', () => {
   const { types } = simulateLinkNavigation({ href: 'https://moneyflow.example/home', explicitBack: true });
+  assert.deepEqual([...types], ['back']);
+});
+
+test('history back control returns to a same-origin referrer and marks a back transition', () => {
+  const { browser, types, click } = simulateLinkNavigation({
+    href: 'https://moneyflow.example/home',
+    activationHref: 'https://moneyflow.example/check',
+    explicitBack: true,
+    historyBack: true,
+    referrer: 'https://moneyflow.example/check',
+  });
+  assert.equal(click.defaultPrevented, true);
+  assert.equal(browser.historyBackCount(), 1);
   assert.deepEqual([...types], ['back']);
 });
 

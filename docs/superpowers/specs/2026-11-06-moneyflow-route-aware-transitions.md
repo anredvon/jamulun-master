@@ -20,6 +20,7 @@ Make navigation feel connected on iPhone: Home rises into view when a Home contr
 ## Interaction rules
 
 - Any same-origin Home link, including the header brand/home controls and in-result Home actions, uses `home-up`: the destination page rises from below with a short, restrained movement.
+- Feature pages expose a top-left back arrow. When entered from another same-origin page it follows browser history; a direct entry falls back to Home. Existing explicit flow-specific back targets remain authoritative.
 - Normal same-origin forward links use `forward`: the destination enters from the right.
 - Explicit back controls and browser history traversal to an earlier entry use `back`: the destination enters from the left and the outgoing page moves right.
 - Reloads, direct entry, same-page navigation, external links, downloads, and modified/new-tab clicks do not receive a directional animation.

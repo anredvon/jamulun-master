@@ -1,5 +1,5 @@
 <header class="app-header" aria-label="머니플로우 상단바">
-  {% if back_url %}<a class="app-header-back" href="{{ back_url }}" aria-label="이전 화면으로 돌아가기" title="뒤로가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>{% endif %}
+  {% if back_url or (active_tab|default('') not in ['home', 'today', 'history'] and not preserve_existing_header_art|default(false)) %}<a class="app-header-back" href="{{ back_url or url_for('home_page') }}"{% if not back_url %} data-history-back{% endif %} aria-label="이전 화면으로 돌아가기" title="뒤로가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>{% endif %}
   <a href="{{ url_for('home_page') }}" class="app-brand" aria-label="머니플로우 홈">
     <span class="app-brand-mark" aria-hidden="true">
       {% if preserve_existing_header_art %}<img src="{{ url_for('static', filename='images/ui/wealth_check/cat_icon.png') }}" alt="">

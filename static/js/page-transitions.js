@@ -99,6 +99,18 @@
 
       pendingIntent = intent;
       pendingDestination = destination.href;
+      if (intent === 'back' && link.hasAttribute('data-history-back') && window.history.length > 1) {
+        try {
+          const referrer = new URL(document.referrer);
+          if (referrer.origin === window.location.origin && referrer.href !== window.location.href) {
+            pendingDestination = referrer.href;
+            event.preventDefault();
+            window.history.back();
+          }
+        } catch (_) {
+          // Empty or non-URL referrers use the link's Home fallback.
+        }
+      }
     }, true);
 
     window.addEventListener('pageswap', (event) => addTransitionType(event, 'swap'));

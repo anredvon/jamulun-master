@@ -490,6 +490,23 @@ class SmokeTest(unittest.TestCase):
         self.assertIn('data-home-url="{{ url_for(\'home_page\') }}"', base_template)
         self.assertIn('filename=\'js/page-transitions.js\'', base_template)
 
+    def test_feature_pages_offer_a_history_back_arrow_with_home_fallback(self):
+        for path in ("/tarot", "/check"):
+            with self.subTest(path=path):
+                html = self.client.get(path).get_data(as_text=True)
+                self.assertIn('class="app-header-back"', html)
+                self.assertIn('data-history-back', html)
+                self.assertIn('href="/home"', html)
+
+        lotto_html = self.client.get("/lotto").get_data(as_text=True)
+        self.assertIn('class="lotto-back lotto-back--icon"', lotto_html)
+        self.assertIn('class="lotto-back lotto-back--icon" href="/home" data-history-back', lotto_html)
+
+        for path in ("/home", "/today", "/history"):
+            with self.subTest(path=path):
+                html = self.client.get(path).get_data(as_text=True)
+                self.assertNotIn('class="app-header-back"', html)
+
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():
             html = render_template(

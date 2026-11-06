@@ -70,7 +70,16 @@
 
 - [x] **Step 1: Review the diff** for API, database, service, deployment, and unrelated interaction changes. Changes are limited to the shared template, route transition JS/CSS, tests, CI test list, and this design/plan record.
 - [x] **Step 2: Commit the verified implementation on the isolated feature branch.** A remote push/PR is not part of this preparation because production work is being held for the user's evening session.
-- [x] **Step 3: Leave production deployment for the user's evening authorization/session; do not deploy in this preparation task.**
+- [x] **Step 3: Keep production deployment pending explicit release authorization.** The user has since authorized release; deployment is being handled in the combined release plan.
+
+### Task 4: Shared feature-page back arrow — complete
+
+**Files:** `templates/_app_header.html`, `static/js/page-transitions.js`, `tests/page-transitions.test.js`, `tests/test_deploy_smoke.py`
+
+- [x] Add failing browser-mock and Flask-render tests for a feature-page back arrow and same-origin history return with a Home fallback.
+- [x] Render the arrow on feature pages while keeping primary Today, History, and Home tabs uncluttered.
+- [x] Follow browser history only when there is a same-origin referrer and a prior history entry; keep explicit flow back targets intact.
+- [x] Use the same route-aware reverse transition for the header back control.
 
 ## Verification evidence
 
