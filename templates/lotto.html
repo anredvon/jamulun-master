@@ -6,9 +6,10 @@
 <div class="page-shell lotto-page">
   <div class="shell lotto-shell">
     {% set active_tab = 'home' %}
+    {% set preserve_existing_header_art = true %}
     {% include '_app_header.html' %}
 
-    <a class="lotto-back" href="{{ url_for('home_page') }}" aria-label="홈으로 돌아가기"><span aria-hidden="true">‹</span> 홈</a>
+    <a class="lotto-back" href="{{ url_for('home_page') }}" aria-label="뒤로가기" title="뒤로가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>
     <main class="lotto-experience" id="lotto-experience" data-state="entry">
       <section class="lotto-entry" id="lotto-entry" aria-labelledby="lotto-title">
         <div class="lotto-entry-sky" aria-hidden="true">
