@@ -56,5 +56,5 @@
 
 ### Task 4: Release
 
-- [ ] Run the repository CI gate through GitHub; no local automated test suite is added or run for this visual-only extension.
+- [ ] Run the focused existing deployment smoke tests locally and the full repository CI gate through GitHub; do not add unrelated test cases.
 - [ ] Merge only after CI passes, deploy the exact merge SHA via the existing Lightsail release script, and verify health plus production Today/Home/History rendering.

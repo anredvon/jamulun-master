@@ -224,11 +224,17 @@ class SmokeTest(unittest.TestCase):
         for path in ("/home", "/history", "/today"):
             with self.subTest(path=path):
                 html = self.client.get(path).get_data(as_text=True)
-                self.assertIn('src="/static/images/ui/wealth_check/cat_icon.png"', html)
+                self.assertIn('feature-illustration--moneyflow', html)
                 self.assertIn('class="app-header-home', html)
-                self.assertIn('src="/static/images/ui/icons/home-mascot.png"', html)
+                self.assertIn('feature-illustration--home', html)
                 self.assertIn('aria-label="홈"', html)
                 self.assertNotIn('<svg viewBox="0 0 24 24"', html)
+
+        lotto_html = self.client.get("/lotto").get_data(as_text=True)
+        self.assertIn('src="/static/images/ui/wealth_check/cat_icon.png"', lotto_html)
+        self.assertIn('src="/static/images/ui/icons/home-mascot.png"', lotto_html)
+        self.assertIn('class="lotto-back lotto-back--icon"', lotto_html)
+        self.assertIn('aria-label="뒤로가기"', lotto_html)
 
     def test_today_uses_canonical_quote_and_today_raster_icons(self):
         html = self.client.get("/today").get_data(as_text=True)
@@ -361,17 +367,18 @@ class SmokeTest(unittest.TestCase):
 
         for relative in (
             "static/css/feature-icons.css",
+            "static/images/ui/icons/feature-outline.png",
             "static/images/ui/icons/feature-mascots.png",
-            "static/images/ui/icons/bottom-nav-mascots.png",
+            "static/images/ui/icons/bottom-nav-outline.png",
         ):
             self.assertTrue((repo_root / relative).is_file(), f"missing raster icon asset: {relative}")
 
         feature_css = (repo_root / "static/css/feature-icons.css").read_text()
-        for name in ("tarot", "palm", "lotto", "check", "future", "spending", "money", "quote", "today", "history"):
-            self.assertRegex(feature_css, rf"\.feature-illustration--{name}\s*\{{\s*background-position:")
+        for name in ("tarot", "palm", "lotto", "check", "future", "spending", "money", "quote", "today", "history", "home", "moneyflow"):
+            self.assertRegex(feature_css, rf"\.feature-illustration--{name}\s*\{{[^}}]*background-position:")
         self.assertRegex(
             feature_css,
-            r"\.feature-illustration--check\s*\{\s*background-position:\s*0\s+50%\s*;",
+            r"\.feature-illustration--check\s*\{\s*background-position:\s*100%\s+0\s*;",
         )
 
     def test_bottom_navigation_divider_tracks_the_menu_grid_inset(self):

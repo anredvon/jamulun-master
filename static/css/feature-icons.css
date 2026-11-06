@@ -10,7 +10,7 @@
 }
 .feature-illustration--tarot{background-position:0 0;}
 .feature-illustration--palm{background-position:33.3333% 0;}
-.feature-illustration--lotto{background-image:url("../images/ui/icons/feature-mascots.png");background-size:300% 300%;background-position:100% 0;}
+.feature-illustration--lotto{background-position:100% 0;background-image:url("../images/ui/icons/feature-mascots.png");background-size:300% 300%;}
 .feature-illustration--check{background-position:100% 0;}
 .feature-illustration--future{background-position:0 50%;}
 .feature-illustration--spending{background-position:33.3333% 50%;}
