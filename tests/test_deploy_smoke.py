@@ -495,6 +495,7 @@ class SmokeTest(unittest.TestCase):
         self.assertIn("moneyflow-page-transition", transition_js)
         self.assertIn("performance?.getEntriesByType", transition_js)
         self.assertIn("moneyflowOutgoingDestination", transition_js)
+        self.assertIn("addEventListener('pagehide'", transition_js)
         self.assertNotIn('addEventListener(\'pageshow\'', transition_js)
 
     def test_all_non_home_pages_offer_a_visible_home_back_control(self):
