@@ -474,6 +474,22 @@ class SmokeTest(unittest.TestCase):
         self.assertRegex(chrome_css, r"\.app-bottom-nav::before\s*\{[^}]*right:\s*var\(--nav-inline-inset\)")
         self.assertRegex(chrome_css, r"@media\s*\(max-width:\s*380px\)[\s\S]*--nav-inline-inset:\s*6px")
 
+    def test_route_aware_page_transitions_keep_app_chrome_steady_and_respect_reduced_motion(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        chrome_css = (repo_root / "static/css/app-chrome.css").read_text()
+        base_template = (repo_root / "templates/base.html").read_text()
+
+        self.assertRegex(chrome_css, r"@view-transition\s*\{\s*navigation:\s*auto;")
+        for transition in ("home-up", "forward", "back"):
+            with self.subTest(transition=transition):
+                self.assertIn(f":active-view-transition-type({transition})", chrome_css)
+        self.assertRegex(chrome_css, r"\.app-header\s*\{[^}]*view-transition-name:\s*app-header")
+        self.assertRegex(chrome_css, r"\.app-bottom-nav\s*\{[^}]*view-transition-name:\s*app-bottom-nav")
+        self.assertRegex(chrome_css, r"\.has-app-chrome \.page-shell\s*\{[^}]*view-transition-name:page-shell")
+        self.assertIn("@media(prefers-reduced-motion:reduce)", chrome_css)
+        self.assertIn('data-home-url="{{ url_for(\'home_page\') }}"', base_template)
+        self.assertIn('filename=\'js/page-transitions.js\'', base_template)
+
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():
             html = render_template(
