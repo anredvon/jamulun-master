@@ -43,4 +43,5 @@
 - [x] Implement metadata recording, matching and inverse mapping; add `home-down` CSS entry keyframe. Keep existing transition distances and timings.
 - [x] Run `node --test tests/page-transitions.test.js`, then the complete project test commands identified from repository documentation.
 - [x] Review the diff for scope: transition JS/CSS, focused tests, and this plan/spec only.
+- [x] Clear transient entry/exit attributes on `pagehide` so a BFCache-cached page returns at its resting transform.
 

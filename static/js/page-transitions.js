@@ -85,6 +85,10 @@
 
     // BFCache restores keep this document alive. Leave their interactive browser transition untouched.
     restoreFallbackEntry();
+    window.addEventListener('pagehide', () => {
+      delete document.documentElement.dataset.transitionExit;
+      delete document.documentElement.dataset.transitionEnter;
+    });
 
     document.addEventListener('click', (event) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

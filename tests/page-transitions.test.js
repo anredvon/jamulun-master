@@ -66,11 +66,12 @@ test('same-origin Home links receive explicit Home intent', () => {
   assert.equal(classifyLinkIntent({ destinationIsHome: true }), 'home');
 });
 
-test('browser entry point exposes classifiers and installs only the click listener', () => {
+test('browser entry point exposes classifiers and installs click and pagehide listeners', () => {
   const { window, documentListeners, windowListeners } = loadTransitionsInBrowserMock();
   assert.equal(typeof window.MoneyFlowPageTransitions.classifyTransition, 'function');
   assert.equal(typeof window.MoneyFlowPageTransitions.classifyLinkIntent, 'function');
   assert.equal(typeof documentListeners.get('click'), 'function');
+  assert.equal(typeof windowListeners.get('pagehide'), 'function');
   assert.equal(windowListeners.has('pageshow'), false);
 });
 
@@ -133,6 +134,14 @@ test('BFCache restoration leaves the interactive browser transition in control',
   const browser = loadTransitionsInBrowserMock();
   assert.equal(browser.windowListeners.has('pageshow'), false);
   assert.equal(browser.window.document.documentElement.dataset.transitionEnter, undefined);
+});
+
+test('pagehide clears the outgoing transform before the browser caches the page', () => {
+  const browser = loadTransitionsInBrowserMock();
+  simulateLink(browser, { href: 'https://moneyflow.example/home' });
+  assert.equal(browser.window.document.documentElement.dataset.transitionExit, 'home-up');
+  browser.windowListeners.get('pagehide')({ persisted: true });
+  assert.equal(browser.window.document.documentElement.dataset.transitionExit, undefined);
 });
 
 test('navigation metadata preserves existing history state', () => {
