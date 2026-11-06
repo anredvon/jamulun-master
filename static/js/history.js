@@ -201,7 +201,6 @@
     } else {
       addTextSection(detailContent, '저장된 내용', item.summary || item.title);
     }
-    detailContent.append(node('p', 'history-detail-disclaimer', '타로는 재미와 자기 성찰을 위한 콘텐츠예요. 재정 상태나 미래를 예측하지 않아요.'));
   }
 
   function renderPalm(item) {

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-home-url="{{ url_for('home_page') }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/feature-icons.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/ui-quality-pass.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/brand-refresh.css') }}">
+  <script defer src="{{ url_for('static', filename='js/page-transitions.js') }}"></script>
   {% block styles %}{% endblock %}
 </head>
 <body class="app-body {% block body_class %}{% endblock %}">

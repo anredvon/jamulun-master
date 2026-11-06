@@ -50,7 +50,7 @@
       date: item.date || formatDate(createdAt),
       createdAt,
       summary: type === 'tarot'
-        ? '재미와 자기 성찰을 위한 기록'
+        ? '오늘의 마음을 돌아본 기록'
         : (item.summary ? String(item.summary) : ''),
       meta: item.meta && typeof item.meta === 'object' && !Array.isArray(item.meta) ? item.meta : {}
     };
