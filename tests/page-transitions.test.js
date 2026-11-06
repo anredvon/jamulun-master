@@ -5,7 +5,12 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { classifyLinkIntent, classifyTransition } = require('../static/js/page-transitions.js');
 
-function loadTransitionsInBrowserMock({ reducedMotion = false } = {}) {
+function loadTransitionsInBrowserMock({
+  reducedMotion = false,
+  navigationType = 'navigate',
+  referrer = '',
+  historyState = { retained: 'existing-state' },
+} = {}) {
   const documentListeners = new Map();
   const windowListeners = new Map();
   const storage = new Map();
@@ -14,7 +19,7 @@ function loadTransitionsInBrowserMock({ reducedMotion = false } = {}) {
   const window = {
     document: {
       documentElement: { dataset: { homeUrl: '/home' } },
-      referrer: '',
+      referrer,
       addEventListener: (name, listener) => documentListeners.set(name, listener),
     },
     Element,
@@ -30,7 +35,11 @@ function loadTransitionsInBrowserMock({ reducedMotion = false } = {}) {
       setItem: (key, value) => storage.set(key, value),
       removeItem: (key) => storage.delete(key),
     },
-    performance: { getEntriesByType: () => [{ type: 'navigate' }] },
+    performance: { getEntriesByType: () => [{ type: navigationType }] },
+    history: {
+      state: historyState,
+      replaceState(state) { this.state = state; },
+    },
     matchMedia: () => ({ matches: reducedMotion }),
     setTimeout: (callback) => { timeoutCallback = callback; return 1; },
     addEventListener: (name, listener) => windowListeners.set(name, listener),
@@ -57,12 +66,12 @@ test('same-origin Home links receive explicit Home intent', () => {
   assert.equal(classifyLinkIntent({ destinationIsHome: true }), 'home');
 });
 
-test('browser entry point exposes classifiers and installs click and pageshow listeners', () => {
+test('browser entry point exposes classifiers and installs only the click listener', () => {
   const { window, documentListeners, windowListeners } = loadTransitionsInBrowserMock();
   assert.equal(typeof window.MoneyFlowPageTransitions.classifyTransition, 'function');
   assert.equal(typeof window.MoneyFlowPageTransitions.classifyLinkIntent, 'function');
   assert.equal(typeof documentListeners.get('click'), 'function');
-  assert.equal(typeof windowListeners.get('pageshow'), 'function');
+  assert.equal(windowListeners.has('pageshow'), false);
 });
 
 test('forward navigation plays an exit and entry motion without a cross-document transition API', () => {
@@ -83,10 +92,62 @@ test('the visible Home control uses the upward Home transition', () => {
   assert.equal(browser.storage.get('moneyflow-page-transition'), 'home-up');
 });
 
-test('browser Back and edge-swipe restoration use a reverse entry motion', () => {
-  const browser = loadTransitionsInBrowserMock();
-  browser.windowListeners.get('pageshow')({ persisted: true });
+test('matched browser Back after Home entry uses the inverse vertical motion', () => {
+  const browser = loadTransitionsInBrowserMock({
+    navigationType: 'back_forward',
+    referrer: 'https://moneyflow.example/home',
+    historyState: {
+      retained: 'existing-state',
+      moneyflowOutgoingTransition: 'home-up',
+      moneyflowOutgoingDestination: 'https://moneyflow.example/home',
+    },
+  });
+  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, 'home-down');
+});
+
+test('matched browser Forward after a backward feature entry uses the inverse horizontal motion', () => {
+  const browser = loadTransitionsInBrowserMock({
+    navigationType: 'back_forward',
+    referrer: 'https://moneyflow.example/tarot',
+    historyState: {
+      moneyflowOutgoingTransition: 'back',
+      moneyflowOutgoingDestination: 'https://moneyflow.example/tarot',
+    },
+  });
+  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, 'forward');
+});
+
+test('unmatched history metadata falls back to horizontal Back motion', () => {
+  const browser = loadTransitionsInBrowserMock({
+    navigationType: 'back_forward',
+    referrer: 'https://moneyflow.example/history',
+    historyState: {
+      moneyflowOutgoingTransition: 'home-up',
+      moneyflowOutgoingDestination: 'https://moneyflow.example/home',
+    },
+  });
   assert.equal(browser.window.document.documentElement.dataset.transitionEnter, 'back');
+});
+
+test('BFCache restoration leaves the interactive browser transition in control', () => {
+  const browser = loadTransitionsInBrowserMock();
+  assert.equal(browser.windowListeners.has('pageshow'), false);
+  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, undefined);
+});
+
+test('navigation metadata preserves existing history state', () => {
+  const browser = loadTransitionsInBrowserMock();
+  simulateLink(browser, { href: 'https://moneyflow.example/home' });
+  assert.equal(browser.window.history.state.retained, 'existing-state');
+  assert.equal(browser.window.history.state.moneyflowOutgoingTransition, 'home-up');
+  assert.equal(browser.window.history.state.moneyflowOutgoingDestination, 'https://moneyflow.example/home');
+});
+
+test('the Today bottom-navigation destination remains a horizontal feature transition', () => {
+  const browser = loadTransitionsInBrowserMock();
+  simulateLink(browser, { href: 'https://moneyflow.example/today' });
+  assert.equal(browser.window.document.documentElement.dataset.transitionExit, 'forward');
+  assert.equal(browser.window.history.state.moneyflowOutgoingTransition, 'forward');
 });
 
 test('reduced motion and modified clicks retain normal browser navigation', () => {

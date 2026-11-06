@@ -486,6 +486,7 @@ class SmokeTest(unittest.TestCase):
         for transition in ("home-up", "forward", "back"):
             self.assertIn(f'data-transition-exit="{transition}"', chrome_css)
             self.assertIn(f'data-transition-enter="{transition}"', chrome_css)
+        self.assertIn('data-transition-enter="home-down"', chrome_css)
         self.assertRegex(history_css, r"\.history-page\s*\{[^}]*background:\s*(?:#|rgb|linear-gradient)")
         self.assertRegex(chrome_css, r"\.app-header\s*\{[^}]*grid-template-columns:\s*56px minmax\(0,1fr\) 44px")
         self.assertIn('data-home-url="{{ url_for(\'home_page\') }}"', base_template)
@@ -493,7 +494,8 @@ class SmokeTest(unittest.TestCase):
         transition_js = (repo_root / "static/js/page-transitions.js").read_text()
         self.assertIn("moneyflow-page-transition", transition_js)
         self.assertIn("performance?.getEntriesByType", transition_js)
-        self.assertIn("pageshow", transition_js)
+        self.assertIn("moneyflowOutgoingDestination", transition_js)
+        self.assertNotIn('addEventListener(\'pageshow\'', transition_js)
 
     def test_all_non_home_pages_offer_a_visible_home_back_control(self):
         for path in ("/today", "/history", "/tarot", "/check", "/palm", "/lotto", "/history?filter=lotto"):
