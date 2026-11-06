@@ -1,27 +1,25 @@
-/* Shared feature sprites: one canonical illustration follows a feature into History. */
+/* Canonical cat illustrations stay consistent wherever a feature appears. */
 .feature-illustration{
   display:block;
   flex:none;
   width:44px;
-  height:44px;
-  background-image:url("../images/ui/icons/feature-outline.png");
+  height:29.33px;
+  background-image:url("../images/ui/icons/feature-mascots.png");
   background-repeat:no-repeat;
-  background-size:400% 300%;
+  background-size:300% 300%;
 }
 .feature-illustration--tarot{background-position:0 0;}
-.feature-illustration--palm{background-position:33.3333% 0;}
-.feature-illustration--lotto{background-position:100% 0;background-image:url("../images/ui/icons/feature-mascots.png");background-size:300% 300%;}
-.feature-illustration--check{background-position:100% 0;}
+.feature-illustration--palm{background-position:50% 0;}
+.feature-illustration--lotto{background-position:100% 0;}
+.feature-illustration--check{background-position:0 50%;}
 .feature-illustration--future{background-position:0 50%;}
-.feature-illustration--spending{background-position:33.3333% 50%;}
-.feature-illustration--money{background-position:66.6667% 50%;}
-.feature-illustration--quote{background-position:100% 50%;}
-.feature-illustration--today{background-position:0 100%;}
-.feature-illustration--history{background-position:33.3333% 100%;}
-.feature-illustration--home{background-position:66.6667% 100%;}
-.feature-illustration--moneyflow{background-position:100% 100%;}
+.feature-illustration--spending{background-position:50% 50%;}
+.feature-illustration--money{background-position:100% 50%;}
+.feature-illustration--quote{background-position:0 100%;}
+.feature-illustration--today{background-position:50% 100%;}
+.feature-illustration--history{background-position:100% 100%;}
 
-/* Dedicated B-direction mini illustrations for the fixed bottom tabs. */
+/* Dedicated, monochrome line icons for the fixed bottom tabs. */
 .nav-illustration{
   display:block;
   flex:none;
