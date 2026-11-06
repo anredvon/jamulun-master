@@ -3,7 +3,7 @@
 재물운 마스터의 실제 웹 UI 배치를 위한 production PNG asset pack.
 
 ## 규칙
-- production asset은 모두 512×512 RGBA PNG입니다.
+- 개별 production 일러스트는 512×512 RGBA PNG입니다. 스프라이트 아틀라스는 파일별 크기를 사용하며 Manifest의 목적과 CSS 매핑을 기준으로 배치합니다.
 - 모든 파일은 실제 alpha transparency를 갖습니다.
 - HTML 텍스트/버튼을 가리는 방식으로 배치하지 않습니다.
 - 모바일에서 권장 표시 크기는 대체로 36~160 CSS px입니다.
@@ -45,3 +45,7 @@
 | `test/test_speech.png` | Test 격려 말풍선 |
 | `test/test_target.png` | Test 목표 아이콘 |
 | `test/test_think.png` | Test 생각 구름 |
+| `icons/bottom-nav-outline.png` | 오늘·타로·체크·기록 공통 2×2 단색 선 아이콘 스프라이트 |
+| `luck/color-atlas.png` | 오늘 행운 색 7종 스프라이트 |
+| `luck/dice-atlas.png` | 주사위 눈 1–6 스프라이트 |
+| `luck/compass-atlas.png` | 8방위 나침반 스프라이트 |

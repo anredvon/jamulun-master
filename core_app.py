@@ -126,13 +126,15 @@ def intro_page(test_type):
     data = intro_map.get(test_type, intro_map["money"])
     return render_template("intro.html", test_type=test_type, test_label=test_label, intro_title=test_label,
                            intro_badge=data["badge"], intro_heading_before=data["heading_before"],
-                           intro_heading_highlight=data["heading_highlight"], intro_desc=data["desc"], intro_bullets=data["bullets"])
+                           intro_heading_highlight=data["heading_highlight"], intro_desc=data["desc"], intro_bullets=data["bullets"],
+                           back_url=url_for("check_page"))
 
 @app.route("/test/<test_type>")
 def test_page(test_type):
     if test_type not in VALID_TEST_TYPES:
         return redirect(url_for("home_page"))
-    return render_template("test.html", test_type=test_type, test_label=TEST_TYPE_LABELS.get(test_type, test_type))
+    return render_template("test.html", test_type=test_type, test_label=TEST_TYPE_LABELS.get(test_type, test_type),
+                           back_url=url_for("intro_page", test_type=test_type))
 
 @app.route("/result/<int:session_id>")
 def result_page(session_id):
@@ -144,7 +146,8 @@ def result_page(session_id):
     result_tags = _result_tags(ts.test_type, result.result_type if result else None)
     test_label = TEST_TYPE_LABELS.get(ts.test_type, ts.test_type)
     return render_template("result.html", ts=ts, result=result, result_heading=result_heading,
-                           result_tags=result_tags, test_type=ts.test_type, test_label=test_label)
+                           result_tags=result_tags, test_type=ts.test_type, test_label=test_label,
+                           back_url=url_for("check_page"))
 
 @app.route("/insight/<int:session_id>")
 def insight_page(session_id):
@@ -154,7 +157,8 @@ def insight_page(session_id):
     if ts.result is None:
         return redirect(url_for("result_page", session_id=session_id))
     result = TestResult.query.filter_by(session_id=session_id).first()
-    return render_template("insight.html", ts=ts, result=result)
+    return render_template("insight.html", ts=ts, result=result,
+                           back_url=url_for("result_page", session_id=session_id))
 
 @app.route("/share/<int:session_id>")
 def share_page(session_id):

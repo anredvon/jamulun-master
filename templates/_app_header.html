@@ -1,4 +1,5 @@
 <header class="app-header" aria-label="머니플로우 상단바">
+  {% if back_url %}<a class="app-header-back" href="{{ back_url }}" aria-label="이전 화면으로 돌아가기" title="뒤로가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>{% endif %}
   <a href="{{ url_for('home_page') }}" class="app-brand" aria-label="머니플로우 홈">
     <span class="app-brand-mark" aria-hidden="true"><img src="{{ url_for('static', filename='images/ui/wealth_check/cat_icon.png') }}" alt=""></span>
     <span class="app-brand-copy">
