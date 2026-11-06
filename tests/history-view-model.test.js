@@ -52,7 +52,7 @@ test('legacy Tarot History hides stored scores and predictive summaries without 
   const view = buildHistoryView([legacy]);
 
   assert.equal(Object.hasOwn(view.rows[0], 'score'), false);
-  assert.equal(view.rows[0].summary, '재미와 자기 성찰을 위한 기록');
+  assert.equal(view.rows[0].summary, '오늘의 마음을 돌아본 기록');
   assert.equal(legacy.score, 84);
   assert.match(legacy.summary, /수익/);
 });

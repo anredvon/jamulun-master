@@ -12,7 +12,7 @@ from palm_integration import register_palm
 from tarot_integration import register_tarot
 from today_integration import register_today
 from lotto_integration import register_lotto
-from tarot_cards import TAROT_CARDS
+from tarot_cards import LEGACY_TAROT_CARDS, TAROT_CARDS
 
 register_tarot(app)
 register_palm(app)
@@ -28,7 +28,9 @@ def history_page():
     Completed results are stored in the browser's localStorage, so anonymous users
     only see records created on their own device instead of server-wide sessions.
     """
-    return render_template("history.html", tarot_cards=TAROT_CARDS)
+    # Old local records store the original card ids. Keep those images resolvable
+    # alongside the new deck without putting legacy cards back in the draw pool.
+    return render_template("history.html", tarot_cards=LEGACY_TAROT_CARDS + TAROT_CARDS)
 
 
 __all__ = ["app", "db"]

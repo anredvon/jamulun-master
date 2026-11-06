@@ -17,7 +17,7 @@ os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
 from app import app
 from models import db
-from tarot_cards import TAROT_CARDS
+from tarot_cards import LEGACY_TAROT_CARDS, TAROT_CARDS
 
 
 class SmokeTest(unittest.TestCase):
@@ -162,23 +162,80 @@ class SmokeTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         html = response.get_data(as_text=True)
         self.assertIn("무작위", html)
-        self.assertIn("재미와 자기 성찰", html)
+        self.assertIn("오늘의 마음을 비춰보는 타로 한 장, 가볍게 즐겨보세요.", html)
         self.assertNotIn("한 장 골라보세요", html)
         self.assertNotIn('class="tarot-score-pill"', html)
 
     def test_tarot_card_copy_uses_reflection_questions_not_financial_predictions(self):
-        self.assertEqual(len(TAROT_CARDS), 24)
-        prediction_terms = (
-            "좋아집니다", "유리합니다", "기대해볼", "수익", "손실", "수입", "재물운",
-            "기회가", "타이밍", "가능성이 있습니다", "결제", "지출", "예산", "재정적",
+        self.assertEqual(len(TAROT_CARDS), 78)
+        self.assertEqual(sum(card.get("arcana") == "major" for card in TAROT_CARDS), 22)
+        self.assertEqual(sum(card.get("arcana") == "minor" for card in TAROT_CARDS), 56)
+        self.assertEqual(
+            {suit: sum(card.get("suit") == suit for card in TAROT_CARDS) for suit in ("wands", "cups", "swords", "pentacles")},
+            {"wands": 14, "cups": 14, "swords": 14, "pentacles": 14},
         )
+        self.assertEqual(len({card["id"] for card in TAROT_CARDS}), 78)
+        self.assertEqual(len({card["image"] for card in TAROT_CARDS}), 78)
+        missing_art = [card["image"] for card in TAROT_CARDS
+                       if not (Path(__file__).resolve().parents[1] / "static" / card["image"]).is_file()]
+        self.assertEqual(missing_art, [])
+        self.assertEqual(len(LEGACY_TAROT_CARDS), 24)
+        self.assertTrue(all(card["image"].startswith("images/tarot/app_cards/")
+                            for card in LEGACY_TAROT_CARDS))
+        prediction_terms = ("수익을 보장", "투자하세요", "반드시 돈이 들어", "부자가 됩니다", "매수하세요", "대출받으세요")
         for card in TAROT_CARDS:
             with self.subTest(card=card["id"]):
-                self.assertTrue(card["flow"].endswith("?"), card["flow"])
+                self.assertGreaterEqual(len(card["flow"]), 80, card["flow"])
                 self.assertTrue(card["caution"].endswith("?"), card["caution"])
                 self.assertTrue(card["line"].endswith("?"), card["line"])
+                self.assertNotEqual(card["caution"], card["line"])
                 copy = " ".join((card["status"], card["flow"], card["caution"], card["line"]))
                 self.assertFalse(any(term in copy for term in prediction_terms), copy)
+
+    def test_tarot_history_catalog_keeps_legacy_cards_and_includes_new_cards(self):
+        response = self.client.get("/history")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        match = re.search(r'<script type="application/json" id="history-tarot-data">(.*?)</script>', html)
+        self.assertIsNotNone(match)
+        catalog = json.loads(match.group(1))
+        card_ids = {card["id"] for card in catalog}
+        self.assertIn("temperance", card_ids)
+        self.assertIn("major-temperance", card_ids)
+        self.assertEqual(len(catalog), 102)
+
+    def test_tarot_picker_has_single_concise_framing_and_no_collection_ui(self):
+        response = self.client.get("/tarot")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn("오늘의 마음을 비춰보는 타로 한 장, 가볍게 즐겨보세요.", html)
+        self.assertIn("78장", html)
+        self.assertNotIn("24장", html)
+        self.assertNotIn("카드 발견", html)
+        self.assertNotIn("NEW CARD", html)
+        self.assertNotIn("moneyflow_tarot_collection_v2", html)
+        script = (Path(__file__).resolve().parents[1] / "static" / "js" / "tarot.js").read_text()
+        styles = (Path(__file__).resolve().parents[1] / "static" / "css" / "tarot.css").read_text()
+        self.assertNotIn("collection", script.lower())
+        self.assertNotIn("collection", styles.lower())
+        self.assertIn("cards[Math.floor(Math.random() * cards.length)]", script)
+
+    def test_tarot_result_uses_korean_title_natural_flow_label_and_defined_card_edges(self):
+        response = self.client.get("/tarot")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn('class="tarot-report-label">오늘의 흐름</span>', html)
+        self.assertNotIn('class="tarot-report-label">생각해볼 거리</span>', html)
+        self.assertNotIn('id="tarot-card-en"', html)
+
+        script = (Path(__file__).resolve().parents[1] / "static" / "js" / "tarot.js").read_text()
+        self.assertIn("elements.reportTitle.textContent = selected.title;", script)
+        self.assertNotIn("${selected.title} · ${selected.en}", script)
+        self.assertNotIn("elements.en.textContent", script)
+
+        styles = (Path(__file__).resolve().parents[1] / "static" / "css" / "tarot.css").read_text()
+        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*border:\s*2px solid")
+        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*box-shadow:\s*0 12px 24px rgba\(45, 31, 87, \.20\)")
 
     def test_home_links_money_quizzes_to_the_check_hub(self):
         response = self.client.get("/home")
