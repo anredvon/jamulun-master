@@ -4,7 +4,7 @@
 
 **Goal:** Reverse the Home vertical transition during a normal browser history return and prevent custom motion from competing with iPhone Safari's native BFCache edge-swipe transition.
 
-**Architecture:** The current history entry records its outgoing transition and destination before a custom same-origin navigation. A restored non-BFCache entry compares its referrer with that destination and plays the inverse transition. A BFCache `pageshow` does not play CSS motion.
+**Architecture:** The current history entry records its outgoing transition and destination before a custom same-origin navigation. A restored non-BFCache entry compares its referrer with that destination and plays the inverse transition. BFCache keeps the browser's interactive gesture, clears stale transforms, and unlocks the next navigation.
 
 **Tech Stack:** Vanilla JavaScript, CSS keyframes, Node built-in test runner.
 

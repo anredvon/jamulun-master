@@ -9,7 +9,7 @@ Make returning from Home feel like the inverse of entering Home, and avoid layer
 - Keep `/home` as the Home destination and keep `/today` as its separate bottom-navigation destination.
 - Keep feature-to-Home entry as an upward movement.
 - On a non-BFCache browser history return, infer the inverse of the transition recorded on the destination history entry. In particular, `home-up` returns with `home-down`.
-- On a `pageshow` event with `persisted === true`, let the browser own the transition; do not add a CSS entry animation.
+- On BFCache `pageshow` with `persisted === true`, let the browser own the gesture; clear stale transforms and unlock the next navigation without adding CSS entry motion.
 - Keep a plain horizontal `back` entry as the fallback when direction metadata is absent or cannot be matched.
 - Preserve reduced-motion behavior, API/DB/server configuration, route behavior, and the existing random Tarot and daily redraw behavior.
 
