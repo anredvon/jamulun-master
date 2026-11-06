@@ -26,6 +26,20 @@
 .quote-attribution a{display:inline-flex;align-items:center;gap:4px;min-height:34px;color:#7051ca;font-size:11px;line-height:1.4;font-weight:500;text-decoration:none;white-space:nowrap;}
 .quote-source-title{display:block;margin-top:0;color:#9690a0;font-size:10px;line-height:1.35;font-weight:400;}
 .horoscope-card{padding:22px 20px 19px;border-color:#ebe4fa;background:linear-gradient(145deg,#f8f5ff,#fff 76%);box-shadow:0 7px 20px rgba(68,45,131,.05);}
+.luck-points{padding:15px 14px 14px;border:1px solid #e7def7;border-radius:20px;background:linear-gradient(145deg,rgba(250,247,255,.96),#fff 82%);box-shadow:0 7px 20px rgba(68,45,131,.045);}
+.luck-points-heading{display:flex;align-items:center;gap:7px;margin:0 1px 11px;min-width:0;}
+.luck-points-heading h2{margin:0;color:#5f43b8;font-size:13px;line-height:1.3;font-weight:700;letter-spacing:-.025em;}
+.luck-points-heading>span:last-child{margin-left:auto;color:#9a91a5;font-size:9px;white-space:nowrap;}
+.luck-points-spark{display:grid;place-items:center;width:22px;height:22px;border-radius:8px;background:#f0eaff;color:#835ed5;font-size:14px;}
+.luck-points-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+.luck-point{display:flex;min-width:0;min-height:112px;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px;border:1px solid #eee8f7;border-radius:16px;background:rgba(255,255,255,.78);}
+.luck-point-art{display:block;width:42px;height:42px;margin:0 0 5px;background-repeat:no-repeat;}
+.luck-point-art--dice{width:52px;height:52px;margin:-5px -5px 0;}
+.luck-point-art--color{background-image:url('../images/ui/luck/color-atlas.png');background-size:400% 200%;}
+.luck-point-art--dice{background-image:url('../images/ui/luck/dice-atlas.png');background-size:300% 200%;}
+.luck-point-art--compass{background-image:url('../images/ui/luck/compass-atlas.png');background-size:400% 200%;}
+.luck-point-label{color:#93899f;font-size:10px;line-height:1.3;}
+.luck-point strong{margin-top:3px;color:#382b58;font-size:14px;line-height:1.25;font-weight:700;}
 .horoscope-heading-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .horoscope-detail{display:grid;gap:11px;margin:15px 0 12px;}
 .horoscope-detail-block{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:start;gap:9px;}
@@ -34,9 +48,8 @@
 .horoscope-detail-icon.action-icon{background:#eef8f2;color:#4d9c70;font-size:17px;font-weight:600;}
 .horoscope-detail-block h3{margin:0 0 3px;color:#694bc5;font-size:12px;line-height:1.3;font-weight:600;letter-spacing:-.02em;}
 .horoscope-copy,.horoscope-action{margin:0;color:#393247;font-size:13px;line-height:1.5;font-weight:400;letter-spacing:-.02em;}
-.horoscope-lucky{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:0 0 11px;padding:6px 10px;border:1px solid #eee6ff;border-radius:999px;background:#f5f0ff;color:#786993;font-size:11px;line-height:1.35;font-weight:400;}
-.horoscope-lucky>span{color:#7954d0;font-size:15px;}
-.horoscope-lucky strong{color:#6546bc;font-size:11px;font-weight:600;}
+.horoscope-lucky{display:block;max-width:100%;margin:0 0 11px;padding:8px 10px;border:1px solid #eee6ff;border-radius:13px;background:#f7f3ff;color:#786993;font-size:11px;line-height:1.5;font-weight:400;}
+.horoscope-lucky strong{color:#6546bc;font-size:11px;font-weight:700;}
 .zodiac-select-trigger{display:inline-flex;align-items:center;gap:6px;min-height:42px;max-width:150px;padding:5px 10px;border:1px solid #e8e0fb;border-radius:14px;background:#f7f3ff;color:#573eae;font-family:inherit;font-size:12px;font-weight:500;line-height:1.2;white-space:nowrap;cursor:pointer;}
 .zodiac-select-trigger:active{background:#eee8ff;}
 .selected-zodiac-icon{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;color:#7254cb;}
@@ -87,6 +100,6 @@ body.zodiac-sheet-open{overflow:hidden;}
 .zodiac-overview-source{margin:11px 0 0;padding-top:10px;border-top:1px solid #eee9f6;color:#958da0;font-size:10px;line-height:1.4;text-align:center;}
 @keyframes zodiac-sheet-rise{from{transform:translateY(18px);opacity:.75}to{transform:translateY(0);opacity:1}}
 @media(min-width:600px){.zodiac-overview-list{grid-template-columns:repeat(2,minmax(0,1fr));}.zodiac-overview-panel{padding-left:22px;padding-right:22px;}}
-@media(max-height:740px){.today-shell{padding-top:calc(6px + env(safe-area-inset-top));}.today-shell .app-header{padding-bottom:8px;}.today-intro{margin-top:10px}.today-intro-kicker{margin-bottom:6px;padding:6px 12px}.today-intro h1{font-size:22px}.today-intro-copy{margin-top:4px;font-size:11px}.today-content{gap:8px;margin-top:10px}.quote-card{padding:14px 16px 12px;}.horoscope-card{padding:13px 16px 12px;}.quote-card blockquote{margin:11px 0 9px;font-size:17px;line-height:1.45}.horoscope-detail{gap:8px;margin:10px 0 8px}.horoscope-copy,.horoscope-action{font-size:12px;line-height:1.4}.horoscope-lucky{margin-bottom:8px}.horoscope-source{padding-top:7px}.zodiac-overview-trigger{min-height:40px;margin-top:8px;}}
+@media(max-height:740px){.today-shell{padding-top:calc(6px + env(safe-area-inset-top));}.today-shell .app-header{padding-bottom:8px;}.today-intro{margin-top:10px}.today-intro-kicker{margin-bottom:6px;padding:6px 12px}.today-intro h1{font-size:22px}.today-intro-copy{margin-top:4px;font-size:11px}.today-content{gap:8px;margin-top:10px}.quote-card{padding:14px 16px 12px;}.horoscope-card{padding:13px 16px 12px;}.quote-card blockquote{margin:11px 0 9px;font-size:17px;line-height:1.45}.horoscope-detail{gap:8px;margin:10px 0 8px}.horoscope-copy,.horoscope-action{font-size:12px;line-height:1.4}.horoscope-lucky{margin-bottom:8px}.horoscope-source{padding-top:7px}.luck-points{padding:11px 10px}.luck-points-heading{margin-bottom:7px}.luck-point{min-height:96px}.zodiac-overview-trigger{min-height:40px;margin-top:8px;}}
 @media(max-width:360px){.quote-card,.horoscope-card{padding-left:13px;padding-right:13px;}.today-heading-copy h1,.today-heading-copy h2{font-size:15px}.zodiac-select-trigger{max-width:132px;padding:4px 7px;font-size:11px}.horoscope-copy,.horoscope-action{font-size:12px}.zodiac-sheet-panel{padding-left:13px;padding-right:13px}.zodiac-option{min-height:88px}.zodiac-overview-panel{padding-left:12px;padding-right:12px}.zodiac-overview-select{grid-template-columns:32px minmax(0,1fr);gap:8px;padding:10px 8px}.zodiac-overview-pattern{width:32px;height:32px}}
 @media(prefers-reduced-motion:reduce){.zodiac-sheet-panel,.zodiac-overview-panel,.zodiac-option,.zodiac-overview-select{animation:none;transition:none}}

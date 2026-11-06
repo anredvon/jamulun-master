@@ -9,11 +9,28 @@
   if (!payloadNode || !trigger || !sheet || !grid || !label || !icon || !copy) return;
   const action = document.getElementById('horoscope-action');
   const luckyItem = document.getElementById('horoscope-lucky-item');
+  const luckColorArt = document.getElementById('luck-color-art');
+  const luckColorName = document.getElementById('luck-color-name');
+  const luckDiceArt = document.getElementById('luck-dice-art');
+  const luckDiceNumber = document.getElementById('luck-dice-number');
+  const luckDirectionArt = document.getElementById('luck-direction-art');
+  const luckDirectionName = document.getElementById('luck-direction-name');
   const overviewTrigger = document.getElementById('zodiac-overview-trigger');
   const overview = document.getElementById('zodiac-overview');
   const overviewList = document.getElementById('zodiac-overview-list');
 
   const STORAGE_KEY = 'moneyflow.today.zodiac.v1';
+  const luckyColors = [
+    { name: '라벤더', sprite: [0, 0] }, { name: '하늘색', sprite: [1, 0] },
+    { name: '세이지', sprite: [2, 0] }, { name: '장미색', sprite: [3, 0] },
+    { name: '골드', sprite: [0, 1] }, { name: '피치', sprite: [1, 1] }, { name: '민트', sprite: [2, 1] },
+  ];
+  const luckyDirections = [
+    { name: '북쪽', sprite: [0, 0] }, { name: '북동쪽', sprite: [1, 0] },
+    { name: '동쪽', sprite: [2, 0] }, { name: '남동쪽', sprite: [3, 0] },
+    { name: '남쪽', sprite: [0, 1] }, { name: '남서쪽', sprite: [1, 1] },
+    { name: '서쪽', sprite: [2, 1] }, { name: '북서쪽', sprite: [3, 1] },
+  ];
   const starPatterns = {
     aries: {stars:[[18,34,2.7],[46,48,3.5],[78,62,2.8]],lines:[[0,1],[1,2]]},
     taurus: {stars:[[17,29,2.7],[40,42,3],[57,50,3.6],[74,42,2.8],[86,57,2.5],[42,74,2.8]],lines:[[0,1],[1,2],[2,3],[3,4],[2,5]]},
@@ -35,6 +52,22 @@
   const byId = new Map(signs.map((sign) => [sign.id, sign]));
   let previouslyFocused = null;
   let overviewPreviouslyFocused = null;
+
+  function updateLuckPoints(sign) {
+    if (!data.date || !luckColorArt || !luckDiceArt || !luckDirectionArt) return;
+    const utcDays = Math.floor(Date.parse(`${data.date}T00:00:00Z`) / 86400000);
+    const signIndex = signs.findIndex((item) => item.id === sign.id);
+    const seed = utcDays + Math.max(signIndex, 0) * 11;
+    const color = luckyColors[((seed % luckyColors.length) + luckyColors.length) % luckyColors.length];
+    const dice = ((seed % 6) + 6) % 6 + 1;
+    const direction = luckyDirections[((seed % luckyDirections.length) + luckyDirections.length) % luckyDirections.length];
+    luckColorArt.style.backgroundPosition = `${color.sprite[0] * 100 / 3}% ${color.sprite[1] * 100}%`;
+    luckDiceArt.style.backgroundPosition = `${((dice - 1) % 3) * 50}% ${Math.floor((dice - 1) / 3) * 100}%`;
+    luckDirectionArt.style.backgroundPosition = `${direction.sprite[0] * 100 / 3}% ${direction.sprite[1] * 100}%`;
+    if (luckColorName) luckColorName.textContent = color.name;
+    if (luckDiceNumber) luckDiceNumber.textContent = String(dice);
+    if (luckDirectionName) luckDirectionName.textContent = direction.name;
+  }
 
   function makePattern(signId) {
     const pattern = starPatterns[signId];
@@ -68,6 +101,7 @@
     copy.textContent = sign.fortune;
     if (action) action.textContent = sign.action || '오늘의 소비와 지출을 한 번 가볍게 살펴보세요.';
     if (luckyItem) luckyItem.textContent = sign.lucky_item || '오늘의 작은 메모';
+    updateLuckPoints(sign);
     document.querySelectorAll('[data-sign-id]').forEach((button) => {
       const selected = button.dataset.signId === sign.id;
       button.setAttribute('aria-pressed', String(selected));

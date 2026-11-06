@@ -23,13 +23,13 @@
 .nav-illustration{
   display:block;
   flex:none;
-  width:40px;
-  height:26.67px;
-  background-image:url("../images/ui/icons/bottom-nav-mascots.png");
+  width:44px;
+  height:22px;
+  background-image:url("../images/ui/icons/bottom-nav-outline.png");
   background-repeat:no-repeat;
-  background-size:200% 200%;
+  background-size:280% 280%;
 }
-.nav-illustration--today{background-position:0 0;}
-.nav-illustration--tarot{background-position:100% 0;}
-.nav-illustration--check{background-position:0 100%;}
-.nav-illustration--history{background-position:100% 100%;}
+.nav-illustration--today{background-position:24% 10%;}
+.nav-illustration--tarot{background-position:75% 10%;}
+.nav-illustration--check{background-position:24% 84%;}
+.nav-illustration--history{background-position:75% 84%;}
