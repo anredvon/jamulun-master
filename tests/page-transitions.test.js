@@ -117,7 +117,7 @@ test('the shared Back control follows browser history without navigating to Home
   assert.equal(browser.window.document.documentElement.dataset.transitionExit, undefined);
 });
 
-test('browser Back after Home entry leaves motion to browser history', () => {
+test('non-BFCache browser Back after Home entry reverses the Home motion', () => {
   const browser = loadTransitionsInBrowserMock({
     navigationType: 'back_forward',
     referrer: 'https://moneyflow.example/home',
@@ -127,10 +127,10 @@ test('browser Back after Home entry leaves motion to browser history', () => {
       moneyflowOutgoingDestination: 'https://moneyflow.example/home',
     },
   });
-  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, undefined);
+  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, 'home-down');
 });
 
-test('browser Forward after a backward feature entry leaves motion to browser history', () => {
+test('non-BFCache browser Forward after Back reverses the horizontal motion', () => {
   const browser = loadTransitionsInBrowserMock({
     navigationType: 'back_forward',
     referrer: 'https://moneyflow.example/tarot',
@@ -139,10 +139,10 @@ test('browser Forward after a backward feature entry leaves motion to browser hi
       moneyflowOutgoingDestination: 'https://moneyflow.example/tarot',
     },
   });
-  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, undefined);
+  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, 'forward');
 });
 
-test('unmatched browser history traversal does not add a fallback motion', () => {
+test('unmatched browser history traversal uses the horizontal Back fallback', () => {
   const browser = loadTransitionsInBrowserMock({
     navigationType: 'back_forward',
     referrer: 'https://moneyflow.example/history',
@@ -151,12 +151,12 @@ test('unmatched browser history traversal does not add a fallback motion', () =>
       moneyflowOutgoingDestination: 'https://moneyflow.example/home',
     },
   });
-  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, undefined);
+  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, 'back');
 });
 
 test('history traversal clears a stale pending link transition instead of replaying it', () => {
   const browser = loadTransitionsInBrowserMock({ navigationType: 'back_forward', storedIntent: 'forward' });
-  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, undefined);
+  assert.equal(browser.window.document.documentElement.dataset.transitionEnter, 'back');
   assert.equal(browser.storage.has('moneyflow-page-transition'), false);
 });
 
@@ -180,8 +180,10 @@ test('BFCache restoration clears the stale navigation lock so the next link rema
   assert.equal(browser.window.location.pathname, '/today');
 });
 
-test('BFCache restoration leaves the interactive browser transition in control', () => {
-  const browser = loadTransitionsInBrowserMock({ navigationType: 'back_forward' });
+test('BFCache pageshow clears stale motion without adding a new entry animation', () => {
+  const browser = loadTransitionsInBrowserMock();
+  browser.window.document.documentElement.dataset.transitionEnter = 'back';
+  browser.windowListeners.get('pageshow')({ persisted: true });
   assert.equal(browser.window.document.documentElement.dataset.transitionEnter, undefined);
 });
 
@@ -193,19 +195,19 @@ test('pagehide clears the outgoing transform before the browser caches the page'
   assert.equal(browser.window.document.documentElement.dataset.transitionExit, undefined);
 });
 
-test('link motion does not rewrite browser history state', () => {
+test('link motion records its transition and destination while preserving history state', () => {
   const browser = loadTransitionsInBrowserMock();
   simulateLink(browser, { href: 'https://moneyflow.example/home' });
   assert.equal(browser.window.history.state.retained, 'existing-state');
-  assert.equal(browser.window.history.state.moneyflowOutgoingTransition, undefined);
-  assert.equal(browser.window.history.state.moneyflowOutgoingDestination, undefined);
+  assert.equal(browser.window.history.state.moneyflowOutgoingTransition, 'home-up');
+  assert.equal(browser.window.history.state.moneyflowOutgoingDestination, 'https://moneyflow.example/home');
 });
 
 test('the Today bottom-navigation destination remains a horizontal feature transition', () => {
   const browser = loadTransitionsInBrowserMock();
   simulateLink(browser, { href: 'https://moneyflow.example/today' });
   assert.equal(browser.window.document.documentElement.dataset.transitionExit, 'forward');
-  assert.equal(browser.window.history.state.moneyflowOutgoingTransition, undefined);
+  assert.equal(browser.window.history.state.moneyflowOutgoingTransition, 'forward');
 });
 
 test('reduced motion and modified clicks retain normal browser navigation', () => {

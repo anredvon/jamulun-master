@@ -27,10 +27,12 @@
 
 @keyframes page-home-out{to{transform:translateY(-10vh)}}
 @keyframes page-home-in{from{transform:translateY(10vh)}to{transform:translateY(0)}}
+@keyframes page-home-down-in{from{transform:translateY(-10vh)}to{transform:translateY(0)}}
 @keyframes page-forward-out{to{transform:translateX(-12vw)}}
 @keyframes page-forward-in{from{transform:translateX(12vw)}to{transform:translateX(0)}}
 html[data-transition-exit="home-up"] .page-shell>.shell{animation:page-home-out 150ms ease-out both;}
 html[data-transition-enter="home-up"] .page-shell>.shell{animation:page-home-in 230ms cubic-bezier(.16,1,.3,1) both;}
+html[data-transition-enter="home-down"] .page-shell>.shell{animation:page-home-down-in 230ms cubic-bezier(.16,1,.3,1) both;}
 html[data-transition-exit="forward"] .page-shell>.shell{animation:page-forward-out 140ms ease-out both;}
 html[data-transition-enter="forward"] .page-shell>.shell{animation:page-forward-in 220ms cubic-bezier(.16,1,.3,1) both;}
 
