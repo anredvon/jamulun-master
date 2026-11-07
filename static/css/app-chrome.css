@@ -2,7 +2,7 @@
 
 .app-header{display:grid;grid-template-columns:56px minmax(0,1fr) 44px;column-gap:8px;align-items:center;padding:2px 0 18px;}
 .app-header-back-slot{grid-column:1;grid-row:1;width:56px;height:40px;}
-.app-header-back{display:flex;place-items:center;align-items:center;justify-content:center;grid-column:1;grid-row:1;width:56px;height:40px;border:1px solid #ece6f6;border-radius:14px;background:rgba(255,255,255,.82);color:#6047aa;font-size:12px;font-weight:750;text-decoration:none;transition:transform .18s ease,background .18s ease;}
+.app-header-back{display:flex;place-items:center;align-items:center;justify-content:center;gap:3px;grid-column:1;grid-row:1;width:56px;height:40px;padding:0;border:1px solid #ece6f6;border-radius:14px;background:rgba(255,255,255,.82);color:#6047aa;font:inherit;font-size:12px;font-weight:750;cursor:pointer;transition:transform .18s ease,background .18s ease;}
 .app-header-back:active{transform:translateX(-2px) scale(.96);background:#f0eaff;}
 .app-brand{display:flex;grid-column:2;grid-row:1;align-items:center;gap:10px;min-width:0;text-decoration:none;}
 .app-brand-mark{position:relative;display:grid;place-items:center;width:34px;height:34px;border-radius:12px;flex:0 0 34px;}

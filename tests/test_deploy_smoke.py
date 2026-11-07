@@ -234,8 +234,11 @@ class SmokeTest(unittest.TestCase):
         self.assertNotIn("elements.en.textContent", script)
 
         styles = (Path(__file__).resolve().parents[1] / "static" / "css" / "tarot.css").read_text()
-        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*border:\s*1px solid")
-        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*box-shadow:\s*0 8px 18px rgba\(45, 31, 87, \.14\)")
+        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*border:\s*0")
+        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*background:\s*transparent")
+        self.assertRegex(styles, r"\.tarot-card-back\s*\{[^}]*box-shadow:\s*none")
+        self.assertRegex(styles, r"\.tarot-card-back img\s*\{[^}]*width:\s*100%[^}]*height:\s*100%")
+        self.assertRegex(styles, r"\.tarot-card-back img\s*\{[^}]*object-fit:\s*contain")
 
     def test_home_links_money_quizzes_to_the_check_hub(self):
         response = self.client.get("/home")
@@ -286,12 +289,14 @@ class SmokeTest(unittest.TestCase):
                 self.assertIn('src="/static/images/ui/icons/home-mascot.png"', html)
                 self.assertIn('aria-label="홈"', html)
                 self.assertIn('class="app-brand"', html)
+                self.assertNotIn('<a href="/home" class="app-brand"', html)
 
         lotto_html = self.client.get("/lotto").get_data(as_text=True)
         self.assertIn('src="/static/images/ui/wealth_check/cat_icon.png"', lotto_html)
         self.assertIn('src="/static/images/ui/icons/home-mascot.png"', lotto_html)
         self.assertIn('class="app-header-back"', lotto_html)
-        self.assertIn('← 홈', lotto_html)
+        self.assertIn('data-history-back', lotto_html)
+        self.assertIn('← 뒤로', lotto_html)
 
     def test_today_uses_canonical_quote_and_today_raster_icons(self):
         html = self.client.get("/today").get_data(as_text=True)
@@ -498,13 +503,14 @@ class SmokeTest(unittest.TestCase):
         self.assertIn("addEventListener('pagehide'", transition_js)
         self.assertNotIn('addEventListener(\'pageshow\'', transition_js)
 
-    def test_all_non_home_pages_offer_a_visible_home_back_control(self):
+    def test_all_non_home_pages_offer_a_visible_browser_back_control(self):
         for path in ("/today", "/history", "/tarot", "/check", "/palm", "/lotto", "/history?filter=lotto"):
             with self.subTest(path=path):
                 html = self.client.get(path).get_data(as_text=True)
                 self.assertIn('class="app-header-back"', html)
-                self.assertIn('← 홈', html)
-                self.assertIn('href="/home"', html)
+                self.assertIn('data-history-back', html)
+                self.assertIn('← 뒤로', html)
+                self.assertNotIn('href="/home" aria-label="홈으로 이동"', html)
 
         lotto_html = self.client.get("/lotto").get_data(as_text=True)
         self.assertNotIn('class="lotto-back lotto-back--icon"', lotto_html)

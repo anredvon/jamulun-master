@@ -93,6 +93,12 @@
     document.addEventListener('click', (event) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const target = event.target instanceof window.Element ? event.target : event.target?.parentElement;
+      const backControl = target?.closest('[data-history-back]');
+      if (backControl) {
+        event.preventDefault();
+        window.history?.back();
+        return;
+      }
       const link = target?.closest('a[href]');
       if (!link) return;
 
