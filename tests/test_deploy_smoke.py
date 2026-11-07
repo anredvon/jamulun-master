@@ -192,6 +192,23 @@ class SmokeTest(unittest.TestCase):
                 copy = " ".join((card["status"], card["flow"], card["caution"], card["line"]))
                 self.assertFalse(any(term in copy for term in prediction_terms), copy)
 
+    def test_active_tarot_78_uses_the_approved_reader_voice(self):
+        cards = {card["id"]: card for card in TAROT_CARDS}
+        self.assertEqual(len(cards), 78)
+        self.assertEqual(
+            cards["wands-king"]["flow"],
+            "완즈 왕이 나왔네요. 큰 그림은 잘 그리지만, 막상 시작하려면 시간과 비용부터 따져보느라 첫발이 늦어질 때가 있죠. 꿈을 줄이라는 뜻은 아니에요. 이번 주에 해볼 수 있는 가장 작은 한 걸음부터 정해보세요.",
+        )
+        self.assertEqual(
+            cards["wands-ten"]["flow"],
+            "완즈 10이 나왔네요. 남들 눈엔 잘 해내는 것 같아도, 속으로는 ‘이것까지 내가 다 해야 하나’ 싶은 일이 쌓였을 수 있어요. 더 버티라는 뜻은 아니니, 이번 주엔 꼭 내 몫인 일과 내려놓거나 나눠도 될 일을 한번 가려보세요.",
+        )
+        self.assertEqual(len({card["flow"] for card in cards.values()}), 78)
+        self.assertEqual(len({card["caution"] for card in cards.values()}), 78)
+        self.assertEqual(len({card["line"] for card in cards.values()}), 78)
+        self.assertTrue(all(card["caution"].endswith("?") for card in cards.values()))
+        self.assertTrue(all(card["line"].endswith("?") for card in cards.values()))
+
     def test_tarot_history_catalog_keeps_legacy_cards_and_includes_new_cards(self):
         response = self.client.get("/history")
         self.assertEqual(response.status_code, 200)
@@ -547,8 +564,10 @@ class SmokeTest(unittest.TestCase):
         html = self.client.get("/tarot").get_data(as_text=True)
         self.assertIn("css/app-chrome.css?v=20261107-nav-tarot-stability-1", html)
         self.assertIn("js/page-transitions.js?v=20261107-nav-bfcache-recovery-1", html)
-        self.assertIn("css/tarot.css?v=20261107-tarot-interaction-guard-1", html)
+        self.assertIn("css/tarot.css?v=20261107-reading-type-1", html)
         self.assertIn("js/tarot.js?v=20261107-tarot-interaction-guard-1", html)
+        palm_html = self.client.get("/palm").get_data(as_text=True)
+        self.assertIn("css/palm.css?v=20261107-reading-type-1", palm_html)
 
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():

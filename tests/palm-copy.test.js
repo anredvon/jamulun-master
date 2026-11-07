@@ -43,3 +43,25 @@ test('life and fate line readings provide line-specific actions, not only a broa
     assert.ok(rule.source_locator);
   }
 });
+
+test('palm readings keep the approved fortune-reader voice and stay grounded in the visible line', () => {
+  const rules = require('../static/data/palm-reading-rules.json');
+  assert.equal(rules.length, 14);
+  const fate = rules.find((rule) => rule.line_type === 'fate' && rule.feature_code === 'central_vertical_visible');
+  assert.equal(fate.reading_text,
+    '손바닥 가운데로 올라오는 선이 보이네요. 손금에서는 이런 선을 운명선으로 보고, 일과 사회생활의 흐름이나 주변 환경이 내 길에 미치는 영향을 살펴요. 맡은 일을 쉽게 놓지 않고 주변의 기대까지 자기 몫으로 끌어안는 모습으로 읽힙니다. 요즘 책임이 유난히 무겁다면, 내가 정말 이어가고 싶은 일과 거절하지 못해 붙들고 있는 일을 한번 나눠보세요.');
+  assert.equal(fate.reflection_prompt, '요즘 이어가고 싶은 일과, 주변의 기대 때문에 붙들고 있는 일은 무엇인가요? 둘을 나눠 적고, 이번 주에 이어갈 한 가지를 골라보세요.');
+  assert.ok(rules.every((rule) => rule.source_locator && rule.source_key));
+  assert.ok(rules.every((rule) => !/지금 분석은|사진에서는 .*확인하지 않으므로|과학적 성격/.test(rule.reading_text)));
+});
+
+test('Tarot and palm reading prose has a legible iPhone type size and line spacing', () => {
+  const tarotCss = require('node:fs').readFileSync(require('node:path').join(__dirname, '../static/css/tarot.css'), 'utf8');
+  const palmCss = require('node:fs').readFileSync(require('node:path').join(__dirname, '../static/css/palm.css'), 'utf8');
+  const baseCss = require('node:fs').readFileSync(require('node:path').join(__dirname, '../static/css/jaemulun.css'), 'utf8');
+  assert.match(tarotCss, /\.tarot-report-card p\s*\{[^}]*font-size:\s*16px/);
+  assert.match(tarotCss, /\.tarot-report-card p\s*\{[^}]*line-height:\s*1\.7/);
+  assert.match(palmCss, /\.palm-reading-item p\s*\{[^}]*font-size:\s*16px/);
+  assert.match(palmCss, /\.palm-reading-item p\s*\{[^}]*line-height:\s*1\.7/);
+  assert.match(baseCss, /font-family:'Pretendard Variable','Pretendard',-apple-system/);
+});

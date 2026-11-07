@@ -1,5 +1,8 @@
 """Tarot card content for the daily money-card experience."""
 
+import json
+from pathlib import Path
+
 LEGACY_TAROT_CARDS = [
     {"id":"temperance","title":"절제","en":"TEMPERANCE","symbol":"⚖️","score":72,"status":"균형","flow":"요즘 내가 균형이 필요하다고 느끼는 순간은 언제일까요?","caution":"한쪽으로 기울 때 내 마음은 어떤 신호를 보내나요?","line":"내가 생각하는 충분함은 어떤 모습일까요?"},
     {"id":"expense","title":"지출","en":"EXPENSE","symbol":"🧾","score":48,"status":"멈춤","flow":"무언가를 선택하기 전, 나는 어떤 기준을 먼저 떠올리나요?","caution":"지금의 선택에 담긴 내 마음은 무엇일까요?","line":"잠시 멈춤이 내게 알려주는 것은 무엇일까요?"},
@@ -297,3 +300,16 @@ TAROT_CARDS = [
         "펜타클 왕은 하루아침의 성취가 아니라 오래 쌓아온 기반을 돌아보게 해요. 통장 잔액처럼 숫자로 보이는 것 외에도, 생활을 꾸려온 경험과 믿을 만한 사람, 다시 시작해본 기억이 있죠. 지금까지 나를 지탱한 기반이 무엇인지 생각해보세요.",
         "지금의 나를 지탱해주는 것은 무엇인가요?", "그 기반을 만든 내 선택 하나를 꼽는다면요?", "pentacles", "king"),
 ]
+
+# Active 78-card interpretations live in a separate reviewed copy catalog.
+# Keep legacy 24-card records untouched so historic entries remain readable.
+_READINGS_PATH = Path(__file__).resolve().parent / "static" / "data" / "tarot-readings.json"
+_READINGS = {item["id"]: item for item in json.loads(_READINGS_PATH.read_text(encoding="utf-8"))}
+_ACTIVE_CARD_IDS = {card["id"] for card in TAROT_CARDS}
+if _READINGS.keys() != _ACTIVE_CARD_IDS:
+    raise ValueError("Active Tarot reading IDs must exactly match the 78-card deck")
+for _card in TAROT_CARDS:
+    _reading = _READINGS[_card["id"]]
+    _card["flow"] = _reading["flow"]
+    _card["caution"] = _reading["question"]
+    _card["line"] = _reading["cat"]

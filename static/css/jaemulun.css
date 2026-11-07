@@ -38,7 +38,7 @@ html,body{
 html{-webkit-text-size-adjust:100%}
 
 body{
-  font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Segoe UI',sans-serif;
+  font-family:'Pretendard Variable','Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Segoe UI',sans-serif;
   color:var(--text-1);
   background:var(--bg);
   line-height:1.5;
