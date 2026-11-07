@@ -37,8 +37,11 @@ function loadTransitionsInBrowserMock({
     },
     performance: { getEntriesByType: () => [{ type: navigationType }] },
     history: {
+      length: 2,
+      backCalls: 0,
       state: historyState,
       replaceState(state) { this.state = state; },
+      back() { this.backCalls += 1; },
     },
     matchMedia: () => ({ matches: reducedMotion }),
     setTimeout: (callback) => { timeoutCallback = callback; return 1; },
@@ -49,13 +52,17 @@ function loadTransitionsInBrowserMock({
   return { window, documentListeners, windowListeners, Element, storage, runTimeout: () => timeoutCallback?.() };
 }
 
-function simulateLink(browser, { href, modifiers = false } = {}) {
+function simulateLink(browser, { href, modifiers = false, historyBack = false } = {}) {
   const link = {
     href, target: '', hasAttribute: () => false,
     relList: { contains: () => false }, matches: () => false,
   };
   const target = new browser.Element();
-  target.closest = (selector) => selector === 'a[href]' ? link : null;
+  const backControl = { matches: (selector) => selector === '[data-history-back]' && historyBack };
+  target.closest = (selector) => {
+    if (selector === '[data-history-back]' && historyBack) return backControl;
+    return selector === 'a[href]' ? link : null;
+  };
   const click = { target, button: 0, defaultPrevented: false, metaKey: modifiers, ctrlKey: false, shiftKey: false, altKey: false,
     preventDefault() { this.defaultPrevented = true; } };
   browser.documentListeners.get('click')(click);
@@ -91,6 +98,15 @@ test('the visible Home control uses the upward Home transition', () => {
   assert.equal(click.defaultPrevented, true);
   assert.equal(browser.window.document.documentElement.dataset.transitionExit, 'home-up');
   assert.equal(browser.storage.get('moneyflow-page-transition'), 'home-up');
+});
+
+test('the shared Back control follows browser history without navigating to Home', () => {
+  const browser = loadTransitionsInBrowserMock();
+  const click = simulateLink(browser, { href: 'https://moneyflow.example/home', historyBack: true });
+  assert.equal(click.defaultPrevented, true);
+  assert.equal(browser.window.history.backCalls, 1);
+  assert.equal(browser.window.location.href, 'https://moneyflow.example/tarot');
+  assert.equal(browser.window.document.documentElement.dataset.transitionExit, undefined);
 });
 
 test('matched browser Back after Home entry uses the inverse vertical motion', () => {
