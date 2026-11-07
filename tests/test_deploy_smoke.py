@@ -542,6 +542,13 @@ class SmokeTest(unittest.TestCase):
         self.assertLess(home_header_markup.index('class="app-brand"'), home_header_markup.index('class="app-header-home'))
         self.assertNotIn('class="app-header-back-row"', home_header_markup)
 
+    def test_modified_navigation_and_tarot_assets_use_fresh_cache_keys(self):
+        html = self.client.get("/tarot").get_data(as_text=True)
+        self.assertIn("css/app-chrome.css?v=20261107-nav-tarot-stability-1", html)
+        self.assertIn("js/page-transitions.js?v=20261107-nav-tarot-stability-1", html)
+        self.assertIn("css/tarot.css?v=20261107-tarot-interaction-guard-1", html)
+        self.assertIn("js/tarot.js?v=20261107-tarot-interaction-guard-1", html)
+
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():
             html = render_template(

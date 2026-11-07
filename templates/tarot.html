@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}오늘의 타로카드 뽑기{% endblock %}
 {% block body_class %}has-app-chrome{% endblock %}
-{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/tarot.css') }}?v=20261107-card-fit-1">{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/tarot.css') }}?v=20261107-tarot-interaction-guard-1">{% endblock %}
 {% block body %}
 <div class="page-shell tarot-page"><main class="shell tarot-shell">
   {% set active_tab = 'tarot' %}{% include '_app_header.html' %}
@@ -23,4 +23,4 @@
 
 <script type="application/json" id="tarot-data">{{ tarot_cards | tojson }}</script>
 {% endblock %}
-{% block scripts %}<script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/dialog-focus.js') }}"></script><script src="{{ url_for('static', filename='js/tarot.js') }}"></script>{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/history-store.js') }}"></script><script src="{{ url_for('static', filename='js/dialog-focus.js') }}"></script><script src="{{ url_for('static', filename='js/tarot.js') }}?v=20261107-tarot-interaction-guard-1"></script>{% endblock %}
