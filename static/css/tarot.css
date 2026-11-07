@@ -13,7 +13,7 @@
 .tarot-card-back img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .tarot-hint { max-width: 330px; margin: 22px auto 0; color: #8a8397; font-size: 12px; line-height: 1.6; text-align: center; }
 .tarot-picker.is-shuffling { pointer-events: none; }
-.tarot-picker.is-shuffling .tarot-choice { will-change: transform, opacity, filter; }
+.tarot-picker.is-shuffling .tarot-choice { transition: none; will-change: transform; }
 .tarot-picker.is-shuffling .tarot-choice:nth-child(1) { animation: shuffle-left 1.02s cubic-bezier(.36, .07, .19, .97) both; }
 .tarot-picker.is-shuffling .tarot-choice:nth-child(2) { animation: shuffle-center 1.02s cubic-bezier(.36, .07, .19, .97) both; }
 .tarot-picker.is-shuffling .tarot-choice:nth-child(3) { animation: shuffle-right 1.02s cubic-bezier(.36, .07, .19, .97) both; }

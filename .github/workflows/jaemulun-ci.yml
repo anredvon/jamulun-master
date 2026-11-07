@@ -22,4 +22,4 @@ jobs:
           node-version: '22'
       - run: pip install -r requirements.txt
       - run: python -m unittest discover -s tests -p 'test_*.py' -v
-      - run: node --test tests/history-store.test.js tests/history-view-model.test.js tests/palm-analysis.test.js tests/palm-copy.test.js tests/today.test.js tests/lotto-ui.test.js tests/dialog-focus.test.js tests/page-transitions.test.js
+      - run: node --test tests/history-store.test.js tests/history-view-model.test.js tests/palm-analysis.test.js tests/palm-copy.test.js tests/today.test.js tests/lotto-ui.test.js tests/dialog-focus.test.js tests/page-transitions.test.js tests/tarot-interactions.test.js
