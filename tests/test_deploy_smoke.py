@@ -488,18 +488,24 @@ class SmokeTest(unittest.TestCase):
         self.assertNotIn("@view-transition", chrome_css)
         self.assertIn("@media(prefers-reduced-motion:reduce)", chrome_css)
         self.assertNotRegex(chrome_css, r"@keyframes page-(?:home|forward|back)-(?:out|in)\s*\{[^}]*opacity:")
-        for transition in ("home-up", "forward", "back"):
+        for transition in ("home-up", "forward"):
             self.assertIn(f'data-transition-exit="{transition}"', chrome_css)
             self.assertIn(f'data-transition-enter="{transition}"', chrome_css)
-        self.assertIn('data-transition-enter="home-down"', chrome_css)
+        self.assertNotIn('data-transition-enter="home-down"', chrome_css)
+        self.assertNotIn('data-transition-exit="back"', chrome_css)
+        self.assertNotIn('data-transition-enter="back"', chrome_css)
         self.assertRegex(history_css, r"\.history-page\s*\{[^}]*background:\s*(?:#|rgb|linear-gradient)")
-        self.assertRegex(chrome_css, r"\.app-header\s*\{[^}]*grid-template-columns:\s*56px minmax\(0,1fr\) 44px")
+        self.assertRegex(chrome_css, r"\.app-header\s*\{[^}]*display:flex;flex-direction:column")
+        self.assertRegex(chrome_css, r"\.app-header-primary\s*\{[^}]*display:flex;[^}]*justify-content:space-between")
+        self.assertIn(".app-header-back-row", chrome_css)
         self.assertIn('data-home-url="{{ url_for(\'home_page\') }}"', base_template)
         self.assertIn('filename=\'js/page-transitions.js\'', base_template)
         transition_js = (repo_root / "static/js/page-transitions.js").read_text()
         self.assertIn("moneyflow-page-transition", transition_js)
         self.assertIn("performance?.getEntriesByType", transition_js)
-        self.assertIn("moneyflowOutgoingDestination", transition_js)
+        self.assertIn("navigationType === 'back_forward'", transition_js)
+        self.assertNotIn("moneyflowOutgoingDestination", transition_js)
+        self.assertNotIn("history?.replaceState", transition_js)
         self.assertIn("addEventListener('pagehide'", transition_js)
         self.assertNotIn('addEventListener(\'pageshow\'', transition_js)
 
@@ -517,6 +523,24 @@ class SmokeTest(unittest.TestCase):
 
         home_html = self.client.get("/home").get_data(as_text=True)
         self.assertNotIn('class="app-header-back"', home_html)
+
+    def test_header_brand_and_home_precede_second_row_back_control(self):
+        feature_html = self.client.get("/tarot").get_data(as_text=True)
+        header = re.search(r'<header class="app-header".*?</header>', feature_html, re.DOTALL)
+        self.assertIsNotNone(header)
+        header_markup = header.group(0)
+        self.assertLess(header_markup.index('class="app-header-primary"'), header_markup.index('class="app-brand"'))
+        self.assertLess(header_markup.index('class="app-brand"'), header_markup.index('class="app-header-home'))
+        self.assertLess(header_markup.index('class="app-header-home'), header_markup.index('class="app-header-back-row"'))
+        self.assertIn('class="app-header-back"', header_markup)
+
+        home_html = self.client.get("/home").get_data(as_text=True)
+        home_header = re.search(r'<header class="app-header".*?</header>', home_html, re.DOTALL)
+        self.assertIsNotNone(home_header)
+        home_header_markup = home_header.group(0)
+        self.assertLess(home_header_markup.index('class="app-header-primary"'), home_header_markup.index('class="app-brand"'))
+        self.assertLess(home_header_markup.index('class="app-brand"'), home_header_markup.index('class="app-header-home'))
+        self.assertNotIn('class="app-header-back-row"', home_header_markup)
 
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():

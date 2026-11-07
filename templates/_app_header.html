@@ -1,15 +1,17 @@
 <header class="app-header" aria-label="머니플로우 상단바">
-  {% if active_tab|default('') == 'home' %}<span class="app-header-back-slot" aria-hidden="true"></span>{% else %}<button type="button" class="app-header-back" data-history-back aria-label="이전 화면으로 이동" title="뒤로"><span aria-hidden="true">← 뒤로</span></button>{% endif %}
-  <div class="app-brand">
-    <span class="app-brand-mark" aria-hidden="true">
-      <img src="{{ url_for('static', filename='images/ui/wealth_check/cat_icon.png') }}" alt="">
-    </span>
-    <span class="app-brand-copy">
-      <strong>머니플로우</strong>
-      <small>오늘의 돈 흐름을 가볍게 발견해보세요</small>
-    </span>
+  <div class="app-header-primary">
+    <div class="app-brand">
+      <span class="app-brand-mark" aria-hidden="true">
+        <img src="{{ url_for('static', filename='images/ui/wealth_check/cat_icon.png') }}" alt="">
+      </span>
+      <span class="app-brand-copy">
+        <strong>머니플로우</strong>
+        <small>오늘의 돈 흐름을 가볍게 발견해보세요</small>
+      </span>
+    </div>
+    <a class="app-header-home{% if active_tab == 'home' %} is-active{% endif %}" href="{{ url_for('home_page') }}" aria-label="홈" title="홈으로">
+      <img src="{{ url_for('static', filename='images/ui/icons/home-mascot.png') }}" alt="" aria-hidden="true">
+    </a>
   </div>
-  <a class="app-header-home{% if active_tab == 'home' %} is-active{% endif %}" href="{{ url_for('home_page') }}" aria-label="홈" title="홈으로">
-    <img src="{{ url_for('static', filename='images/ui/icons/home-mascot.png') }}" alt="" aria-hidden="true">
-  </a>
+  {% if active_tab|default('') != 'home' %}<div class="app-header-back-row"><button type="button" class="app-header-back" data-history-back aria-label="이전 화면으로 이동" title="뒤로"><span aria-hidden="true">← 뒤로</span></button></div>{% endif %}
 </header>

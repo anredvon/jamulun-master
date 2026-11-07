@@ -25,6 +25,10 @@
 
   let selected = null;
   let isShuffling = false;
+  let isOpening = false;
+  let pendingOpenTimer = null;
+  let shuffleTimer = null;
+  const completedShuffleChoices = new Set();
   let drawId = null;
   const focusManager = window.MoneyFlowDialogFocus?.create(document);
   const newDrawId = () => `tarot-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -32,6 +36,7 @@
   const randomCard = () => cards[Math.floor(Math.random() * cards.length)];
 
   function openModal(card) {
+    isOpening = false;
     selected = card;
     drawId = newDrawId();
     elements.title.textContent = card.title;
@@ -55,7 +60,7 @@
   }
 
   function renderReport() {
-    if (!selected) return;
+    if (!selected || reveal.classList.contains('is-hidden')) return;
     elements.reportTitle.textContent = selected.title;
     elements.status.textContent = selected.status;
     elements.flow.textContent = selected.flow;
@@ -78,11 +83,28 @@
   function clearChoiceState() {
     selected = null;
     drawId = null;
-    elements.choices.forEach((button) => button.classList.remove('is-muted', 'is-picked'));
+    elements.choices.forEach((button) => {
+      button.disabled = false;
+      button.classList.remove('is-muted', 'is-picked');
+    });
+  }
+
+  function finishShuffle() {
+    if (!isShuffling) return;
+    if (shuffleTimer !== null) window.clearTimeout(shuffleTimer);
+    shuffleTimer = null;
+    picker.classList.remove('is-shuffling');
+    elements.choices.forEach((button) => { button.disabled = false; });
+    elements.hint.textContent = '세 카드의 위치와 관계없이 한 장을 무작위로 뽑아요.';
+    completedShuffleChoices.clear();
+    isShuffling = false;
   }
 
   function reset(animate = false) {
     if (isShuffling) return;
+    if (pendingOpenTimer !== null) window.clearTimeout(pendingOpenTimer);
+    pendingOpenTimer = null;
+    isOpening = false;
     clearChoiceState();
     closeModal();
     if (!animate) return;
@@ -91,22 +113,33 @@
     elements.choices.forEach((button) => { button.disabled = true; });
     elements.hint.textContent = '카드를 다시 섞고 있어요…';
     picker.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    window.setTimeout(() => {
-      picker.classList.remove('is-shuffling');
-      elements.choices.forEach((button) => { button.disabled = false; });
-      elements.hint.textContent = '세 카드의 위치와 관계없이 한 장을 무작위로 뽑아요.';
-      isShuffling = false;
-    }, 700);
+    completedShuffleChoices.clear();
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      finishShuffle();
+      return;
+    }
+    shuffleTimer = window.setTimeout(finishShuffle, 1300);
   }
 
+  picker.addEventListener('animationend', (event) => {
+    if (!isShuffling || !elements.choices.includes(event.target) || !event.animationName?.startsWith('shuffle-')) return;
+    completedShuffleChoices.add(event.target);
+    if (completedShuffleChoices.size === elements.choices.length) finishShuffle();
+  });
+
   elements.choices.forEach((choice) => choice.addEventListener('click', () => {
-    if (selected || isShuffling) return;
+    if (selected || isOpening || isShuffling) return;
+    isOpening = true;
     const card = randomCard(); // Draw with replacement; a selected card stays in the pool.
     elements.choices.forEach((button) => button === choice
       ? button.classList.add('is-picked')
       : button.classList.add('is-muted'));
+    elements.choices.forEach((button) => { button.disabled = true; });
     elements.hint.textContent = '오늘의 카드를 만나고 있어요…';
-    window.setTimeout(() => openModal(card), 400);
+    pendingOpenTimer = window.setTimeout(() => {
+      pendingOpenTimer = null;
+      if (isOpening) openModal(card);
+    }, 400);
   }));
 
   document.querySelectorAll('[data-close-modal]').forEach((node) => {
