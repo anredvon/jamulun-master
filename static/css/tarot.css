@@ -43,10 +43,10 @@
 .tarot-report-card { margin-top: 9px; padding: 15px 16px; border: 1px solid #ece8f2; border-radius: 18px; background: #fff; }
 .tarot-report-warning { background: #fffaf7; }
 .tarot-report-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 900; }
-.tarot-report-card p { margin: 0; color: #6e6877; font-size: 14px; line-height: 1.72; word-break: keep-all; }
+.tarot-report-card p { margin: 0; color: #514b5c; font-size: 16px; line-height: 1.75; word-break: keep-all; }
 .tarot-one-line { margin-top: 10px; padding: 15px 16px; border-radius: 18px; background: linear-gradient(135deg, #5e43b4, #795bd2); color: #fff; }
 .tarot-one-line span { display: block; margin-bottom: 6px; font-size: 11px; opacity: .8; }
-.tarot-one-line strong { font-size: 15px; line-height: 1.55; }
+.tarot-one-line strong { font-size: 16px; line-height: 1.6; }
 .tarot-report .cta { margin-top: 10px; }
 .tarot-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 

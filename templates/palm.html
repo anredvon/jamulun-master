@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}오늘의 손금 보기 · 머니플로우{% endblock %}
 {% block body_class %}has-app-chrome{% endblock %}
-{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/palm.css') }}">{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/palm.css') }}?v=20261107-reading-type-1">{% endblock %}
 {% block body %}
 <div class="page-shell palm-page"><main class="shell palm-shell">
   {% set active_tab = 'today' %}{% include '_app_header.html' %}

@@ -32,5 +32,17 @@
     "rights_status": "Project Gutenberg marks this text public domain in the USA and directs users outside the USA to check local law. Verify Korean and other target-market law before commercial reuse.",
     "tradition": "early twentieth-century English-language popular palmistry",
     "editorial_note": "Historical source. Exclude health, illness, lifespan, death, criminality, relationship certainty, and guaranteed career/wealth predictions."
+  },
+  {
+    "source_key": "wikihow-palmistry-ko",
+    "title": "손금 보는 법",
+    "author": "wikiHow 편집진",
+    "publication_year": null,
+    "language": "ko",
+    "source_url": "https://ko.wikihow.com/손금-보는-법",
+    "catalog_url": "https://ko.wikihow.com/손금-보는-법",
+    "rights_status": "참고 자료로만 활용. 문장을 복제하지 않고 앱 문구는 새로 작성.",
+    "tradition": "현대 대중 손금 안내",
+    "editorial_note": "감정선·두뇌선·생명선·운명선의 통상적 명칭과 손바닥 위치를 교차 확인하는 보조 자료. 건강, 수명, 결혼 시기, 성격의 확정, 미래 예측 주장은 앱 해석에 사용하지 않음."
   }
 ]
