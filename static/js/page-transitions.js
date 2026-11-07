@@ -66,6 +66,12 @@
       delete document.documentElement.dataset.transitionExit;
       delete document.documentElement.dataset.transitionEnter;
     });
+    window.addEventListener('pageshow', (event) => {
+      if (!event.persisted) return;
+      fallbackNavigationPending = false;
+      delete document.documentElement.dataset.transitionExit;
+      delete document.documentElement.dataset.transitionEnter;
+    });
 
     document.addEventListener('click', (event) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

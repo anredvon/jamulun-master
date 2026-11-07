@@ -15,7 +15,7 @@ function loadTransitionsInBrowserMock({
   const documentListeners = new Map();
   const windowListeners = new Map();
   const storage = new Map(storedIntent ? [['moneyflow-page-transition', storedIntent]] : []);
-  let timeoutCallback = null;
+  const timeoutCallbacks = [];
   class Element {}
   const window = {
     document: {
@@ -45,12 +45,12 @@ function loadTransitionsInBrowserMock({
       back() { this.backCalls += 1; },
     },
     matchMedia: () => ({ matches: reducedMotion }),
-    setTimeout: (callback) => { timeoutCallback = callback; return 1; },
+    setTimeout: (callback) => { timeoutCallbacks.push(callback); return timeoutCallbacks.length; },
     addEventListener: (name, listener) => windowListeners.set(name, listener),
   };
   const source = fs.readFileSync(path.join(__dirname, '../static/js/page-transitions.js'), 'utf8');
   vm.runInNewContext(source, { window, URL, module: undefined });
-  return { window, documentListeners, windowListeners, Element, storage, runTimeout: () => timeoutCallback?.() };
+  return { window, documentListeners, windowListeners, Element, storage, timeoutCallbacks, runTimeout: (index = timeoutCallbacks.length - 1) => timeoutCallbacks[index]?.() };
 }
 
 function simulateLink(browser, { href, modifiers = false, historyBack = false, backClass = false } = {}) {
@@ -74,13 +74,13 @@ test('same-origin Home links receive explicit Home intent', () => {
   assert.equal(classifyLinkIntent({ destinationIsHome: true }), 'home');
 });
 
-test('browser entry point exposes classifiers and installs click and pagehide listeners', () => {
+test('browser entry point exposes classifiers and installs click, pagehide, and pageshow listeners', () => {
   const { window, documentListeners, windowListeners } = loadTransitionsInBrowserMock();
   assert.equal(typeof window.MoneyFlowPageTransitions.classifyTransition, 'function');
   assert.equal(typeof window.MoneyFlowPageTransitions.classifyLinkIntent, 'function');
   assert.equal(typeof documentListeners.get('click'), 'function');
   assert.equal(typeof windowListeners.get('pagehide'), 'function');
-  assert.equal(windowListeners.has('pageshow'), false);
+  assert.equal(typeof windowListeners.get('pageshow'), 'function');
 });
 
 test('forward navigation plays an exit and entry motion without a cross-document transition API', () => {
@@ -160,9 +160,28 @@ test('history traversal clears a stale pending link transition instead of replay
   assert.equal(browser.storage.has('moneyflow-page-transition'), false);
 });
 
-test('BFCache restoration leaves the interactive browser transition in control', () => {
+test('BFCache restoration clears the stale navigation lock so the next link remains usable', () => {
   const browser = loadTransitionsInBrowserMock();
-  assert.equal(browser.windowListeners.has('pageshow'), false);
+
+  simulateLink(browser, { href: 'https://moneyflow.example/history' });
+  browser.runTimeout();
+  assert.equal(browser.window.location.pathname, '/history');
+
+  browser.windowListeners.get('pagehide')({ persisted: true });
+  browser.window.location.href = 'https://moneyflow.example/tarot';
+  browser.window.location.pathname = '/tarot';
+  browser.windowListeners.get('pageshow')({ persisted: true });
+
+  const scheduledBeforeNextTap = browser.timeoutCallbacks.length;
+  const click = simulateLink(browser, { href: 'https://moneyflow.example/today' });
+  assert.equal(click.defaultPrevented, true);
+  assert.equal(browser.timeoutCallbacks.length, scheduledBeforeNextTap + 1);
+  browser.runTimeout();
+  assert.equal(browser.window.location.pathname, '/today');
+});
+
+test('BFCache restoration leaves the interactive browser transition in control', () => {
+  const browser = loadTransitionsInBrowserMock({ navigationType: 'back_forward' });
   assert.equal(browser.window.document.documentElement.dataset.transitionEnter, undefined);
 });
 

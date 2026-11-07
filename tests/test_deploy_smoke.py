@@ -507,7 +507,8 @@ class SmokeTest(unittest.TestCase):
         self.assertNotIn("moneyflowOutgoingDestination", transition_js)
         self.assertNotIn("history?.replaceState", transition_js)
         self.assertIn("addEventListener('pagehide'", transition_js)
-        self.assertNotIn('addEventListener(\'pageshow\'', transition_js)
+        self.assertIn("addEventListener('pageshow'", transition_js)
+        self.assertIn('if (!event.persisted) return;', transition_js)
 
     def test_all_non_home_pages_offer_a_visible_browser_back_control(self):
         for path in ("/today", "/history", "/tarot", "/check", "/palm", "/lotto", "/history?filter=lotto"):
@@ -545,7 +546,7 @@ class SmokeTest(unittest.TestCase):
     def test_modified_navigation_and_tarot_assets_use_fresh_cache_keys(self):
         html = self.client.get("/tarot").get_data(as_text=True)
         self.assertIn("css/app-chrome.css?v=20261107-nav-tarot-stability-1", html)
-        self.assertIn("js/page-transitions.js?v=20261107-nav-tarot-stability-1", html)
+        self.assertIn("js/page-transitions.js?v=20261107-nav-bfcache-recovery-1", html)
         self.assertIn("css/tarot.css?v=20261107-tarot-interaction-guard-1", html)
         self.assertIn("js/tarot.js?v=20261107-tarot-interaction-guard-1", html)
 
