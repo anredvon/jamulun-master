@@ -1,9 +1,10 @@
 .tarot-page { background: linear-gradient(180deg, #f8f6ff 0%, #fbf9ff 52%, #fff 100%); }
 .tarot-shell { display: flex; flex-direction: column; min-height: 100dvh; }
+@media (min-height: 760px) { .tarot-hero { margin-top: auto; } }
 .tarot-hero { padding: 12px 0 2px; text-align: center; }
 .tarot-hero h1 { margin: 14px 0 8px; font-size: 30px; line-height: 1.2; letter-spacing: -.05em; font-weight: 900; }
 .tarot-hero p { margin: 0; color: var(--text-2); font-size: 14px; line-height: 1.65; }
-.tarot-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 22px; align-items: end; perspective: 1000px; }
+.tarot-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: clamp(22px, 6dvh, 52px); align-items: end; perspective: 1000px; }
 .tarot-choice { appearance: none; min-width: 0; padding: 0; border: 0; background: none; cursor: pointer; transition: transform .28s ease, opacity .28s ease, filter .28s ease; }
 .tarot-choice:nth-child(2) { transform: translateY(-12px); }
 .tarot-choice.is-muted { opacity: .2; filter: blur(.4px) saturate(.65); pointer-events: none; }
@@ -11,7 +12,8 @@
 .tarot-card { display: block; position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 18px; background: #4f3aa5; box-shadow: 0 14px 30px rgba(63, 48, 112, .14); }
 .tarot-card-back { border: 0; background: transparent; box-shadow: none; }
 .tarot-card-back img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.tarot-hint { max-width: 330px; margin: 22px auto 0; color: #8a8397; font-size: 12px; line-height: 1.6; text-align: center; }
+.tarot-hint { max-width: 330px; margin: clamp(16px, 2.5dvh, 22px) auto 0; color: #6f687b; font-size: 12px; line-height: 1.6; text-align: center; }
+@media (min-height: 760px) { .tarot-hint { margin-bottom: auto; } }
 .tarot-picker.is-shuffling { pointer-events: none; }
 .tarot-picker.is-shuffling .tarot-choice { transition: none; will-change: transform; }
 .tarot-picker.is-shuffling .tarot-choice:nth-child(1) { animation: shuffle-left 1.02s cubic-bezier(.36, .07, .19, .97) both; }
@@ -58,4 +60,5 @@
 
 @media (min-width: 700px) { .tarot-modal { align-items: center; } }
 @media (max-width: 380px) { .tarot-modal-panel { padding: 18px; } .tarot-hero h1 { font-size: 27px; } }
+@media (max-height: 740px) { .tarot-picker { margin-top: 20px; } .tarot-hint { margin-top: 14px; } }
 @media (prefers-reduced-motion: reduce) { .tarot-reveal-card.is-revealing, .tarot-modal-panel, .tarot-picker.is-shuffling .tarot-choice { animation: none; } }

@@ -526,7 +526,7 @@ class SmokeTest(unittest.TestCase):
         self.assertIn("addEventListener('pagehide'", transition_js)
         self.assertIn("addEventListener('pageshow'", transition_js)
         self.assertIn('if (!event.persisted) return;', transition_js)
-        self.assertIn('v=20261107-nav-reverse-1', base_template)
+        self.assertIn('v=20261108-mobile-layout-type-1', base_template)
 
     def test_all_non_home_pages_offer_a_visible_browser_back_control(self):
         for path in ("/today", "/history", "/tarot", "/check", "/palm", "/lotto", "/history?filter=lotto"):
@@ -563,12 +563,12 @@ class SmokeTest(unittest.TestCase):
 
     def test_modified_navigation_and_tarot_assets_use_fresh_cache_keys(self):
         html = self.client.get("/tarot").get_data(as_text=True)
-        self.assertIn("css/app-chrome.css?v=20261107-nav-reverse-1", html)
+        self.assertIn("css/app-chrome.css?v=20261108-mobile-layout-type-1", html)
         self.assertIn("js/page-transitions.js?v=20261107-nav-reverse-1", html)
-        self.assertIn("css/tarot.css?v=20261107-reading-type-1", html)
+        self.assertIn("css/tarot.css?v=20261108-mobile-layout-type-1", html)
         self.assertIn("js/tarot.js?v=20261107-tarot-interaction-guard-1", html)
         palm_html = self.client.get("/palm").get_data(as_text=True)
-        self.assertIn("css/palm.css?v=20261107-reading-type-1", palm_html)
+        self.assertIn("css/palm.css?v=20261108-mobile-layout-type-1", palm_html)
 
     def test_result_page_uses_shared_history_store(self):
         with app.test_request_context():
